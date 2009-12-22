@@ -1,0 +1,126 @@
+$Id
+
+-- SUMMARY --
+
+The Better Exposed Filters module replaces the Views' default single- 
+or multi-select boxes with radio buttons or checkboxes, respectively.
+
+Views Filters are a powerful tool to limit the results of a given view.
+When you expose a filter, you allow the user to interact with the view
+making it easy to build a customized advanced search.  For example, 
+exposing a taxonomy filter lets your site visitor search for articles
+specific tags.  Better Exposed Filters gives you greater control over
+the rendering of exposed filters. 
+
+For a full description of the module, visit the project page:
+  http://drupal.org/project/bef
+
+To submit bug reports and feature suggestions, or to track changes:
+  http://drupal.org/project/issues/bef
+  
+For more information on Views filters, see the Advanced Help documentation
+that comes with Views or visit the online version:
+  http://views-help.doc.logrus.com/help/views/filter 
+
+
+-- REQUIREMENTS --
+
+This module requires the Views module:
+  http://drupal.org/project/views 
+
+
+-- INSTALLATION --
+
+* Install as usual, see http://drupal.org/node/70151 for further information.
+
+
+-- CONFIGURATION --
+
+When adding a filter to a view, you are given several options in the 
+"Configure filter" screen.  At the top of this screen is the option
+to expose the filter (button in the upper-right).  Clicking this button
+adds more customization options to the screen.
+
+Better Exposed Filters adds the option to render the filter using the 
+default Views display or as radio buttons/checkboxes.  If "Force single"
+is selected radio buttons will be used, otherwise checkboxes are displayed.
+
+When adding a CCK-field based filter, be sure to use the "Allowed values"
+option, otherwise the filter is rendered as an auto-complete textbox.
+
+
+-- CUSTOMIZATION --
+
+At this point there are no customization options for Better Exposed Filters.
+If you have any suggestions, please add them to the issue queue:
+  http://drupal.org/project/issues/bef
+  
+  
+-- TROUBLESHOOTING --
+
+* I don't see the "Display exposed filter as" option when I click the Expose button.
+
+  - Make sure this filter isn't already displayed as a checkbox/radio button
+
+  - If this is a CCK-based field (field title starts with "Content:") make sure
+    you're filtering on the "Allowed values" option.
+
+* Radio buttons for fields like Node -> Type are not displayed.
+
+  - This only happens if the "Force single" option is checked.  See 
+    http://drupal.org/node/648034.  To work around this, use the default dropdown 
+    menu or turn off the "Force single" option.  Note: Filters on CCK and Taxonomy
+    fields work fine with force single.
+    
+* Wow, a really long URL is generated when using exposed filters!  How can I make it 
+  a more reasonable length?
+  
+  - Exposed Views filters (with or without BEF enabled) store their current selection
+    in the URL query string.  This allows for easy bookmarking of search results as well
+    as "return to search results" links.  However, it can make for long URLs when using
+    Views' default settings, especially with CCK-based fields.  To shorten the key used
+    for a given filter, configure the filter and change the value in the "Filter indentifier"
+    textbox.  Make sure that your indentifiers are unique within your view!  
+
+-- FAQ --
+
+Q: What was the motivation to build this module?
+
+A: I find multi-select boxes to be a horrible user experience.  Imagine telling a
+   a client that they should click on an option, then scroll to the next option and
+   ctrl+click on it.  Make sure not to just click as you'll lose your first selection
+   and ctrl+click again to unselect an option...  Yeah, not user friendly.
+   
+Q: Can't you just use hook_form_alter() to flip the exposed filter type from 
+   'select' to 'checkboxes'?
+   
+A: Yes, that will get you checkboxes displayed but they won't act as you would expect.
+   For example, leaving all checkboxes unchecked (often the default state) returns
+   zero results.
+   
+Q: So, how does Better Exposed Fitlers work?
+
+A: BEF changes the display of an exposed filter at the theme level.  This also
+   allows a designer to customize the display by overriding BEF's 
+   theme_select_as_checkboxes().
+   
+Q: What is the "Hidden" option used for?
+
+A: You can use the "Hidden" option to build multi-page search.  For example, on the first 
+   page the user selects a country, on the next page they select a region, etc.  To build
+   this using BEF create a view with only the country field as an exposed filter.  On the
+   second page, expose filters for both the region and country fields but set the display
+   of the country filter to "Hidden".  More details can be found here: 
+   http://drupal.org/node/645348#comment-2336516  
+
+
+-- CONTACT --
+
+The current maintainer for this project is Mike Keran (mikeker - http://drupal.org/user/192273)
+He can be contacted through his personal web site (http://MikeKeran.com) for 
+work on this module or other Drupal projects.
+
+
+-- CREDIT --
+
+Thanks to Ben Buckman (http://echodittolabs.org/) for the original concept.

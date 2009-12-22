@@ -1,0 +1,242 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Allows the use of checkboxes, radio buttons or hidden fields for exposed Views filters.
+ * 
+ * Thanks to Ben Buckman (http://echodittolabs.org/) for the original concept.
+ */
+
+
+/**
+ * Implements hook_form_alter()
+ */
+function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
+  
+  /*
+   * Add new display options to the views config form
+   * 
+   * NOTE: In Views 2.x these options were saved as part of the View, including adding
+   *    the relevant information to an exported view.  In Views 3.x, we need to inform
+   *    the Views API of any settings that need to be changed.
+   *    
+   *    See: better_exposed_filters_exposed_form_plugin.inc
+   */
+  if ('views_ui_config_item_form' == $form_id && !empty($form['options']['expose'])) {
+    // Add options to the views configuration form for exposed filters
+
+    // Is this a field we can override?
+    $overrideable = array('select', 'checkboxes', 'radios');
+    if (!in_array($form['options']['value']['#type'], $overrideable)) { 
+      return;
+    }
+    
+    // Get current BEF display format, or set default value if none exists
+    $curr = empty($form_state['handler']->options['expose']['bef_format']) ?
+      'default' : $form_state['handler']->options['expose']['bef_format'];
+    
+    // Build new form element
+    $new = array();
+    $new['bef_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Display exposed filter as'),
+      '#default_value' => $curr,
+      '#options' => array(
+        'default' => t('Default select list'),
+        'bef' => t('Checkboxes/Radio Buttons'),
+        'bef_hidden' => t('Hidden'),
+      ),
+      '#description' => t(
+        'Select a format for the exposed filter.  The "Hidden" option is 
+         generally used for multi-step filters.  Note: if "Force single" 
+         is checked, radio buttons will be used.  If "Force single" is 
+         unchecked, checkboxes will be used.' 
+      ),
+    );
+    
+    // If this was originally displayed as a set of radio buttons, we lose the fact that
+    // "Force single" is implied.
+    if ('radios' == $form['options']['value']['#type']) {
+      $new['bef_format_single'] = array(
+        '#type' => 'hidden',
+        '#value' => TRUE,
+      );
+    }
+
+    // Insert form element into the 'expose' portion of the form
+    $expose = $form['options']['expose'];
+    $first_chunk = array_splice($expose, 0, array_search('end_left', array_keys($expose)));
+    $form['options']['expose'] = array_merge($first_chunk, $new, $expose);
+
+  }     // if ('views_ui_config_item_form' ...) {
+  
+  /*
+   * Update exposed filters to show either checkboxes or radio buttons
+   */
+  if ('views_exposed_form' == $form_id) {
+    // Go through each filter checking for a Better Exposed Filter setting
+    foreach ($form_state['view']->filter as $field => $filter) {
+      if ($filter->options['exposed'] && isset($filter->options['expose']['bef_format'])) {
+        // Form element is designated by the element ID which is user-configurable
+        $field_id = $form['#info']["filter-$field"]['value'];
+
+        switch ($filter->options['expose']['bef_format']) {
+          case 'bef':
+            if ( (isset($filter->options['expose']['single']) && $filter->options['expose']['single']) 
+              || (isset($filter->options['expose']['bef_format_single']) && $filter->options['expose']['bef_format_single'])) {
+                
+              // For "force-single" select boxes, just switch to radio buttons instead
+              $form[$field_id]['#type'] = 'radios';
+              if (isset($form[$field_id]['#options']['All'])) {
+                // TODO: The terms 'All' and 'Any' are customizable in Views
+                if (!$filter->options['expose']['optional']) {
+                  // Some third-party filter handlers still add the "Any" option even if this is not
+                  // an option filter.  Zap it here if they do. 
+                  unset($form[$field_id]['#options']['All']);
+                }
+                else {
+                  // Otherwise, make sure the "Any" text is clean
+                  $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
+                }
+              }
+            }
+            else {
+              // For multi-select boxes, rewrite the HTML at the theme level, since the Forms API handles
+              // selects and checkboxes differently.
+              $form[$field_id]['#theme'] = 'select_as_checkboxes';
+            }
+            break;
+            
+          case 'bef_hidden':
+    				if ($filter->options['expose']['single']) {
+    					$form[$field_id]['#type'] = 'hidden';
+    				}
+    				else {
+    					$form[$field_id]['#theme'] = 'select_as_hidden';
+    				}
+            break;
+        }
+      }
+    }     // foreach (...)
+  }       // if ('views_exposed_form' == $form_id)
+}
+
+/**
+ * Implements hook_theme()
+ */
+function better_exposed_filters_theme($existing, $type, $theme, $path) {
+  return array(
+    'select_as_checkboxes' => array('function' => 'theme_select_as_checkboxes'),
+    'select_as_hidden'     => array('function' => 'theme_select_as_hidden'),
+  );
+}
+
+/**
+ * Themes a select element as a checkbox or radio button instead
+ * 
+ * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
+ * @param object $element - An associative array containing the properties of the element. 
+ *                          Properties used: title, value, options, description, extra, multiple, required
+ * @return HTML string representing the form element.
+ */
+function theme_select_as_checkboxes($element) {
+  $output = '';
+  $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
+  $properties = array(
+    'title' => $element['#title'],
+    'description' => $element['#description'],
+    'required' => FALSE,
+  );
+
+  foreach ($element['#options'] as $key => $value) {
+    if ('All' === $key) { 
+      // TODO: 'All' text is customizable in Views
+      // No need for an 'All' option -- either unchecking or checking all the checkboxes is equivelent
+      continue;
+    }
+    
+    // Check for Taxonomy-based filters
+    if (is_object($value)) {
+      list($key, $value) = each(array_slice($value->option, 0, 1, TRUE));
+    }
+    
+    // Custom ID for each checkbox based on the <select>'s original ID
+    $id = $element['#id'] . '-' . $key;
+    
+    // Very similar to theme_checkbox (http://api.drupal.org/api/function/theme_checkbox/6)
+    $checkbox = '<input type="checkbox" '
+      . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
+      . 'id="'. $id .'" '
+      . 'value="'. $key .'" '
+      . ((array_search($key, $selected_options) !== FALSE) ? 'checked="checked" ' : '')
+      . drupal_attributes($element['#attributes']) .' />';
+    $item = '<label class="option" for="'. $id .'">'. $checkbox .' '. check_plain($value) .'</label>';
+    $output .= theme('form_element', array_merge($properties, array('#id' => $id)), $item);
+  }
+  
+  // Fake theme_checkboxes() which we can't call because it calls theme_form_element() for each option
+  $class = 'class="form-checkboxes ';
+  $class .= (isset($element['#attributes']['class']) ? $element['#attrbiutes']['class'] : '');
+  $class .= '"';
+  return "<div $class>$output</div>";
+}
+
+/**
+ * Themes a select element as a series of hidden fields
+ * 
+ * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
+ * @param object $element - An associative array containing the properties of the element. 
+ *                          Properties used: title, value, options, description, extra, multiple, required
+ * @return HTML string representing the form element.
+ */
+function theme_select_as_hidden($element) {
+  $output = '';
+  $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
+  $properties = array(
+    'title' => $element['#title'],
+    'description' => $element['#description'],
+    'required' => FALSE,
+  );
+
+  foreach ($element['#options'] as $key => $value) {    
+    // Check for Taxonomy-based filters
+    if (is_object($value)) {
+      list($key, $value) = each(array_slice($value->option, 0, 1, TRUE));
+    }
+	
+  	// Only render fields for selected values -- no selected values renders zero fields
+  	if (array_search($key, $selected_options) !== FALSE) { 
+  		// Custom ID for each hidden field based on the <select>'s original ID
+  		$id = $element['#id'] . '-' . $key;
+  		
+  		// Very similar to theme_hidden (http://api.drupal.org/api/function/theme_hidden/6)
+  		$hidden = '<input type="hidden" '
+  		  . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
+  		  . 'id="'. $id .'" '
+  		  . 'value="'. check_plain($key) .'" '
+  		  . drupal_attributes($element['#attributes']) .' />';
+  		$output .= theme('form_element', array_merge($properties, array('#id' => $id)), $hidden);
+    }
+  }
+  return $output;
+}
+
+
+/*
+ * Views3 support
+ * 
+ * Views3 adds the concept of exposed forms to the mix.  In addition, elements injected into a Views
+ * dialog is no longer saved along with the Views form information (see the unpack_options() and
+ * option_definition() methods of the views_object object). 
+ */
+
+/**
+ * Implements hook_views_api()
+ */
+function better_exposed_filters_views_api() {
+  return array(
+    'api' => 3.0,
+  );
+}
+
