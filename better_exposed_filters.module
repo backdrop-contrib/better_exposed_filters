@@ -24,7 +24,6 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
    *    See: better_exposed_filters_exposed_form_plugin.inc
    */
   if ('views_ui_config_item_form' == $form_id && !empty($form['options']['expose'])) {
-    // Add options to the views configuration form for exposed filters
 
     // Is this a field we can override?
     $overrideable = array('select', 'checkboxes', 'radios');
@@ -55,15 +54,6 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       ),
     );
     
-    // If this was originally displayed as a set of radio buttons, we lose the fact that
-    // "Force single" is implied.
-    if ('radios' == $form['options']['value']['#type']) {
-      $new['bef_format_single'] = array(
-        '#type' => 'hidden',
-        '#value' => TRUE,
-      );
-    }
-
     // Insert form element into the 'expose' portion of the form
     $expose = $form['options']['expose'];
     $first_chunk = array_splice($expose, 0, array_search('end_left', array_keys($expose)));
@@ -83,16 +73,17 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
 
         switch ($filter->options['expose']['bef_format']) {
           case 'bef':
-            if ( (isset($filter->options['expose']['single']) && $filter->options['expose']['single']) 
-              || (isset($filter->options['expose']['bef_format_single']) && $filter->options['expose']['bef_format_single'])) {
-                
-              // For "force-single" select boxes, just switch to radio buttons instead
+            if (empty($form[$field_id]['#multiple'])) {
+              // For "force-single" select boxes or other single-select options, just switch to 
+              // radio buttons.
               $form[$field_id]['#type'] = 'radios';
+              $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
+
               if (isset($form[$field_id]['#options']['All'])) {
                 // TODO: The terms 'All' and 'Any' are customizable in Views
                 if (!$filter->options['expose']['optional']) {
                   // Some third-party filter handlers still add the "Any" option even if this is not
-                  // an option filter.  Zap it here if they do. 
+                  // an optional filter.  Zap it here if they do. 
                   unset($form[$field_id]['#options']['All']);
                 }
                 else {
@@ -109,7 +100,7 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
             break;
             
           case 'bef_hidden':
-    				if ($filter->options['expose']['single']) {
+    				if (empty($form[$field_id]['#multiple'])) {
     					$form[$field_id]['#type'] = 'hidden';
     				}
     				else {
