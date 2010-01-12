@@ -168,7 +168,7 @@ function theme_select_as_checkboxes($element) {
   
   // Fake theme_checkboxes() which we can't call because it calls theme_form_element() for each option
   $class = 'class="form-checkboxes ';
-  $class .= (isset($element['#attributes']['class']) ? $element['#attrbiutes']['class'] : '');
+  $class .= (isset($element['#attributes']['class']) ? $element['#attributes']['class'] : '');
   $class .= '"';
   return "<div $class>$output</div>";
 }
