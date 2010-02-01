@@ -9,7 +9,7 @@ if (Drupal.jsEnabled) {
       var selNone = Drupal.t('Select None');
       
       // Set up link and event handlers
-      var link = $('<a class="bef-selecter" href="#">'+ selAll +'</a>')
+      var link = $('<a class="bef-toggle" href="#">'+ selAll +'</a>')
       link.click(function() {
         if (selAll == this.text) {
           // Select all the checkboxes
