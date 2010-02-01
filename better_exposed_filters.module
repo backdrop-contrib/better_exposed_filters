@@ -30,17 +30,31 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
     if (!in_array($form['options']['value']['#type'], $overrideable)) { 
       return;
     }
-    
-    // Get current BEF display format, or set default value if none exists
-    $curr = empty($form_state['handler']->options['expose']['bef_format']) ?
+
+    // Get current BEF values or set default values
+    $curr = array();
+    $curr['format'] = empty($form_state['handler']->options['expose']['bef_format']) ?
       'default' : $form_state['handler']->options['expose']['bef_format'];
+    $curr['allnone'] = empty($form_state['handler']->options['expose']['bef_select_all_none']) ?
+      FALSE : $form_state['handler']->options['expose']['bef_select_all_none'];
+    $curr['description'] = empty($form_state['handler']->options['expose']['bef_filter_description']) ?
+      '' : $form_state['handler']->options['expose']['bef_filter_description'];
+      
+    // Build form elements for the left side of the exposed filter form
+    $left = array();
     
-    // Build new form element
-    $new = array();
-    $new['bef_format'] = array(
+    // Build a description option form element
+    $left['bef_filter_description'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Description'),
+      '#default_value' => $curr['description'],
+    );
+    
+    // Build format selection element
+    $left['bef_format'] = array(
       '#type' => 'select',
       '#title' => t('Display exposed filter as'),
-      '#default_value' => $curr,
+      '#default_value' => $curr['format'],
       '#options' => array(
         'default' => t('Default select list'),
         'bef' => t('Checkboxes/Radio Buttons'),
@@ -54,11 +68,30 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       ),
     );
     
-    // Insert form element into the 'expose' portion of the form
+    // Build form elements for the right side of the exposed filter form
+    $right = array();
+
+    // Build check all/none option form element
+    $right['bef_select_all_none'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Add select all/none links'),
+      '#default_value' => $curr['allnone'],
+      '#description' => t(
+        'Add a "Select All/None" link when rendering the exposed filter using 
+         checkboxes. NOTE: The link is built at page load, so it will not appear
+         in the "Live Preview" which is loaded dynamically.'
+      ),
+    ); 
+    
+    // Insert BEF form elements into the exposed filter form
     $expose = $form['options']['expose'];
     $first_chunk = array_splice($expose, 0, array_search('end_left', array_keys($expose)));
-    $form['options']['expose'] = array_merge($first_chunk, $new, $expose);
+    $form['options']['expose'] = array_merge($first_chunk, $left, $expose);
 
+    $expose = $form['options']['expose'];
+    $first_chunk = array_splice($expose, 0, array_search('end_checkboxes', array_keys($expose)));
+    $form['options']['expose'] = array_merge($first_chunk, $right, $expose);
+    
   }     // if ('views_ui_config_item_form' ...) {
   
   /*
@@ -67,50 +100,78 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
   if ('views_exposed_form' == $form_id) {
     // Go through each filter checking for a Better Exposed Filter setting
     foreach ($form_state['view']->filter as $field => $filter) {
-      if ($filter->options['exposed'] && isset($filter->options['expose']['bef_format'])) {
+      if ($filter->options['exposed']) {
+
         // Form element is designated by the element ID which is user-configurable
         $field_id = $form['#info']["filter-$field"]['value'];
 
-        switch ($filter->options['expose']['bef_format']) {
-          case 'bef':
-            if (empty($form[$field_id]['#multiple'])) {
-              // For "force-single" select boxes or other single-select options, just switch to 
-              // radio buttons.
-              $form[$field_id]['#type'] = 'radios';
-              $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
-
-              if (isset($form[$field_id]['#options']['All'])) {
-                // TODO: The terms 'All' and 'Any' are customizable in Views
-                if (!$filter->options['expose']['optional']) {
-                  // Some third-party filter handlers still add the "Any" option even if this is not
-                  // an optional filter.  Zap it here if they do. 
-                  unset($form[$field_id]['#options']['All']);
-                }
-                else {
-                  // Otherwise, make sure the "Any" text is clean
-                  $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
+        // Add a description to the exposed filter
+        if (isset($filter->options['expose']['bef_filter_description'])) {
+          $form[$field_id]['#description'] = $filter->options['expose']['bef_filter_description'];
+        } 
+        
+        if (isset($filter->options['expose']['bef_format'])) {
+          switch ($filter->options['expose']['bef_format']) {
+            case 'bef':
+              if (empty($form[$field_id]['#multiple'])) {
+                // For "force-single" select boxes or other single-select options, just switch to 
+                // radio buttons.
+                $form[$field_id]['#type'] = 'radios';
+                $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
+  
+                if (isset($form[$field_id]['#options']['All'])) {
+                  // @TODO: The terms 'All' and 'Any' are customizable in Views
+                  if (!$filter->options['expose']['optional']) {
+                    // Some third-party filter handlers still add the "Any" option even if this is not
+                    // an optional filter.  Zap it here if they do. 
+                    unset($form[$field_id]['#options']['All']);
+                  }
+                  else {
+                    // Otherwise, make sure the "Any" text is clean
+                    $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
+                  }
                 }
               }
-            }
-            else {
-              // For multi-select boxes, rewrite the HTML at the theme level, since the Forms API handles
-              // selects and checkboxes differently.
-              $form[$field_id]['#theme'] = 'select_as_checkboxes';
-            }
-            break;
-            
-          case 'bef_hidden':
-    				if (empty($form[$field_id]['#multiple'])) {
-    					$form[$field_id]['#type'] = 'hidden';
-    				}
-    				else {
-    					$form[$field_id]['#theme'] = 'select_as_hidden';
-    				}
-            break;
-        }
-      }
-    }     // foreach (...)
+              else {
+                // For multi-select boxes, rewrite the HTML at the theme level, since the Forms API handles
+                // selects and checkboxes differently.
+                $form[$field_id]['#theme'] = 'select_as_checkboxes';
+                if ($filter->options['expose']['bef_select_all_none']) {
+                  // Add BEF's JavaScript to the mix to handle select all/none functionality
+                  drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
+
+                  // Add select all/none functionality to this filter.
+                  $form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
+                }
+              }
+              break;
+              
+            case 'bef_hidden':
+      				if (empty($form[$field_id]['#multiple'])) {
+      					$form[$field_id]['#type'] = 'hidden';
+      				}
+      				else {
+      					$form[$field_id]['#theme'] = 'select_as_hidden';
+      				}
+              break;
+          } // switch
+        }   // if (isset($filter->options['expose']['bef_format'])) {
+      }     // if ($filter->options['exposed']) {
+    }       // foreach (...)
   }       // if ('views_exposed_form' == $form_id)
+  
+  /*
+   * @TODO:
+   * When Drupal upgrades to jQuery 1.3, we can use this to provide added UX enhancements.
+   * (Uncomment the similar block of code in better_exposed_filters.js)
+   * 
+  if ('views_ui_edit_view_form' == $form_id) {
+    // Add BEF's JavaScript to the mix so we can do some basic UX improvements
+    // We have to do this here rather than in views_ui_config_item_form as that form is loaded
+    // dynamically. 
+    drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
+  }
+   */
 }
 
 /**
@@ -170,7 +231,13 @@ function theme_select_as_checkboxes($element) {
   $class = 'class="form-checkboxes ';
   $class .= (isset($element['#attributes']['class']) ? $element['#attributes']['class'] : '');
   $class .= '"';
-  return "<div $class>$output</div>";
+  
+  // Add exposed filter description
+  if (!empty($element['#description'])) {
+    $description = '<div class="description">'. $element['#description'] .'</div>';
+  }
+  
+  return "<div $class>$description$output</div>";
 }
 
 /**
