@@ -8,7 +8,7 @@ if (Drupal.jsEnabled) {
       var selAll = Drupal.t('Select All');
       var selNone = Drupal.t('Select None');
       
-      // Set up link and event handlers
+      // Set up a prototype link and event handlers
       var link = $('<a class="bef-toggle" href="#">'+ selAll +'</a>')
       link.click(function() {
         if (selAll == this.text) {
@@ -31,7 +31,9 @@ if (Drupal.jsEnabled) {
 
       // Add link to the page.
       selected.each(function(index) {
-        link.insertBefore($('.form-item:first', this));
+        // Clone the link prototype and insert into the DOM
+        var newLink = link.clone(true);
+        newLink.insertBefore($('.form-item:first', this));
         
         // Check if all checkboxes are already checked by default and switch to Select None if they are
         var all_checked = true;
@@ -42,7 +44,7 @@ if (Drupal.jsEnabled) {
           }
         });
         if (all_checked) {
-          link.click();
+          newLink.click();
         }
       });
     }
