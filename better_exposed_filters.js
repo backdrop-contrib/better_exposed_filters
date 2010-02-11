@@ -11,7 +11,7 @@ if (Drupal.jsEnabled) {
       // Set up a prototype link and event handlers
       var link = $('<a class="bef-toggle" href="#">'+ selAll +'</a>')
       link.click(function() {
-        if (selAll == this.text) {
+        if (selAll == $(this).text()) {
           // Select all the checkboxes
           $(this)
             .html(selNone)
@@ -38,7 +38,7 @@ if (Drupal.jsEnabled) {
         // Check if all checkboxes are already checked by default and switch to Select None if they are
         var all_checked = true;
         $('input:checkbox', this).each(function() {
-          if (!this.checked) {
+          if (! $(this).checked()) {
             all_checked = false;
             return false;   
           }
