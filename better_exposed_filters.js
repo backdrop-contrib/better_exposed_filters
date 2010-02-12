@@ -29,21 +29,14 @@ if (Drupal.jsEnabled) {
         }
       });
 
-      // Add link to the page.
+      // Add link to the page for each set of checkboxes.
       selected.each(function(index) {
         // Clone the link prototype and insert into the DOM
         var newLink = link.clone(true);
         newLink.insertBefore($('.form-item:first', this));
         
-        // Check if all checkboxes are already checked by default and switch to Select None if they are
-        var all_checked = true;
-        $('input:checkbox', this).each(function() {
-          if (! $(this).checked()) {
-            all_checked = false;
-            return false;   
-          }
-        });
-        if (all_checked) {
+        // If all checkboxes are already checked by default then switch to Select None
+        if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
           newLink.click();
         }
       });
