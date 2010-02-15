@@ -65,13 +65,6 @@ If you have any suggestions, please add them to the issue queue:
   - If this is a CCK-based field (field title starts with "Content:") make sure
     you're filtering on the "Allowed values" option.
 
-* Radio buttons for fields like Node -> Type are not displayed.
-
-  - This only happens if the "Force single" option is checked.  See 
-    http://drupal.org/node/648034.  To work around this, use the default dropdown 
-    menu or turn off the "Force single" option.  Note: Filters on CCK and Taxonomy
-    fields work fine with force single.
-    
 * Wow, a really long URL is generated when using exposed filters!  How can I make it 
   a more reasonable length?
   
