@@ -27,6 +27,7 @@ if (Drupal.jsEnabled) {
               $('input:checkbox', this).attr('checked', '');
             });
         }
+        return false;
       });
 
       // Add link to the page for each set of checkboxes.
