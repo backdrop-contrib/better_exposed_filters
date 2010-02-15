@@ -17,12 +17,21 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
   /*
    * Add new display options to the views config form
    * 
-   * NOTE: In Views 2.x these options were saved as part of the View, including adding
-   *    the relevant information to an exported view.  In Views 3.x, we need to inform
-   *    the Views API of any settings that need to be changed.
+   * NOTE: In Views 2.x these options were saved as part of the View and we use hook_form_alter
+   *    to inject them into the filter config form.  In Views 3.x, with the addition of exposed
+   *    forms, we can now do all of this in a plugin (better_exposed_filters_exposed_form_plugin.inc).
    *    
-   *    See: better_exposed_filters_exposed_form_plugin.inc
+   *    However, now there is duplicate code in two locations.  Any changes to hook_form_alter
+   *    will need to be replicated in better_exposed_filters_exposed_form_plugin (either in
+   *    options_form for ptions settings or exposed_form_alter for displaying the filter).  The
+   *    other choice was to create a new Views 3.x branch of BEF, but then we'd need to maintain
+   *    code between two different branches...  Not much better.
    */
+  if ('2' != substr(views_api_version(), 0, 1)) {
+    // Only continue for Views 2.x
+    return;
+  }
+  
   if ('views_ui_config_item_form' == $form_id && !empty($form['options']['expose'])) {
 
     // Is this a field we can override?

@@ -20,15 +20,13 @@ function better_exposed_filters_views_plugins() {
     'exposed_form' => array(
       'better_exposed_filters' => array(
         'title' => t('Better Exposed Filters'),
-        'help' => t(
-          'Changes the display of exposed filters from single- or multi-select boxes
-           to radio buttons or checkboxes, respectively.'
-         ),
-         'handler' => 'better_exposed_filters_exposed_form_plugin',
-         'path' => drupal_get_path('module', 'better_exposed_filters'),
-         'uses options' => TRUE,
-         'type' => 'normal',
-         'parent' => 'basic',
+        'help' => t('Allow use of checkboxes/radio buttons for exposed filters'),
+        'handler' => 'better_exposed_filters_exposed_form_plugin',
+        'uses row plugin' => FALSE,
+        'uses fields' => TRUE,
+        'uses options' => TRUE,
+        'type' => 'normal',
+        'parent' => 'basic',
       ),
     ),
   );
