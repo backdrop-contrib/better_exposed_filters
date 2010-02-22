@@ -30,66 +30,68 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $bef_options = array();
 
     // Go through each filter and add the same options we used to add in hook_form_alter()
-    foreach ($this->view->display_handler->options['filters'] as $label => $filter) {
-      if (!$filter['exposed']) {
-        continue;
-      }
-      
-      // Is this a type of field we can't tweak?  (eg: text fields)
-      if (('=' == $filter['operator']) && !is_bool($filter['value'])) {
-        // others?
-        continue;
-      }
-
-      // Main BEF option: default/checkboxes/hidden
-      $bef_options[$label]['bef_format'] = array(
-        '#type' => 'select',
-        '#title' => t('Display "@label" exposed filter as', array('@label' => $filter['expose']['label'])),
-        '#default_value' => $this->options['bef'][$label]['bef_format'],
-        '#options' => array(
-          'default' => t('Default select list'),
-          'bef' => t('Checkboxes/Radio Buttons'),
-          'bef_hidden' => t('Hidden'),
-      ),
-        '#description' => t(
-          'Select a format for the exposed filter.  The "Hidden" option is 
-           generally used for multi-step filters.  Note: if "Force single" 
-           is checked, radio buttons will be used.  If "Force single" is 
-           unchecked, checkboxes will be used.' 
-           ),
-           );
-
-           // Fieldset to keep the UI from getting out of hand
-           $bef_options[$label]['more_options'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('More options for "@label"', array('@label' => $filter['expose']['label'])),
-        '#collapsible' => TRUE,
-        '#collapsed' => TRUE,
-           );
-
-           // Select all checkbox
-           $bef_options[$label]['more_options']['bef_select_all_none'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Add select all/none links'),
-        '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
-        '#disabled' => $filter['expose']['single'],
-        '#description' => t(
-          'Add a "Select All/None" link when rendering the exposed filter using 
-           checkboxes. If this option is disabled, edit the filter and uncheck
-           "Force single". NOTE: The link is built at page load, so it will not appear
-           in the "Live Preview" which is loaded dynamically.'
-           ),
-           );
-
-           // Build a description option form element
-           $bef_options[$label]['more_options']['bef_filter_description'] = array(
-        '#type' => 'textarea',
-        '#title' => t('Description'),
-        '#default_value' => $this->options['bef'][$label]['more_options']['bef_filter_description'],
-        '#description' => t('Adds descriptive text to the exposed filter.  This is usually 
-                             rendered in smaller print under the label or the options.'),
-           );
-    }             // foreach ($filters as $filter) {
+    if (isset($this->view->display_handler->options['filters'])) {
+      foreach ($this->view->display_handler->options['filters'] as $label => $filter) {
+        if (!$filter['exposed']) {
+          continue;
+        }
+        
+        // Is this a type of field we can't tweak?  (eg: text fields)
+        if (('=' == $filter['operator']) && !is_bool($filter['value'])) {
+          // others?
+          continue;
+        }
+  
+        // Main BEF option: default/checkboxes/hidden
+        $bef_options[$label]['bef_format'] = array(
+          '#type' => 'select',
+          '#title' => t('Display "@label" exposed filter as', array('@label' => $filter['expose']['label'])),
+          '#default_value' => $this->options['bef'][$label]['bef_format'],
+          '#options' => array(
+            'default' => t('Default select list'),
+            'bef' => t('Checkboxes/Radio Buttons'),
+            'bef_hidden' => t('Hidden'),
+        ),
+          '#description' => t(
+            'Select a format for the exposed filter.  The "Hidden" option is 
+             generally used for multi-step filters.  Note: if "Force single" 
+             is checked, radio buttons will be used.  If "Force single" is 
+             unchecked, checkboxes will be used.' 
+             ),
+             );
+  
+             // Fieldset to keep the UI from getting out of hand
+             $bef_options[$label]['more_options'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('More options for "@label"', array('@label' => $filter['expose']['label'])),
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+             );
+  
+             // Select all checkbox
+             $bef_options[$label]['more_options']['bef_select_all_none'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Add select all/none links'),
+          '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
+          '#disabled' => $filter['expose']['single'],
+          '#description' => t(
+            'Add a "Select All/None" link when rendering the exposed filter using 
+             checkboxes. If this option is disabled, edit the filter and uncheck
+             "Force single". NOTE: The link is built at page load, so it will not appear
+             in the "Live Preview" which is loaded dynamically.'
+             ),
+             );
+  
+             // Build a description option form element
+             $bef_options[$label]['more_options']['bef_filter_description'] = array(
+          '#type' => 'textarea',
+          '#title' => t('Description'),
+          '#default_value' => $this->options['bef'][$label]['more_options']['bef_filter_description'],
+          '#description' => t('Adds descriptive text to the exposed filter.  This is usually 
+                               rendered in smaller print under the label or the options.'),
+             );
+      }             // foreach ($filters as $filter) {
+    }
 
     // Add BEF form elements to the exposed form options form
     $form['bef'] = $bef_options;
