@@ -223,7 +223,7 @@ function theme_select_as_checkboxes($element) {
     }
     
     // Custom ID for each checkbox based on the <select>'s original ID
-    $id = $element['#id'] . '-' . $key;
+    $id = form_clean_id($element['#id'] . '-' . $key);
     
     // Very similar to theme_checkbox (http://api.drupal.org/api/function/theme_checkbox/6)
     $checkbox = '<input type="checkbox" '
@@ -275,8 +275,8 @@ function theme_select_as_hidden($element) {
   	// Only render fields for selected values -- no selected values renders zero fields
   	if (array_search($key, $selected_options) !== FALSE) { 
   		// Custom ID for each hidden field based on the <select>'s original ID
-  		$id = $element['#id'] . '-' . $key;
-  		
+      $id = form_clean_id($element['#id'] . '-' . $key);
+  	    		
   		// Very similar to theme_hidden (http://api.drupal.org/api/function/theme_hidden/6)
   		$hidden = '<input type="hidden" '
   		  . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
