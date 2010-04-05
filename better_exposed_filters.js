@@ -1,5 +1,6 @@
 if (Drupal.jsEnabled) {
-  $(document).ready(function() {
+  Drupal.behaviors.better_exposed_filters = function() {
+
     /*
      * Add Select all/none links to specified checkboxes
      */
@@ -42,24 +43,5 @@ if (Drupal.jsEnabled) {
         }
       });
     }
-    
-    /*
-     * Turn the "Add select all/none" on and off based on other settings
-     * 
-     * @TODO:
-     * When Drupal upgrades to jQuery 1.3, we can use this to provide addition UX support
-     * (Uncomment the similar block in better_exposed_filters.module)
-     * 
-    $('#edit-options-expose-bef-format, #edit-options-expose-single').live('click', function() {
-      if (('bef' == $('#edit-options-expose-bef-format').val()) 
-          && ('checked' == $('#edit-options-expose-single').attr('checked'))) {
-        $('#edit-options-expose-bef-select-all-none').attr('disabled', '');
-      }
-      else {
-        $('#edit-options-expose-bef-select-all-none').attr('disabled', 'disabled');
-      }
-      return false;     // Stop event from propagating further
-    });
-    */
-  });
+  };
 }
