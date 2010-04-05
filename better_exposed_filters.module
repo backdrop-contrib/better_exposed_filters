@@ -168,19 +168,6 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       }     // if ($filter->options['exposed']) {
     }       // foreach (...)
   }       // if ('views_exposed_form' == $form_id)
-  
-  /*
-   * @TODO:
-   * When Drupal upgrades to jQuery 1.3, we can use this to provide added UX enhancements.
-   * (Uncomment the similar block of code in better_exposed_filters.js)
-   * 
-  if ('views_ui_edit_view_form' == $form_id) {
-    // Add BEF's JavaScript to the mix so we can do some basic UX improvements
-    // We have to do this here rather than in views_ui_config_item_form as that form is loaded
-    // dynamically. 
-    drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
-  }
-   */
 }
 
 /**
