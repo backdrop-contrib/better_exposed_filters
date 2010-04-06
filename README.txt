@@ -51,8 +51,10 @@ option, otherwise the filter is rendered as an auto-complete textbox.
 
 -- CUSTOMIZATION --
 
-At this point there are no customization options for Better Exposed Filters.
-If you have any suggestions, please add them to the issue queue:
+Themers can override the theme_select_as_checkboxes() routine to allow for 
+addition markup in the exposed filter.  However, this routine is updated 
+often with bug fixes and enhancements.  If you have suggestions on how to
+improve Better Exposed Filters, please add them to the issue queue:
   http://drupal.org/project/issues/bef
   
   
@@ -91,7 +93,7 @@ A: Yes, that will get you checkboxes displayed but they won't act as you would e
    For example, leaving all checkboxes unchecked (often the default state) returns
    zero results.
    
-Q: So, how does Better Exposed Fitlers work?
+Q: So, how does Better Exposed Filters work?
 
 A: BEF changes the display of an exposed filter at the theme level.  This also
    allows a designer to customize the display by overriding BEF's 
@@ -109,9 +111,9 @@ A: You can use the "Hidden" option to build multi-page search.  For example, on 
 
 -- CONTACT --
 
-The current maintainer for this project is Mike Keran (mikeker - http://drupal.org/user/192273)
-He can be contacted through his personal web site (http://MikeKeran.com) for 
-work on this module or other Drupal projects.
+The maintainer for this project is Mike Keran (mikeker - http://drupal.org/user/192273)
+He can be contacted through his personal web site (http://MikeKeran.com) for work on this 
+module or other custom projects.
 
 
 -- CREDIT --
