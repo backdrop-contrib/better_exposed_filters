@@ -134,6 +134,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             // radio buttons.
             $form[$field_id]['#type'] = 'radios';
             $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
+            $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
+            $form[$field_id]['#suffix'] = '</div>';
 
             if (isset($form[$field_id]['#options']['All'])) {
               // @TODO: The terms 'All' and 'Any' are customizable in Views

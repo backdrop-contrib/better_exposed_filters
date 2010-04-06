@@ -127,7 +127,9 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
                 // radio buttons.
                 $form[$field_id]['#type'] = 'radios';
                 $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
-  
+                $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
+                $form[$field_id]['#suffix'] = '</div>';
+                                
                 if (isset($form[$field_id]['#options']['All'])) {
                   // @TODO: The terms 'All' and 'Any' are customizable in Views
                   if (!$filter->options['expose']['optional']) {
@@ -189,7 +191,6 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes($element) {
-  $output = '';
   $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
   $properties = array(
     'title' => $element['#title'],
@@ -197,10 +198,11 @@ function theme_select_as_checkboxes($element) {
     'required' => FALSE,
   );
 
+  $output = '<div class="bef-checkboxes">';
   foreach ($element['#options'] as $key => $value) {
     if ('All' === $key) { 
       // TODO: 'All' text is customizable in Views
-      // No need for an 'All' option -- either unchecking or checking all the checkboxes is equivelent
+      // No need for an 'All' option -- either unchecking or checking all the checkboxes is equivalent
       continue;
     }
     
@@ -222,9 +224,10 @@ function theme_select_as_checkboxes($element) {
     $item = '<label class="option" for="'. $id .'">'. $checkbox .' '. check_plain($value) .'</label>';
     $output .= theme('form_element', array_merge($properties, array('#id' => $id)), $item);
   }
+  $output .= '</div>';
   
   // Fake theme_checkboxes() which we can't call because it calls theme_form_element() for each option
-  $class = 'class="form-checkboxes ';
+  $class = 'class="form-checkboxes bef-select-as-checkboxes ';
   $class .= (isset($element['#attributes']['class']) ? $element['#attributes']['class'] : '');
   $class .= '"';
   

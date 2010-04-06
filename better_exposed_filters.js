@@ -16,17 +16,19 @@ if (Drupal.jsEnabled) {
           // Select all the checkboxes
           $(this)
             .html(selNone)
-            .siblings('.form-item').each(function() {
-              $('input:checkbox', this).attr('checked', 'checked');
-            });
+            .siblings('.bef-checkboxes')
+              .find('.form-item input:checkbox').each(function() {
+                $(this).attr('checked', 'checked');
+              });
         }
         else {
           // Unselect all the checkboxes
           $(this)
             .html(selAll)
-            .siblings('.form-item').each(function() {
-              $('input:checkbox', this).attr('checked', '');
-            });
+            .siblings('.bef-checkboxes')
+              .find('.form-item input:checkbox').each(function() {
+                $(this).attr('checked', '');
+              });
         }
         return false;
       });
@@ -35,7 +37,7 @@ if (Drupal.jsEnabled) {
       selected.each(function(index) {
         // Clone the link prototype and insert into the DOM
         var newLink = link.clone(true);
-        newLink.insertBefore($('.form-item:first', this));
+        newLink.insertBefore($('.bef-checkboxes', this));
         
         // If all checkboxes are already checked by default then switch to Select None
         if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
