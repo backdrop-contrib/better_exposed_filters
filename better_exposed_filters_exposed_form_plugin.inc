@@ -51,25 +51,25 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             'default' => t('Default select list'),
             'bef' => t('Checkboxes/Radio Buttons'),
             'bef_hidden' => t('Hidden'),
-        ),
+          ),
           '#description' => t(
             'Select a format for the exposed filter.  The "Hidden" option is 
              generally used for multi-step filters.  Note: if "Force single" 
              is checked, radio buttons will be used.  If "Force single" is 
              unchecked, checkboxes will be used.' 
-             ),
-             );
+          ),
+        );
   
-             // Fieldset to keep the UI from getting out of hand
-             $bef_options[$label]['more_options'] = array(
+        // Fieldset to keep the UI from getting out of hand
+        $bef_options[$label]['more_options'] = array(
           '#type' => 'fieldset',
           '#title' => t('More options for "@label"', array('@label' => $filter['expose']['label'])),
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
-             );
+        );
   
-             // Select all checkbox
-             $bef_options[$label]['more_options']['bef_select_all_none'] = array(
+        // Select all checkbox
+        $bef_options[$label]['more_options']['bef_select_all_none'] = array(
           '#type' => 'checkbox',
           '#title' => t('Add select all/none links'),
           '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
@@ -79,17 +79,17 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
              checkboxes. If this option is disabled, edit the filter and uncheck
              "Force single". NOTE: The link is built at page load, so it will not appear
              in the "Live Preview" which is loaded dynamically.'
-             ),
-             );
+          ),
+        );
   
-             // Build a description option form element
-             $bef_options[$label]['more_options']['bef_filter_description'] = array(
+        // Build a description option form element
+        $bef_options[$label]['more_options']['bef_filter_description'] = array(
           '#type' => 'textarea',
           '#title' => t('Description'),
           '#default_value' => $this->options['bef'][$label]['more_options']['bef_filter_description'],
           '#description' => t('Adds descriptive text to the exposed filter.  This is usually 
                                rendered in smaller print under the label or the options.'),
-             );
+        );
       }             // foreach ($filters as $filter) {
     }
 
@@ -176,5 +176,4 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }     // switch ($options['bef_format'])
     }       // foreach ($this->options['bef']...)
   }         // function exposed_form_alter(...)
-
 }
