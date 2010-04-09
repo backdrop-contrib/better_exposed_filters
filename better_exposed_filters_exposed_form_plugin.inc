@@ -2,6 +2,7 @@
 // $Id$
 
 /**
+ * @file
  * Provides an Better Exposed Filters exposed form plugin for View 3.x.
  */
 class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_form_basic {
