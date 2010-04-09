@@ -158,18 +158,18 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
               break;
               
             case 'bef_hidden':
-      				if (empty($form[$field_id]['#multiple'])) {
-      					$form[$field_id]['#type'] = 'hidden';
-      				}
-      				else {
-      					$form[$field_id]['#theme'] = 'select_as_hidden';
-      				}
+              if (empty($form[$field_id]['#multiple'])) {
+                $form[$field_id]['#type'] = 'hidden';
+              }
+              else {
+                $form[$field_id]['#theme'] = 'select_as_hidden';
+              }
               break;
           } // switch
         }   // if (isset($filter->options['expose']['bef_format'])) {
       }     // if ($filter->options['exposed']) {
     }       // foreach (...)
-  }       // if ('views_exposed_form' == $form_id)
+  }         // if ('views_exposed_form' == $form_id)
 }
 
 /**
@@ -261,19 +261,19 @@ function theme_select_as_hidden($element) {
     if (is_object($value)) {
       list($key, $value) = each(array_slice($value->option, 0, 1, TRUE));
     }
-	
-  	// Only render fields for selected values -- no selected values renders zero fields
-  	if (array_search($key, $selected_options) !== FALSE) { 
-  		// Custom ID for each hidden field based on the <select>'s original ID
+    
+    // Only render fields for selected values -- no selected values renders zero fields
+    if (array_search($key, $selected_options) !== FALSE) { 
+      // Custom ID for each hidden field based on the <select>'s original ID
       $id = form_clean_id($element['#id'] . '-' . $key);
-  	    		
-  		// Very similar to theme_hidden (http://api.drupal.org/api/function/theme_hidden/6)
-  		$hidden = '<input type="hidden" '
-  		  . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
-  		  . 'id="'. $id .'" '
-  		  . 'value="'. check_plain($key) .'" '
-  		  . drupal_attributes($element['#attributes']) .' />';
-  		$output .= theme('form_element', array_merge($properties, array('#id' => $id)), $hidden);
+                
+      // Very similar to theme_hidden (http://api.drupal.org/api/function/theme_hidden/6)
+      $hidden = '<input type="hidden" '
+        . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
+        . 'id="'. $id .'" '
+        . 'value="'. check_plain($key) .'" '
+        . drupal_attributes($element['#attributes']) .' />';
+      $output .= theme('form_element', array_merge($properties, array('#id' => $id)), $hidden);
     }
   }
   return $output;
