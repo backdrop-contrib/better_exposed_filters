@@ -1,0 +1,160 @@
+<?php
+class BEF_TestCase extends DrupalWebTestCase {
+  protected $view_name;
+  protected $privileged_user;
+  
+  public static function getInfo() {
+    return array(
+      'name' => 'BEF Test',
+      'description' => 'Basic tests for Better Exposed Filters.',
+      'group' => 'Better Exposed Filters',
+    );
+  }
+  
+  public function setUp() {
+    parent::setUp('views', 'views_ui', 'better_exposed_filters');  // Enable any modules required for the test
+    
+    // User with edit views perms
+    $this->privileged_user = $this->drupalCreateUser(array('access content', 'administer views'));
+    $this->drupalLogin($this->privileged_user);
+
+    // Build a basic view
+    $this->view_name = $this->randomName(8);
+    $vn = $this->view_name;     // Shorthand
+    $edit = array(
+      'name' => $vn,
+    );
+    $this->drupalPost('admin/build/views/add', $edit, 'Next');
+    
+    $edit = array(
+      'name[node.title]' => TRUE,
+    );
+    $this->drupalPost("admin/build/views/nojs/add-item/$vn/default/field", $edit, 'Add');
+    $this->drupalPost("admin/build/views/nojs/config-item/$vn/default/field/title", array(), 'Update');
+    
+    // Add node->status exposed filter (binary type)
+    $edit = array(
+      'name[node.status]' => TRUE,
+    );
+    $this->drupalPost("admin/build/views/nojs/add-item/$vn/default/filter", $edit, 'Add');
+    $this->drupalPost("admin/build/views/nojs/config-item/$vn/default/filter/status", array(), 'Expose');
+    $this->drupalPost("admin/build/views/nojs/config-item/$vn/default/filter/status", array(), 'Update');
+
+    // Add node->type exposed filter (int/text type)
+    $edit = array(
+      'name[node.type]' => TRUE,
+    );
+    $this->drupalPost("admin/build/views/nojs/add-item/$vn/default/filter", $edit, 'Add');
+    $this->drupalPost("admin/build/views/nojs/config-item/$vn/default/filter/type", array(), 'Expose');
+    $this->drupalPost("admin/build/views/nojs/config-item/$vn/default/filter/type", array(), 'Update');
+    
+    $this->drupalPost("admin/build/views/edit/$vn", array(), 'Save');
+  }
+  
+  public function testsimpletest_befOptionsExist() {
+    // Check node->status (binary type)
+    $this->drupalGet("admin/build/views/nojs/config-item/$this->view_name/default/filter/status");
+    $this->assertText(t('Display exposed filter as'));
+    $this->assertFieldById('edit-options-expose-bef-format');
+
+    // Check node->status (binary type)
+    $this->drupalGet("admin/build/views/nojs/config-item/$this->view_name/default/filter/type");
+    $this->assertText(t('Display exposed filter as'));
+    $this->assertFieldById('edit-options-expose-bef-format');
+  }
+  
+  public function testsimpletest_befOptionsSave() {
+    $edit = array(
+      'options[expose][bef_format]' => 'bef',
+      'options[expose][bef_filter_description]' => $this->randomName(16),
+      'options[expose][bef_select_all_none]' => TRUE, 
+    );
+    $this->drupalPost("admin/build/views/nojs/config-item/$this->view_name/default/filter/status", $edit, 'Update');
+    $this->drupalGet("admin/build/views/nojs/config-item/$this->view_name/default/filter/status");
+    foreach ($edit as $name => $expected) {
+      $this->assertFieldByName($name, $expected);
+    }
+  }
+  
+  public function testsimpletest_befPageDisplayRadios() {
+    $edit = array(
+      'options[expose][bef_format]' => 'bef',
+      'options[expose][bef_filter_description]' => $this->randomName(16),
+      'options[expose][bef_select_all_none]' => TRUE, 
+    );
+    $this->drupalPost("admin/build/views/nojs/config-item/$this->view_name/default/filter/status", $edit, 'Update');
+
+    // Add a page view to the default view
+    $edit = array(
+      'display' => 'page',
+    );
+    $this->drupalPost("admin/build/views/edit/$this->view_name", $edit, 'Add display');
+
+    $edit = array(
+      'path' => $this->randomName(8),
+    );
+    $this->drupalPost("admin/build/views/nojs/display/$this->view_name/page_1/path", $edit, 'Update');
+    $this->drupalPost("admin/build/views/edit/$this->view_name", array(), 'Save');
+
+    $this->drupalGet($edit['path']);
+    $this->assertText(t('Published'));
+    $this->assertFieldByXpath(
+      '//input[@name="status" and @type="radio"]', 
+      TRUE,
+      'Exposed filter is shown as radio buttons'
+    );
+  }
+
+  public function testsimpletest_befPageDisplayCheckboxes() {
+    $edit = array(
+      'options[expose][bef_format]' => 'bef',
+      'options[expose][bef_filter_description]' => $this->randomName(16),
+      'options[expose][bef_select_all_none]' => TRUE,
+      'options[expose][single]' => FALSE,     
+    );
+    $this->drupalPost("admin/build/views/nojs/config-item/$this->view_name/default/filter/type", $edit, 'Update');
+
+    // Add a page view to the default view
+    $edit = array(
+      'display' => 'page',
+    );
+    $this->drupalPost("admin/build/views/edit/$this->view_name", $edit, 'Add display');
+
+    $edit = array(
+      'path' => $this->randomName(8),
+    );
+    $this->drupalPost("admin/build/views/nojs/display/$this->view_name/page_1/path", $edit, 'Update');
+    $this->drupalPost("admin/build/views/edit/$this->view_name", array(), 'Save');
+
+    $this->drupalGet($edit['path']);
+    $this->assertText(t('Node: Type'));
+    $this->assertFieldByXpath(
+      '//input[@name="type[]" and @type="checkbox"]', 
+      TRUE,
+      'Exposed filter is shown as checkboxes'
+    );
+    $this->assertFieldByXpath(
+      '//div[contains(@class, "bef-select-all-none")]', 
+      FALSE,
+      'Class is set correctly for JS to build select all/none links'
+    );
+  }
+  
+  
+//    $edit = array(
+//      'options[expose][bef_format]' => 'bef',
+//      'options[expose][bef_filter_description]' => $this->randomName(16),
+//      'options[expose][bef_select_all_none]' => TRUE, 
+//      'options[expose][optional]' => FALSE,
+//    );
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+}
