@@ -152,12 +152,16 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
                   drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
 
                   // Add select all/none functionality to this filter.
+                  if (!isset($form[$field_id]['#attributes'])) {
+                    $form[$field_id]['#attributes'] = array();
+                  }
                   $form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
                 }
               }
               break;
               
             case 'bef_hidden':
+              $form['#info']["filter-$field_id"]['label'] = '';     // Hide the label
               if (empty($form[$field_id]['#multiple'])) {
                 $form[$field_id]['#type'] = 'hidden';
               }
@@ -256,6 +260,7 @@ function theme_select_as_checkboxes($element) {
   $class .= '"';
   
   // Add exposed filter description
+  $description = '';
   if (!empty($element['#description'])) {
     $description = '<div class="description">'. $element['#description'] .'</div>';
   }

@@ -166,6 +166,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           break;
               
         case 'bef_hidden':
+          $form['#info']["filter-$field_id"]['label'] = '';     // Hide the label
           if (empty($form[$field_id]['#multiple'])) {
             $form[$field_id]['#type'] = 'hidden';
           }
