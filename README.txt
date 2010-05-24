@@ -14,6 +14,10 @@ the rendering of exposed filters.
 
 For a full description of the module, visit the project page:
   http://drupal.org/project/bef
+  
+A handbook page has been started to document some use cases, provide
+additional documentation and and tips:
+  http://drupal.org/node/766974 
 
 To submit bug reports and feature suggestions, or to track changes:
   http://drupal.org/project/issues/bef
@@ -31,7 +35,7 @@ This module requires the Views module:
 
 -- INSTALLATION --
 
-* Install as usual, see http://drupal.org/node/70151 for further information.
+Install as usual, see http://drupal.org/node/70151 for further information.
 
 
 -- CONFIGURATION --
@@ -47,6 +51,11 @@ is selected radio buttons will be used, otherwise checkboxes are displayed.
 
 When adding a CCK-field based filter, be sure to use the "Allowed values"
 option, otherwise the filter is rendered as an auto-complete textbox.
+
+In Views 3.x, the BEF configuration options have been moved to the Exposed
+Form dialog.  Set the "Exposed form style" to "Better Exposed Filters" and
+make your configuration changes in the resulting dialog.  Each filter is 
+listed based on the label given in the exposed filter dialog.
 
 
 -- CUSTOMIZATION --
@@ -66,6 +75,9 @@ improve Better Exposed Filters, please add them to the issue queue:
 
   - If this is a CCK-based field (field title starts with "Content:") make sure
     you're filtering on the "Allowed values" option.
+    
+  - You're using Views 3.x.  The BEF settings have been moved to the Exposed Form
+    dialog.
 
 * Wow, a really long URL is generated when using exposed filters!  How can I make it 
   a more reasonable length?
