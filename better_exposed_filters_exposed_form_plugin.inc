@@ -158,7 +158,13 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
 
               // Add select all/none functionality to this filter.
-              $form[$field_id]['#attributes']['class'] .= ' bef-select-all-none';
+              if (!isset($form[$field_id]['#attributes'])) {
+                $form[$field_id]['#attributes'] = array();
+              }
+              
+              // If the 'class' index doesn't exist, PHP will throw a notice if the error_reporting
+              // level includes E_NOTICE.  Suppress the notice with the '@' operator. 
+              @$form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
             }
           }
           break;
