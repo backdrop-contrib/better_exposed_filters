@@ -4,6 +4,9 @@ if (Drupal.jsEnabled) {
     /*
      * Add Select all/none links to specified checkboxes
      */
+    
+    // Check for selected that already has the select all/none element for pages with outside ajaxy
+    // things going on.
     var selected = $('.form-checkboxes.bef-select-all-none');
     if (selected.length) {
       var selAll = Drupal.t('Select All');
@@ -19,7 +22,13 @@ if (Drupal.jsEnabled) {
             .siblings('.bef-checkboxes')
               .find('.form-item input:checkbox').each(function() {
                 $(this).attr('checked', 'checked');
-              });
+              })
+            .end()
+
+            // attr() doesn't trigger a change event, so we do it ourselves. But just on 
+            // one checkbox otherwise we have many spinning cursors
+            .find('input[@type=checkbox]:first').change() 
+          ;
         }
         else {
           // Unselect all the checkboxes
@@ -28,7 +37,13 @@ if (Drupal.jsEnabled) {
             .siblings('.bef-checkboxes')
               .find('.form-item input:checkbox').each(function() {
                 $(this).attr('checked', '');
-              });
+              })
+            .end()
+
+            // attr() doesn't trigger a change event, so we do it ourselves. But just on 
+            // one checkbox otherwise we have many spinning cursors
+            .find('input[@type=checkbox]:first').change() 
+          ;
         }
         return false;
       });
