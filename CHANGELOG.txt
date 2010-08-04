@@ -1,0 +1,13 @@
+// $Id$
+
+Better Exposed Filters change log
+---------------------------------
+
+
+Better Exposed Filters 6.x-x.x  xxxx-xx-xx
+------------------------------------------
+#864614 by OxideInteractive: Fixes extra space in class attributes
+
+Better Exposed Filters 6.x-1.0  2010-05-25
+------------------------------------------
+Initial release.  Supports Views 2.x and 3.x.
