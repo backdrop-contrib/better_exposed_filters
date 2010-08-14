@@ -198,7 +198,9 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes($element) {
-  $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
+  // the selected keys from #options
+  $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : $element['#default_value'];
+  
   $properties = array(
     'title' => $element['#title'],
     'description' => $element['#description'],
