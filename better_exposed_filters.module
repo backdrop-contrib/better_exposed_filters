@@ -130,6 +130,19 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
                 $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
                 $form[$field_id]['#suffix'] = '</div>';
 
+                // Clean up objects from the options array (happens for taxonomy-based filters)
+                $options = $form[$field_id]['#options'];
+                $form[$field_id]['#options'] = array();
+                foreach ($options as $index => $option) {
+                  if (is_object($option)) {
+                    list($key, $val) = each($option->option);
+                    $form[$field_id]['#options'][$key] = $val;
+                  }
+                  else {
+                    $form[$field_id]['#options'][$index] = $option;
+                  }
+                }
+
                 if (isset($form[$field_id]['#options']['All'])) {
                   // @TODO: The terms 'All' and 'Any' are customizable in Views
                   if (!$filter->options['expose']['optional']) {

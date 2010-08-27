@@ -8,6 +8,8 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------
 #864614 by OxideInteractive: Fixes extra space in class attributes
 #874978 by vosechu: select_as_checkboxes now respects #default_value
+#812778 by mikeker: Fixes problem with "Show hierarchy in dropdown enabled"
+
 
 Better Exposed Filters 6.x-1.0  2010-05-25
 ------------------------------------------

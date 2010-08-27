@@ -24,8 +24,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     parent::options_form($form, $form_state);
 
     /*
-     * Changes to the options form need to be mirrored in hook_form_alter in 
-     * better_exposed_filters.module to maintain Views 2.x support 
+     * Changes to the options form need to be mirrored in hook_form_alter in
+     * better_exposed_filters.module to maintain Views 2.x support
      */
     
     $bef_options = array();
@@ -53,10 +53,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'bef_hidden' => t('Hidden'),
         ),
         '#description' => t(
-          'Select a format for the exposed filter.  The "Hidden" option is 
-            generally used for multi-step filters.  Note: if "Force single" 
-            is checked, radio buttons will be used.  If "Force single" is 
-            unchecked, checkboxes will be used.' 
+          'Select a format for the exposed filter.  The "Hidden" option is
+            generally used for multi-step filters.  Note: if "Force single"
+            is checked, radio buttons will be used.  If "Force single" is
+            unchecked, checkboxes will be used.'
         ),
       );
 
@@ -75,7 +75,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
         '#disabled' => $filter->options['expose']['single'],
         '#description' => t(
-          'Add a "Select All/None" link when rendering the exposed filter using 
+          'Add a "Select All/None" link when rendering the exposed filter using
             checkboxes. If this option is disabled, edit the filter and uncheck
             "Force single". NOTE: The link is built at page load, so it will not appear
             in the "Live Preview" which is loaded dynamically.'
@@ -87,7 +87,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#type' => 'textarea',
         '#title' => t('Description'),
         '#default_value' => $this->options['bef'][$label]['more_options']['bef_filter_description'],
-        '#description' => t('Adds descriptive text to the exposed filter.  This is usually 
+        '#description' => t('Adds descriptive text to the exposed filter.  This is usually
                               rendered in smaller print under the label or the options.'),
       );
     }             // foreach ($filters as $filter) {
@@ -103,8 +103,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     parent::exposed_form_alter($form, $form_state);
     
     /*
-     * Changes to the display of BEF filters need to be mirrored in hook_form_alter in 
-     * better_exposed_filters.module to maintain Views 2.x support 
+     * Changes to the display of BEF filters need to be mirrored in hook_form_alter in
+     * better_exposed_filters.module to maintain Views 2.x support
      */
     
     // Shorthand for all filters in this view
@@ -124,23 +124,36 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       // Add a description to the exposed filter
       if (!empty($options['more_options']['bef_filter_description'])) {
         $form[$field_id]['#description'] = $options['more_options']['bef_filter_description'];
-      } 
+      }
         
       switch ($options['bef_format']) {
         case 'bef':
           if (empty($form[$field_id]['#multiple'])) {
-            // For "force-single" select boxes or other single-select options, just switch to 
+            // For "force-single" select boxes or other single-select options, just switch to
             // radio buttons.
             $form[$field_id]['#type'] = 'radios';
             $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
             $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
             $form[$field_id]['#suffix'] = '</div>';
 
+            // Clean up objects from the options array (happens for taxonomy-based filters)
+            $options = $form[$field_id]['#options'];
+            $form[$field_id]['#options'] = array();
+            foreach ($options as $index => $option) {
+              if (is_object($option)) {
+                list($key, $val) = each($option->option);
+                $form[$field_id]['#options'][$key] = $val;
+              }
+              else {
+                $form[$field_id]['#options'][$index] = $option;
+              }
+            }
+
             if (isset($form[$field_id]['#options']['All'])) {
               // @TODO: The terms 'All' and 'Any' are customizable in Views
               if (!$filters[$label]->options['expose']['optional']) {
                 // Some third-party filter handlers still add the "Any" option even if this is not
-                // an optional filter.  Zap it here if they do. 
+                // an optional filter.  Zap it here if they do.
                 unset($form[$field_id]['#options']['All']);
               }
               else {
@@ -163,7 +176,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               }
               
               // If the 'class' index doesn't exist, PHP will throw a notice if the error_reporting
-              // level includes E_NOTICE.  Suppress the notice with the '@' operator. 
+              // level includes E_NOTICE.  Suppress the notice with the '@' operator.
               @$form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
             }
           }
