@@ -7,7 +7,7 @@ if (Drupal.jsEnabled) {
     
     // Check for selected that already has the select all/none element for pages with outside ajaxy
     // things going on.
-    var selected = $('.form-checkboxes.bef-select-all-none');
+    var selected = $('.form-checkboxes.bef-select-all-none:not(.bef-processed)');
     if (selected.length) {
       var selAll = Drupal.t('Select All');
       var selNone = Drupal.t('Select None');
@@ -49,16 +49,19 @@ if (Drupal.jsEnabled) {
       });
 
       // Add link to the page for each set of checkboxes.
-      selected.each(function(index) {
-        // Clone the link prototype and insert into the DOM
-        var newLink = link.clone(true);
-        newLink.insertBefore($('.bef-checkboxes', this));
-        
-        // If all checkboxes are already checked by default then switch to Select None
-        if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
-          newLink.click();
-        }
-      });
+      selected
+        .addClass('bef-processed')
+        .each(function(index) {
+          // Clone the link prototype and insert into the DOM
+          var newLink = link.clone(true);
+          
+          newLink.insertBefore($('.bef-checkboxes', this));
+          
+          // If all checkboxes are already checked by default then switch to Select None
+          if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
+            newLink.click();
+          }
+        });
     }
   };
 }
