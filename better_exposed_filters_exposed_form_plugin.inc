@@ -23,13 +23,58 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
+    $bef_options = array();
+
+    /*
+     * Add options for exposed sorts
+     */
+    $exposed = FALSE;
+    foreach ($this->display->handler->get_handlers('sort') as $label => $sort) {
+      if ($sort->options['exposed']) {
+        $exposed = TRUE;
+        break;
+      }
+    }
+    if ($exposed) {
+      $bef_options['sort']['bef_format'] = array(
+        '#type' => 'select',
+        '#title' => t('Display exposed sort options as'),
+        '#default_value' => $this->options['bef']['sort']['bef_format'],
+        '#options' => array(
+          'default' => t('Default select list'),
+          'bef' => t('Radio Buttons'),
+        ),
+        '#description' => t('Select a format for the exposed sort options.'),
+      );
+      $bef_options['sort']['combine'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Combine sort order with sort by'),
+        '#default_value' => $this->options['bef']['sort']['combine'],
+        '#description' => t('
+          Combines the sort by options and order (ascending or decending) into a single list.  Use this to
+          display "Option1 (ascending)", "Option1 (descending)", "Option2 (ascending)", "Option2 (descending)"
+          in a single drop-down or set of radio buttons.
+        '),
+      );
+      $bef_options['sort']['reset'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Include a "Reset sort" option'),
+        '#default_value' => $this->options['bef']['sort']['reset'],
+        '#description' => t('Adds a "Reset sort" link; Views will use the default sort order.'),
+      );
+      $bef_options['sort']['reset_label'] = array(
+        '#type' => 'textfield',
+        '#title' => t('"Reset sort" label'),
+        '#default_value' => $this->options['bef']['sort']['reset_label'],
+        '#description' => t('Text to use if the above option is checked'),
+      );
+    }
+
     /*
      * Changes to the options form need to be mirrored in hook_form_alter in
      * better_exposed_filters.module to maintain Views 2.x support
      */
     
-    $bef_options = array();
-
     // Go through each filter and add the same options we used to add in hook_form_alter()
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
@@ -103,6 +148,70 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     parent::exposed_form_alter($form, $form_state);
     
     /*
+     * Handle exposed sort elements
+     */
+    if (isset($this->options['bef']['sort'])) {
+
+      // Check for combined sort_by and sort_order
+      if ($this->options['bef']['sort']['combine']) {
+        // Combine sort_by and sort_order into a single element
+        $options = array();
+
+        // Add reset sort option at the top of the list
+        if ($this->options['bef']['sort']['reset']) {
+          $options[' '] = t($this->options['bef']['sort']['reset_label']);
+        }
+        
+        $selected = '';
+        foreach ($form['sort_by']['#options'] as $by_key => $by_val) {
+          foreach ($form['sort_order']['#options'] as $order_key => $order_val) {
+            // Use a space to separate the two keys, we'll unpack them in our submit handler
+            $options["$by_key $order_key"] = "$by_val $order_val";
+          }
+        }
+        $form['sort_bef_combine'] = array(
+          '#type' => 'radios',
+          '#options' => $options,
+          '#title' => $form['sort_by']['#title'],
+          '#prefix' => '<div class="bef-sort-combined bef-select-as-radios">',
+          '#suffix' => '</div>',
+        );
+        
+        if ('default' == $this->options['bef']['sort']['bef_format']) {
+          $form['sort_bef_combine']['#type'] = 'select';
+          $form['sort_bef_combine']['#prefix'] = $form['sort_bef_combine']['#suffix'] = '';
+        }
+        
+        // Add our submit routine to process
+        $form['#submit'][] = 'bef_sort_combine_submit';
+
+        // Remove the existing sort_by and sort_order elements
+        unset($form['sort_by']);
+        unset($form['sort_order']);
+      }
+      else {
+        // Leave sort_by and sort_order as separate elements
+        if ('bef' == $this->options['bef']['sort']['bef_format']) {
+          $form['sort_by']['#type'] = 'radios';
+          $form['sort_by']['#process'] = array('expand_radios', 'views_process_dependency');
+          $form['sort_by']['#prefix'] = '<div class="bef-sortby bef-select-as-radios">';
+          $form['sort_by']['#suffix'] = '</div>';
+
+          $form['sort_order']['#type'] = 'radios';
+          $form['sort_order']['#process'] = array('expand_radios', 'views_process_dependency');
+          $form['sort_order']['#prefix'] = '<div class="bef-sortorder bef-select-as-radios">';
+          $form['sort_order']['#suffix'] = '</div>';
+        }
+
+        // Add reset sort option if selected
+        if ($this->options['bef']['sort']['reset']) {
+          array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
+        }
+      }
+    }
+    
+    
+    /*
      * Changes to the display of BEF filters need to be mirrored in hook_form_alter in
      * better_exposed_filters.module to maintain Views 2.x support
      */
@@ -114,7 +223,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     foreach ($this->options['bef'] as $label => $options) {
 
       // Sanity check: Ensure this filter is an exposed filter
-      if (!$filters[$label]->options['exposed']) {
+      if (empty($filters[$label]) || !$filters[$label]->options['exposed']) {
         continue;
       }
       
@@ -191,7 +300,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $form[$field_id]['#theme'] = 'select_as_hidden';
           }
           break;
-          
+
       }     // switch ($options['bef_format'])
     }       // foreach ($this->options['bef']...)
   }         // function exposed_form_alter(...)

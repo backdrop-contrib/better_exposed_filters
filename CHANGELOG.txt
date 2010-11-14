@@ -10,6 +10,7 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 #874978 by vosechu: select_as_checkboxes now respects #default_value
 #812778 by mikeker: Fixes problem with "Show hierarchy in dropdown enabled"
 #811954 by pivica: Fixes duplicate Select All/None links with multiple Behavior executions
+#657148 by mikeker: Adds support for exposed sort manipulation
 
 
 Better Exposed Filters 6.x-1.0  2010-05-25
