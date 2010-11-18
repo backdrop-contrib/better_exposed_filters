@@ -57,7 +57,7 @@ function theme_select_as_checkboxes($element) {
       $checkbox = '<input type="checkbox" '
         . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
         . 'id="'. $id .'" '
-        . 'value="'. $key .'" '
+        . 'value="'. check_plain($key) .'" '
         . ((array_search($key, $selected_options) !== FALSE) ? 'checked="checked" ' : '')
         . drupal_attributes($element['#attributes']) .' />';
       $item = '<label class="option" for="'. $id .'">'. $checkbox .' '. check_plain($value) .'</label>';

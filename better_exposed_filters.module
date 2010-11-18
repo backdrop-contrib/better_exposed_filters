@@ -23,7 +23,7 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
    *
    *    However, now there is duplicate code in two locations.  Any changes to hook_form_alter
    *    will need to be replicated in better_exposed_filters_exposed_form_plugin (either in
-   *    options_form for ptions settings or exposed_form_alter for displaying the filter).  The
+   *    options_form for options settings or exposed_form_alter for displaying the filter).  The
    *    other choice was to create a new Views 3.x branch of BEF, but then we'd need to maintain
    *    code between two different branches...  Not much better.
    */
