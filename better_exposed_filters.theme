@@ -2,11 +2,34 @@
 // $Id$
 
 /**
- * Themes a select element as a checkbox or radio button instead
+ * Themes a select element as a collection of checkboxes enclosed in a collapsible fieldset
+ *
+ * @param array $element - An associative array containing the properties of the element.
+ *                         Properties used: title, value, options, description, extra, multiple, required
+ * @return HTML string representing the form element.
+ */
+function theme_select_as_checkboxes_fieldset($element) {
+  $fieldset = array(
+    '#title' => $element['#title'],
+    '#collapsible' => TRUE,
+    '#description' => $element['#description'],
+    '#collapsed' => empty($element['#value']),
+    '#attribute' => array('class' => 'bef-select-as-checkboxes-fieldset'),
+  );
+  
+  // Description is rendered as part of the fieldset, don't render it twice.
+  unset($element['#description']);
+  
+  $fieldset['#children'] = theme('select_as_checkboxes', $element);
+  return theme('fieldset', $fieldset);
+}
+
+/**
+ * Themes a select element as a set of checkboxes
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
- * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: title, value, options, description, extra, multiple, required
+ * @param array $element - An associative array containing the properties of the element.
+ *                         Properties used: title, value, options, description, extra, multiple, required
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes($element) {
@@ -57,7 +80,7 @@ function theme_select_as_checkboxes($element) {
       $checkbox = '<input type="checkbox" '
         . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
         . 'id="'. $id .'" '
-        . 'value="'. check_plain($key) .'" '
+        . 'value="'. $key .'" '
         . ((array_search($key, $selected_options) !== FALSE) ? 'checked="checked" ' : '')
         . drupal_attributes($element['#attributes']) .' />';
       $item = '<label class="option" for="'. $id .'">'. $checkbox .' '. check_plain($value) .'</label>';
@@ -140,6 +163,37 @@ function theme_select_as_hidden($element) {
   return $output;
 }
 
+function theme_select_as_radios_fieldset($element) {
+  // The "all" option is the first in the list. If the selected radio button is the all
+  // option, then leave the fieldset collapsed.  Otherwise, render it opened.
+  $all = array_shift(array_keys($element['#options']));
+
+  $fieldset = array(
+    '#title' => $element['#bef_title'],
+    '#collapsible' => TRUE,
+    '#description' => $element['#bef_description'],
+    '#collapsed' => ($element[$all]['#value'] == $all),
+    '#attribute' => array('class' => 'bef-select-as-radios-fieldset'),
+  );
+  $fieldset['#children'] = theme('select_as_radios', $element);
+  return theme('fieldset', $fieldset);
+}
+
+/**
+ * Themes a select drop-down as a collection of radio buttons
+ *
+ * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
+ * @param object $element - An associative array containing the properties of the element.
+ *                          Properties used: required, return_value, value, attributes, title, description
+ * @return HTML string representing the form element.
+ */
+function theme_select_as_radios($element) {
+  $output = '';
+  foreach (element_children($element) as $key) {
+    $output .= theme('radio', $element[$key]);
+  }
+  return '<div class="bef-select-as-radios">'. $output .'</div>';
+}
 
 /**
  * Themes a sort select drop-down as a collection of radio buttons

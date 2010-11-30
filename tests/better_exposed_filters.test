@@ -89,6 +89,7 @@ class BEF_TestCase extends DrupalWebTestCase {
       'options[expose][bef_format]' => 'bef',
       'options[expose][bef_filter_description]' => $this->randomName(16),
       'options[expose][bef_select_all_none]' => TRUE,
+      'options[expose][bef_collapsible]' => TRUE,
     );
     $this->drupalPost("admin/build/views/nojs/config-item/$this->view_name/default/filter/status", $edit, 'Update');
     $this->drupalGet("admin/build/views/nojs/config-item/$this->view_name/default/filter/status");
@@ -126,6 +127,41 @@ class BEF_TestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Verify BEF radio buttons are rendered correctly in a fieldset (collapsible == TRUE)
+   */
+  public function testsimpletest_befPageDisplayRadiosFieldset() {
+    $bef_settings = array(
+      'bef_format' => 'bef',
+      'bef_filter_description' => $this->randomName(16),
+      'bef_select_all_none' => TRUE,
+      'bef_collapsible' => TRUE,
+    );
+    $this->_befExposedFilterSettings('status', $bef_settings);
+
+    // Add a page view to the default view
+    $settings = array(
+      'path' => array('path' => $this->randomName(8)),
+    );
+    $this->_befCreateDisplay('page', $settings);
+    $this->_befSaveView();
+
+    $this->drupalGet($settings['path']['path']);
+    $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
+    $this->assertFieldByXpath(
+      '//fieldset//input[@name="status" and @type="radio"]',
+      NULL,
+      'Radio buttons are enclosed by a fieldset',
+      'Better Exposed Filters'
+    );
+    $this->assertFieldByXpath(
+      '//fieldset/legend',
+      t('Published'),
+      'Filter label is used as the fieldset legend',
+      'Better Exposed Filters'
+    );
+  }
+
+/**
    * Verify that checkboxes are rendered correctly on a page display
    */
   public function testsimpletest_befPageDisplayCheckboxes() {
@@ -161,6 +197,52 @@ class BEF_TestCase extends DrupalWebTestCase {
     );
   }
 
+/**
+  * Verify that checkboxes are rendered correctly on a page display
+  */
+  public function testsimpletest_befPageDisplayCheckboxesFieldset() {
+    // Exposed the type filter such that it allows multiple selections
+    $bef_settings = array(
+      'bef_format' => 'bef',
+      'bef_filter_description' => $this->randomName(16),
+      'bef_select_all_none' => TRUE,
+      'bef_collapsible' => TRUE,
+      'single' => FALSE,
+    );
+    $this->_befExposedFilterSettings('type', $bef_settings);
+
+    // Add a page view to the default view
+    $settings = array(
+      'path' => array('path' => $this->randomName(8)),
+    );
+    $this->_befCreateDisplay('page', $settings);
+    $this->_befSaveView();
+
+    $this->drupalGet($settings['path']['path']);
+    $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
+
+    $this->assertFieldByXpath(
+      '//fieldset//input[@name="type[]" and @type="checkbox"]',
+      NULL,
+      'Radio buttons are enclosed by a fieldset',
+      'Better Exposed Filters'
+    );
+    $this->assertFieldByXpath(
+      '//fieldset//div[contains(@class, "bef-select-all-none")]',
+      NULL,
+      'Class is set correctly for JS to build select all/none links',
+      'Beter Exposed Filters'
+    );
+    $this->assertFieldByXpath(
+      '//fieldset/legend',
+      t('Node: Type'),
+      'Filter label is used as the fieldset legend',
+      'Better Exposed Filters'
+    );
+  }
+
+  
+
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
    * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
@@ -185,7 +267,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   public function testsimpletest_befTaxonomyFilters() {
     $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
     $this->drupalLogin($this->taxonomy_user);
-    
+
     // Add a vocabulary and populate with a few terms
     $edit = array(
       'name' => 'BEF test vocab',
@@ -197,7 +279,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     foreach ($terms as $term) {
       $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
     }
-    
+
     // Exposed the taxonomy filter
     $addl = array(
       'options[vid]' => TRUE,
@@ -212,14 +294,14 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_filter_description' => $this->randomName(16),
     );
     $this->_befExposedFilterSettings('tid', $bef_settings);
-    
+
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
     $this->_befCreateDisplay('page', $settings);
     $this->_befSaveView();
-    
+
     // Verify taxonomy filter as radio buttons
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
@@ -229,7 +311,7 @@ class BEF_TestCase extends DrupalWebTestCase {
       'Exposed filter is shown as radio buttons',
       'Better Exposed Filters'
     );
-    
+
     // Set Force single to FALSE to display as checkboxes and set select all/none option
     $bef_settings = array(
       'bef_select_all_none' => TRUE,
@@ -237,7 +319,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     );
     $this->_befExposedFilterSettings('tid', $bef_settings);
     $this->_befSaveView();
-    
+
     // Verify taxonomy filter as checkboxes
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');

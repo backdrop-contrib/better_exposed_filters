@@ -11,7 +11,7 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 #812778 by mikeker: Fixes problem with "Show hierarchy in dropdown enabled"
 #811954 by pivica: Fixes duplicate Select All/None links with multiple Behavior executions
 #657148 by mikeker: Adds support for exposed sort manipulation
-#954600 by sreynen and mikeker: Quotes are not properly escaped in values
+#965388 by mikeker: Adds support for collapsible fieldsets
 
 
 Better Exposed Filters 6.x-1.0  2010-05-25

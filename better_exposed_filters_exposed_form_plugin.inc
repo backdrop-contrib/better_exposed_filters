@@ -126,7 +126,17 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             in the "Live Preview" which is loaded dynamically.'
         ),
       );
-
+      
+      // Put filter in collapsible fieldset option
+      $bef_options[$label]['more_options']['bef_collapsible'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Make this filter collapsible'),
+        '#default_value' => $this->options['bef'][$label]['more_options']['bef_collapsible'],
+        '#description' => t(
+          'Puts this filter in a collapsible fieldset'
+        ),
+      );
+      
       // Build a description option form element
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
         '#type' => 'textarea',
@@ -188,7 +198,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         // Remove the existing sort_by and sort_order elements
         unset($form['sort_by']);
         unset($form['sort_order']);
-      }
+      }                 // if ($this->options['bef']['sort']['combine']) {
       else {
         // Leave sort_by and sort_order as separate elements
         if ('bef' == $this->options['bef']['sort']['bef_format']) {
@@ -207,8 +217,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         if ($this->options['bef']['sort']['reset']) {
           array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
         }
-      }
-    }
+      }                 // if ($this->options['bef']['sort']['combine']) { ... } else {
+    }                   // if (isset($this->options['bef']['sort'])) {
     
     
     /*
@@ -234,27 +244,24 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       if (!empty($options['more_options']['bef_filter_description'])) {
         $form[$field_id]['#description'] = $options['more_options']['bef_filter_description'];
       }
-        
+      
       switch ($options['bef_format']) {
         case 'bef':
           if (empty($form[$field_id]['#multiple'])) {
-            // For "force-single" select boxes or other single-select options, just switch to
-            // radio buttons.
+            // Single-select -- display as radio buttons
             $form[$field_id]['#type'] = 'radios';
             $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
-            $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
-            $form[$field_id]['#suffix'] = '</div>';
-
+        
             // Clean up objects from the options array (happens for taxonomy-based filters)
-            $options = $form[$field_id]['#options'];
+            $opts = $form[$field_id]['#options'];
             $form[$field_id]['#options'] = array();
-            foreach ($options as $index => $option) {
-              if (is_object($option)) {
-                list($key, $val) = each($option->option);
+            foreach ($opts as $index => $opt) {
+              if (is_object($opt)) {
+                list($key, $val) = each($opt->option);
                 $form[$field_id]['#options'][$key] = $val;
               }
               else {
-                $form[$field_id]['#options'][$index] = $option;
+                $form[$field_id]['#options'][$index] = $opt;
               }
             }
 
@@ -270,26 +277,53 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
               }
             }
-          }
+          
+            // Render as radio buttons or radio buttons in a collapsible fieldset
+            if (!empty($options['more_options']['bef_collapsible'])) {
+              // Use the option label for the title of the fieldset
+              $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
+              unset($form['#info']["filter-$label"]['label']);
+              
+              // Pass the description and title along in a way such that it doesn't get rendered as part of
+              // the exposed form widget.  We'll render them as part of the fieldset.
+              $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
+              unset($form[$field_id]['#description']);
+              $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
+              unset($form[$field_id]['#title']);
+              
+              // Take care of adding the fieldset in the theme layer
+              $form[$field_id]['#theme'] = 'select_as_radios_fieldset';
+            }
+            else {
+              // Render select element as radio buttons
+              $form[$field_id]['#theme'] = 'select_as_radios';
+            }
+          }           // if (empty($form[$field_id]['#multiple'])) {
           else {
-            // For multi-select boxes, rewrite the HTML at the theme level, since the Forms API handles
-            // selects and checkboxes differently.
-            $form[$field_id]['#theme'] = 'select_as_checkboxes';
+            // Render as checkboxes or checkboxes enclosed in a collapsible fieldset
+            if (!empty($options['more_options']['bef_collapsible'])) {
+              // Use exposed filter widget label as legend for this fieldset
+              $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
+              unset($form['#info']["filter-$label"]['label']);
+              
+              $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
+            }
+            else {
+              $form[$field_id]['#theme'] = 'select_as_checkboxes';
+            }
+            
             if ($options['more_options']['bef_select_all_none']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
 
               // Add select all/none functionality to this filter.
-              if (!isset($form[$field_id]['#attributes'])) {
-                $form[$field_id]['#attributes'] = array();
+              if (!isset($form[$field_id]['#attributes']['class'])) {
+                $form[$field_id]['#attributes']['class'] = '';
               }
-              
-              // If the 'class' index doesn't exist, PHP will throw a notice if the error_reporting
-              // level includes E_NOTICE.  Suppress the notice with the '@' operator.
-              @$form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
+              $form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
             }
-          }
-          break;
+          }           // if (empty($form[$field_id]['#multiple'])) { ... } else {
+          break;      // case 'bef':
               
         case 'bef_hidden':
           $form['#info']["filter-$field_id"]['label'] = '';     // Hide the label

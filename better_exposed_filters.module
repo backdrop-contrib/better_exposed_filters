@@ -46,6 +46,8 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       'default' : $form_state['handler']->options['expose']['bef_format'];
     $curr['allnone'] = empty($form_state['handler']->options['expose']['bef_select_all_none']) ?
       FALSE : $form_state['handler']->options['expose']['bef_select_all_none'];
+    $curr['collapsible'] = empty($form_state['handler']->options['expose']['bef_collapsible']) ?
+      FALSE : $form_state['handler']->options['expose']['bef_collapsible'];
     $curr['description'] = empty($form_state['handler']->options['expose']['bef_filter_description']) ?
       '' : $form_state['handler']->options['expose']['bef_filter_description'];
 
@@ -92,6 +94,16 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       ),
     );
 
+    // Put filter in collapsible fieldset option
+    $right['bef_collapsible'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Make this filter collapsible'),
+      '#default_value' => $curr['collapsible'],
+      '#description' => t(
+        'Puts this filter in a collapsible fieldset'
+      ),
+    );
+  
     // Insert BEF form elements into the exposed filter form
     $expose = $form['options']['expose'];
     $first_chunk = array_splice($expose, 0, array_search('end_left', array_keys($expose)));
@@ -123,13 +135,10 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
           switch ($filter->options['expose']['bef_format']) {
             case 'bef':
               if (empty($form[$field_id]['#multiple'])) {
-                // For "force-single" select boxes or other single-select options, just switch to
-                // radio buttons.
+                // Single-select -- display as radio buttons
                 $form[$field_id]['#type'] = 'radios';
                 $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
-                $form[$field_id]['#prefix'] = '<div class="bef-select-as-radios">';
-                $form[$field_id]['#suffix'] = '</div>';
-
+                
                 // Clean up objects from the options array (happens for taxonomy-based filters)
                 $options = $form[$field_id]['#options'];
                 $form[$field_id]['#options'] = array();
@@ -155,11 +164,41 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
                     $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
                   }
                 }
-              }
+                
+                // Render as radio buttons or radio buttons in a collapsible fieldset
+                if (!empty($filter->options['expose']['bef_collapsible'])) {
+                  // Use the option label for the title of the fieldset
+                  $form[$field_id]['#title'] = $form['#info']["filter-$field_id"]['label'];
+                  unset($form['#info']["filter-$field_id"]['label']);
+                  
+                  // Pass the description and title along in a way such that it doesn't get rendered as part of
+                  // the exposed form widget.  We'll render them as part of the fieldset.
+                  $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
+                  unset($form[$field_id]['#description']);
+                  $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
+                  unset($form[$field_id]['#title']);
+                  
+                  // Take care of adding the fieldset in the theme layer
+                  $form[$field_id]['#theme'] = 'select_as_radios_fieldset';
+                }
+                else {
+                  // Render select element as radio buttons
+                  $form[$field_id]['#theme'] = 'select_as_radios';
+                }
+              }         // if (empty($form[$field_id]['#multiple'])) {
               else {
-                // For multi-select boxes, rewrite the HTML at the theme level, since the Forms API handles
-                // selects and checkboxes differently.
-                $form[$field_id]['#theme'] = 'select_as_checkboxes';
+                // Render as checkboxes or checkboxes enclosed in a collapsible fieldset
+                if (!empty($filter->options['expose']['bef_collapsible'])) {
+                  // Use exposed filter widget label as legend for this fieldset
+                  $form[$field_id]['#title'] = $form['#info']["filter-$field_id"]['label'];
+                  unset($form['#info']["filter-$field_id"]['label']);
+                  
+                  $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
+                }
+                else {
+                  $form[$field_id]['#theme'] = 'select_as_checkboxes';
+                }
+
                 if ($filter->options['expose']['bef_select_all_none']) {
                   // Add BEF's JavaScript to the mix to handle select all/none functionality
                   drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
@@ -173,7 +212,7 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
                   // level includes E_NOTICE.  Suppress the notice with the '@' operator.
                   @$form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
                 }
-              }
+              }         // if (empty($form[$field_id]['#multiple'])) { ... } else {
               break;
 
             case 'bef_hidden':
@@ -197,7 +236,10 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
  */
 function better_exposed_filters_theme($existing, $type, $theme, $path) {
   return array(
-    'select_as_checkboxes' => array('function' => 'theme_select_as_checkboxes', 'file' => 'better_exposed_filters.theme'),
+    'select_as_checkboxes'          => array('function' => 'theme_select_as_checkboxes', 'file' => 'better_exposed_filters.theme'),
+    'select_as_checkboxes_fieldset' => array('function' => 'theme_select_as_checkboxes_fieldset', 'file' => 'better_exposed_filters.theme'),
+    'select_as_radios'              => array('function' => 'theme_select_as_radios', 'file' => 'better_exposed_filters.theme'),
+    'select_as_radios_fieldset'     => array('function' => 'theme_select_as_radios_fieldset', 'file' => 'better_exposed_filters.theme'),
     'select_as_hidden'     => array('function' => 'theme_select_as_hidden',     'file' => 'better_exposed_filters.theme'),
     'sort_select_as_links' => array('function' => 'theme_sort_select_as_links', 'file' => 'better_exposed_filters.theme'),
     'sort_select_as_pager' => array('function' => 'theme_sort_select_as_pager', 'file' => 'better_exposed_filters.theme'),
