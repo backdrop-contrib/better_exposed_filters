@@ -88,7 +88,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
 
       // Main BEF option: default/checkboxes/hidden
-      dsm('got here');
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
