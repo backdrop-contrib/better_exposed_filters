@@ -33,15 +33,13 @@ function theme_select_as_checkboxes_fieldset($element) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes($element) {
+  if (!empty($element['#bef_nested'])) {
+    return theme('select_as_tree', $element);
+  }
+  
   // the selected keys from #options
   $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : $element['#default_value'];
   
-  $properties = array(
-    'title' => $element['#title'],
-    'description' => $element['#description'],
-    'required' => FALSE,
-  );
-
   $output = '<div class="bef-checkboxes">';
   foreach ($element['#options'] as $option => $elem) {
     if ('All' === $option) {
@@ -73,18 +71,7 @@ function theme_select_as_checkboxes($element) {
     }
 
     foreach ($element_set as $key => $value) {
-      // Custom ID for each checkbox based on the <select>'s original ID
-      $id = form_clean_id($element['#id'] . '-' . $key);
-
-      // Very similar to theme_checkbox (http://api.drupal.org/api/function/theme_checkbox/6)
-      $checkbox = '<input type="checkbox" '
-        . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
-        . 'id="'. $id .'" '
-        . 'value="'. $key .'" '
-        . ((array_search($key, $selected_options) !== FALSE) ? 'checked="checked" ' : '')
-        . drupal_attributes($element['#attributes']) .' />';
-      $item = '<label class="option" for="'. $id .'">'. $checkbox .' '. check_plain($value) .'</label>';
-      $output .= theme('form_element', array_merge($properties, array('#id' => $id)), $item);
+      $output .= bef_checkbox($element, $key, $value, array_search($key, $selected_options) !== FALSE);
     }
 
     if ($is_optgroup) {
@@ -163,6 +150,13 @@ function theme_select_as_hidden($element) {
   return $output;
 }
 
+/**
+ * Themes a select element as a collection of radio buttons enclosed in a collapsible fieldset
+ *
+ * @param array $element - An associative array containing the properties of the element.
+ *                         Properties used: title, value, options, description, extra, multiple, required
+ * @return HTML string representing the form element.
+ */
 function theme_select_as_radios_fieldset($element) {
   // The "all" option is the first in the list. If the selected radio button is the all
   // option, then leave the fieldset collapsed.  Otherwise, render it opened.
@@ -188,12 +182,112 @@ function theme_select_as_radios_fieldset($element) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_radios($element) {
+  if (!empty($element['#bef_nested'])) {
+    return theme('select_as_tree', $element);
+  }
+  
   $output = '';
   foreach (element_children($element) as $key) {
     $output .= theme('radio', $element[$key]);
   }
   return '<div class="bef-select-as-radios">'. $output .'</div>';
 }
+
+/**
+ * Themes a taxonomy-based exposed filter select element as a nested unordered list.  Note: this
+ * routine depends on the '-' char prefixed on the term names by Views to determine depth.
+ * 
+ * @param $element
+ * @return HTML
+ */
+function theme_select_as_tree($element) {
+  // The selected keys from #options
+  $selected_options = (array)$element['#post'][$element['#name']];
+
+  /*
+   *  Build a bunch of nested unordered lists to represent the hierarchy based on the '-' prefix
+   *  added by Views or optgroup structure. 
+   */
+  $output = '<ul class="bef-tree">';
+  $curr_depth = 0;
+  foreach ($element['#options'] as $option_value => $option_label) {
+//    if ('All' === $option_value) { 
+//      // TODO: 'All' text is customizable in Views
+//      // No need for an 'All' option -- either unchecking or checking all the checkboxes is equivalent
+//      continue;
+//    }
+    
+    // Check for Taxonomy-based filters
+    if (is_object($option_label)) {
+      list($option_value, $option_label) = each(array_slice($option_label->option, 0, 1, TRUE));
+    }
+    
+    // Check for optgroups -- which is basically a two-level deep tree
+    if (is_array($option_label)) {
+      // TODO:
+    }
+    else {
+      // Build hierarchy based on prefixed '-' on the element label 
+      preg_match('/^(-*).*$/', $option_label, $matches);
+      $depth = strlen($matches[1]);
+      
+      // Build either checkboxes or radio buttons, depending on Views' Force single option
+      $html = '';
+      if ($element['#multiple']) {
+        $html = bef_checkbox(
+          $element, 
+          $option_value, 
+          ltrim($option_label, '-'),              // Remove prefixed '-' characters 
+          (array_search($option_value, $selected_options) !== FALSE)
+        ); 
+      }
+      else {
+        $html = theme('radio', $element[$option_value]);
+      }
+      
+      if ($depth > $curr_depth) {
+        // We've moved down a level: create a new nested <ul>
+        $output .= "<ul class='bef-tree-child bef-tree-depth-$depth'><li>$html";
+        $curr_depth = $depth;
+      }
+      elseif ($depth < $curr_depth) {
+        // We've moved up a level: finish previous <ul> and <li> tags
+        $output .= "</li></ul></li><li>$html";
+        $curr_depth = $depth;
+      }
+      else {
+        // Remain at same level as previous entry
+        $output .= "</li><li>$html";        
+      }
+    }
+  }                             // foreach ($element['#options'] as $option_value => $option_label)
+  
+  if (!$curr_depth) {
+    // Close last <li> tag
+    $output .= '</li>';
+  }
+  else {
+    // Finish closing <ul> and <li> tags
+    while ($curr_depth) {
+      $curr_depth--;
+      $output .= '</li></ul></li>';
+    }
+  }
+  
+  // Close the opening <ul class="bef-tree"> tag
+  $output .= '</ul>';
+  
+  // Add exposed filter description
+  $class = (isset($element['#attributes']['class']) ? $element['#attributes']['class'] : '');
+  $description = '';
+  if (!empty($element['#description'])) {
+    $description = '<div class="description">'. $element['#description'] .'</div>';
+  }
+  
+  return "<div $class>$description$output</div>";
+}
+
+
 
 /**
  * Themes a sort select drop-down as a collection of radio buttons
@@ -206,3 +300,40 @@ function theme_select_as_radios($element) {
 //function theme_sort_select_as_radio($element) {
 //
 //}
+
+
+
+/*
+ * Helper functions
+ */
+
+/**
+ * Build a BEF checkbox -- very similar to theme_checkbox 
+ * (http://api.drupal.org/api/function/theme_checkbox/6)
+ *   
+ * @param $element - array: original <select> element generated by Views
+ * @param $value - string: value of this checkbox option
+ * @param $label - string: label for this checkbox option
+ * @param $selected - bool: checked or not
+ * @return string: checkbox HTML
+ */
+function bef_checkbox($element, $value, $label, $selected) {
+  $value = check_plain($value);
+  $label = check_plain($label);
+    
+  // Custom ID for each checkbox based on the <select>'s original ID
+  $properties = array(
+    '#required' => FALSE,
+    '#id' => form_clean_id($element['#id'] . '-' . $value), 
+  );
+  
+  $checkbox = '<input type="checkbox" '
+    . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
+    . 'id="'. $id .'" '
+    . 'value="'. $value .'" '
+    . ($selected ? 'checked="checked" ' : '')
+    . drupal_attributes($element['#attributes']) .' />';
+  $item = "<label class='option' for='$id'>$checkbox $label</label>";
+  $output .= theme('form_element', $properties, $item);
+  return $output;
+}

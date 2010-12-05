@@ -12,6 +12,8 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 #811954 by pivica: Fixes duplicate Select All/None links with multiple Behavior executions
 #657148 by mikeker: Adds support for exposed sort manipulation
 #965388 by mikeker: Adds support for collapsible fieldsets
+#965388 by mikeker: Adds support for collapsible fieldsets
+mikeker: Adds nested list display for hierarchical taxonomy filters
 
 
 Better Exposed Filters 6.x-1.0  2010-05-25

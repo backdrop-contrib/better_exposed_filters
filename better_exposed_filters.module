@@ -69,10 +69,13 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
       '#options' => array(
         'default' => t('Default select list'),
         'bef' => t('Checkboxes/Radio Buttons'),
+        'bef_ul' => t('Nested Checkboxes/Radio Buttons'),
         'bef_hidden' => t('Hidden'),
       ),
       '#description' => t(
-        'Select a format for the exposed filter.  The "Hidden" option is
+        'Select a format for the exposed filter.  The "Nested" option places
+         hierarchical taxonomy filters in a nested, unordered list.
+         The "Hidden" option is
          generally used for multi-step filters.  Note: if "Force single"
          is checked, radio buttons will be used.  If "Force single" is
          unchecked, checkboxes will be used.'
@@ -133,6 +136,10 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
 
         if (isset($filter->options['expose']['bef_format'])) {
           switch ($filter->options['expose']['bef_format']) {
+            case 'bef_ul':
+              $form[$field_id]['#bef_nested'] = TRUE;
+              // Intentionally falling through
+              
             case 'bef':
               if (empty($form[$field_id]['#multiple'])) {
                 // Single-select -- display as radio buttons
@@ -236,14 +243,26 @@ function better_exposed_filters_form_alter(&$form, $form_state, $form_id) {
  */
 function better_exposed_filters_theme($existing, $type, $theme, $path) {
   return array(
-    'select_as_checkboxes'          => array('function' => 'theme_select_as_checkboxes', 'file' => 'better_exposed_filters.theme'),
-    'select_as_checkboxes_fieldset' => array('function' => 'theme_select_as_checkboxes_fieldset', 'file' => 'better_exposed_filters.theme'),
-    'select_as_radios'              => array('function' => 'theme_select_as_radios', 'file' => 'better_exposed_filters.theme'),
-    'select_as_radios_fieldset'     => array('function' => 'theme_select_as_radios_fieldset', 'file' => 'better_exposed_filters.theme'),
-    'select_as_hidden'     => array('function' => 'theme_select_as_hidden',     'file' => 'better_exposed_filters.theme'),
-    'sort_select_as_links' => array('function' => 'theme_sort_select_as_links', 'file' => 'better_exposed_filters.theme'),
-    'sort_select_as_pager' => array('function' => 'theme_sort_select_as_pager', 'file' => 'better_exposed_filters.theme'),
-    'sort_select_as_radio' => array('function' => 'theme_sort_select_as_radio', 'file' => 'better_exposed_filters.theme'),
+    'select_as_checkboxes'          => array('function' => 'theme_select_as_checkboxes',
+                                             'file' => 'better_exposed_filters.theme'),
+    'select_as_checkboxes_fieldset' => array('function' => 'theme_select_as_checkboxes_fieldset', 
+                                             'file' => 'better_exposed_filters.theme'),
+    'select_as_radios'              => array('function' => 'theme_select_as_radios',
+                                             'file' => 'better_exposed_filters.theme'),
+    'select_as_radios_fieldset'     => array('function' => 'theme_select_as_radios_fieldset',
+                                             'file' => 'better_exposed_filters.theme'),
+    'select_as_hidden'              => array('function' => 'theme_select_as_hidden',
+                                             'file' => 'better_exposed_filters.theme'),
+    'select_as_tree'                => array('function' => 'theme_select_as_tree',
+                                             'file' => 'better_exposed_filters.theme'),
+
+    // NYI:
+    'sort_select_as_links' => array('function' => 'theme_sort_select_as_links',
+                                    'file' => 'better_exposed_filters.theme'),
+    'sort_select_as_pager' => array('function' => 'theme_sort_select_as_pager',
+                                    'file' => 'better_exposed_filters.theme'),
+    'sort_select_as_radio' => array('function' => 'theme_sort_select_as_radio',
+                                    'file' => 'better_exposed_filters.theme'),
   );
 }
 

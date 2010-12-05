@@ -88,6 +88,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
 
       // Main BEF option: default/checkboxes/hidden
+      dsm('got here');
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
@@ -95,13 +96,16 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#options' => array(
           'default' => t('Default select list'),
           'bef' => t('Checkboxes/Radio Buttons'),
+          'bef_ul' => t('Nested Checkboxes/Radio Buttons'),
           'bef_hidden' => t('Hidden'),
         ),
         '#description' => t(
-          'Select a format for the exposed filter.  The "Hidden" option is
-            generally used for multi-step filters.  Note: if "Force single"
-            is checked, radio buttons will be used.  If "Force single" is
-            unchecked, checkboxes will be used.'
+          'Select a format for the exposed filter.  The "Nested" option places
+           hierarchical taxonomy filters in a nested, unordered list.
+           The "Hidden" option is
+           generally used for multi-step filters.  Note: if "Force single"
+           is checked, radio buttons will be used.  If "Force single" is
+           unchecked, checkboxes will be used.'
         ),
       );
 
@@ -246,6 +250,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
       
       switch ($options['bef_format']) {
+        case 'bef_ul':
+          $form[$field_id]['#bef_nested'] = TRUE;
+          // Intentionally falling through
+          
         case 'bef':
           if (empty($form[$field_id]['#multiple'])) {
             // Single-select -- display as radio buttons
