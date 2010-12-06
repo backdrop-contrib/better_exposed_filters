@@ -211,11 +211,6 @@ function theme_select_as_tree($element) {
   $output = '<ul class="bef-tree">';
   $curr_depth = 0;
   foreach ($element['#options'] as $option_value => $option_label) {
-//    if ('All' === $option_value) { 
-//      // TODO: 'All' text is customizable in Views
-//      // No need for an 'All' option -- either unchecking or checking all the checkboxes is equivalent
-//      continue;
-//    }
     
     // Check for Taxonomy-based filters
     if (is_object($option_label)) {
@@ -247,13 +242,18 @@ function theme_select_as_tree($element) {
       
       if ($depth > $curr_depth) {
         // We've moved down a level: create a new nested <ul>
+        // TODO: Is there is a way to jump more than one level deeper at a time?  I don't think so...
         $output .= "<ul class='bef-tree-child bef-tree-depth-$depth'><li>$html";
         $curr_depth = $depth;
       }
       elseif ($depth < $curr_depth) {
-        // We've moved up a level: finish previous <ul> and <li> tags
-        $output .= "</li></ul></li><li>$html";
-        $curr_depth = $depth;
+        // We've moved up a level: finish previous <ul> and <li> tags, once for each level, since we
+        // can jump multiple levels up at a time.
+        while ($depth < $curr_depth) {
+          $output .= '</li></ul>';
+          $curr_depth--;
+        }
+        $output .= "</li><li>$html";
       }
       else {
         // Remain at same level as previous entry
