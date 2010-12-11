@@ -9,14 +9,14 @@ Views Filters are a powerful tool to limit the results of a given view.
 When you expose a filter, you allow the user to interact with the view
 making it easy to build a customized advanced search.  For example, 
 exposing a taxonomy filter lets your site visitor search for articles
-specific tags.  Better Exposed Filters gives you greater control over
-the rendering of exposed filters. 
+with specific tags.  Better Exposed Filters gives you greater control
+over the rendering of exposed filters. 
 
 For a full description of the module, visit the project page:
   http://drupal.org/project/bef
   
 A handbook page has been started to document some use cases, provide
-additional documentation and and tips:
+additional documentation and tips:
   http://drupal.org/node/766974 
 
 To submit bug reports and feature suggestions, or to track changes:
@@ -35,7 +35,7 @@ This module requires the Views module:
 
 -- INSTALLATION --
 
-Install as usual, see http://drupal.org/node/70151 for further information.
+Install as usual, see http://drupal.org/node/70151 for further instructions.
 
 
 -- CONFIGURATION --
@@ -56,6 +56,10 @@ In Views 3.x, the BEF configuration options have been moved to the Exposed
 Form dialog.  Set the "Exposed form style" to "Better Exposed Filters" and
 make your configuration changes in the resulting dialog.  Each filter is 
 listed based on the label given in the exposed filter dialog.
+
+Views 3.x also introduces the idea of the exposed form allowing site builders
+to expose other options such as sort and pager.  BEF allows you to customize
+those settings as well.
 
 
 -- CUSTOMIZATION --
