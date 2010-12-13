@@ -14,7 +14,7 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 #965388 by mikeker: Adds support for collapsible fieldsets
 #965388 by mikeker: Adds support for collapsible fieldsets
 mikeker: Adds nested list display for hierarchical taxonomy filters
-
+#894312 by kenorb, mikeker: Adds links as a BEF option 
 
 Better Exposed Filters 6.x-1.0  2010-05-25
 ------------------------------------------

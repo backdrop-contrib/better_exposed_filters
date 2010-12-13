@@ -43,6 +43,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#options' => array(
           'default' => t('Default select list'),
           'bef' => t('Radio Buttons'),
+          'bef_links' => t('Links'),
         ),
         '#description' => t('Select a format for the exposed sort options.'),
       );
@@ -53,7 +54,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('
           Combines the sort by options and order (ascending or decending) into a single list.  Use this to
           display "Option1 (ascending)", "Option1 (descending)", "Option2 (ascending)", "Option2 (descending)"
-          in a single drop-down or set of radio buttons.
+          in a single form element.
         '),
       );
       $bef_options['sort']['reset'] = array(
@@ -70,6 +71,23 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       );
     }
 
+    /*
+     * Add options for exposed pager
+     */
+    if ($this->display->display_options['pager'] && $this->display->display_options['pager']['options']['expose']['items_per_page']) {
+      $bef_options['pager']['bef_format'] = array(
+        '#type' => 'select',
+        '#title' => t('Display exposed pager options as'),
+        '#default_value' => $this->options['bef']['pager']['bef_format'],
+        '#options' => array(
+          'default' => t('Default select list'),
+          'bef' => t('Radio Buttons'),
+          'bef_links' => t('Links'),
+        ),
+        '#description' => t('Select a format for the exposed pager options.'),
+      );
+    }
+    
     /*
      * Changes to the options form need to be mirrored in hook_form_alter in
      * better_exposed_filters.module to maintain Views 2.x support
@@ -99,14 +117,21 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'bef_hidden' => t('Hidden'),
         ),
         '#description' => t(
-          'Select a format for the exposed filter.  The "Nested" option places
-           hierarchical taxonomy filters in a nested, unordered list.
+          'Select a format for the exposed filter. The "Nested" option places
+           filter options is an unordered list. Hierarchical taxonomy filters
+           will be rendered as nested, unordered lists. "Links" will render filter
+           options as links, but may cause problems with AJAX views.
            The "Hidden" option is
            generally used for multi-step filters.  Note: if "Force single"
            is checked, radio buttons will be used.  If "Force single" is
            unchecked, checkboxes will be used.'
         ),
       );
+      
+      // Link option is available if "Force single" is selected
+//      if ($filter->options['expose']['single']) {
+//
+//      }
 
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
@@ -182,17 +207,28 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $options["$by_key $order_key"] = "$by_val $order_val";
           }
         }
+        
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
           '#options' => $options,
           '#title' => $form['sort_by']['#title'],
-          '#prefix' => '<div class="bef-sort-combined bef-select-as-radios">',
-          '#suffix' => '</div>',
         );
         
-        if ('default' == $this->options['bef']['sort']['bef_format']) {
-          $form['sort_bef_combine']['#type'] = 'select';
-          $form['sort_bef_combine']['#prefix'] = $form['sort_bef_combine']['#suffix'] = '';
+        // Handle display-specific details
+        switch ($this->options['bef']['sort']['bef_format']) {
+          case 'bef':
+            $form['sort_bef_combine']['#prefix'] = '<div class="bef-sort-combined bef-select-as-radios">';
+            $form['sort_bef_combine']['#suffix'] = '</div>';
+            break;
+            
+          case 'bef_links':
+            $form['sort_bef_combine']['#theme'] = 'select_as_links';
+            unset($form['sort_bef_combine']['#title']);
+            break;
+            
+          case 'default':
+            $form['sort_bef_combine']['#type'] = 'select';
+            break;
         }
         
         // Add our submit routine to process
@@ -215,6 +251,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           $form['sort_order']['#prefix'] = '<div class="bef-sortorder bef-select-as-radios">';
           $form['sort_order']['#suffix'] = '</div>';
         }
+        else if ('bef_links' == $this->options['bef']['sort']['bef_format']) {
+          $form['sort_by']['#theme'] = 'select_as_links';
+          $form['sort_order']['#theme'] = 'select_as_links';
+        }
 
         // Add reset sort option if selected
         if ($this->options['bef']['sort']['reset']) {
@@ -222,7 +262,27 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         }
       }                 // if ($this->options['bef']['sort']['combine']) { ... } else {
     }                   // if (isset($this->options['bef']['sort'])) {
-    
+
+    /*
+     * Handle exposed pager elements
+     */
+    if (isset($this->options['bef']['pager'])) {
+      switch($this->options['bef']['pager']['bef_format']) {
+        case 'bef':
+          $form['items_per_page']['#type'] = 'radios';
+          $form['items_per_page']['#process'] = array('expand_radios', 'views_process_dependency');
+          $form['items_per_page']['#prefix'] = '<div class="bef-sortby bef-select-as-radios">';
+          $form['items_per_page']['#suffix'] = '</div>';
+          break;
+          
+        case 'bef_links':
+          if (count($form['items_per_page']['#options']) > 1) {
+            $form['items_per_page']['#theme'] = 'select_as_links';
+            $form['items_per_page']['#items_per_page'] = max($form['items_per_page']['#default_value'], key($form['items_per_page']['#options']));
+          }
+        break;
+      }
+    }
     
     /*
      * Changes to the display of BEF filters need to be mirrored in hook_form_alter in
@@ -249,9 +309,13 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
       
       switch ($options['bef_format']) {
+        case 'bef_links':
+          $form[$field_id]['#theme'] = 'select_as_links';
+          break;
+          
         case 'bef_ul':
           $form[$field_id]['#bef_nested'] = TRUE;
-          // Intentionally falling through
+          // Intentionally falling through to case 'bef':
           
         case 'bef':
           if (empty($form[$field_id]['#multiple'])) {

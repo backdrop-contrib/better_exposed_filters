@@ -5,7 +5,7 @@
  * Themes a select element as a collection of checkboxes enclosed in a collapsible fieldset
  *
  * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description, extra, multiple, required
+ *                         Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes_fieldset($element) {
@@ -29,7 +29,7 @@ function theme_select_as_checkboxes_fieldset($element) {
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
  * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description, extra, multiple, required
+ *                         Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes($element) {
@@ -100,7 +100,7 @@ function theme_select_as_checkboxes($element) {
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
  * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: title, value, options, description, extra, multiple, required
+ *                          Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
 function theme_select_as_hidden($element) {
@@ -154,7 +154,7 @@ function theme_select_as_hidden($element) {
  * Themes a select element as a collection of radio buttons enclosed in a collapsible fieldset
  *
  * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description, extra, multiple, required
+ *                         Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
 function theme_select_as_radios_fieldset($element) {
@@ -178,7 +178,7 @@ function theme_select_as_radios_fieldset($element) {
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
  * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: required, return_value, value, attributes, title, description
+ *                          Properties used: return_value, value, attributes, title, description
  * @return HTML string representing the form element.
  */
 function theme_select_as_radios($element) {
@@ -196,7 +196,7 @@ function theme_select_as_radios($element) {
 /**
  * Themes a taxonomy-based exposed filter select element as a nested unordered list.  Note: this
  * routine depends on the '-' char prefixed on the term names by Views to determine depth.
- * 
+ *
  * @param $element
  * @return HTML
  */
@@ -206,7 +206,7 @@ function theme_select_as_tree($element) {
 
   /*
    *  Build a bunch of nested unordered lists to represent the hierarchy based on the '-' prefix
-   *  added by Views or optgroup structure. 
+   *  added by Views or optgroup structure.
    */
   $output = '<ul class="bef-tree">';
   $curr_depth = 0;
@@ -222,7 +222,7 @@ function theme_select_as_tree($element) {
       // TODO:
     }
     else {
-      // Build hierarchy based on prefixed '-' on the element label 
+      // Build hierarchy based on prefixed '-' on the element label
       preg_match('/^(-*).*$/', $option_label, $matches);
       $depth = strlen($matches[1]);
       
@@ -230,11 +230,11 @@ function theme_select_as_tree($element) {
       $html = '';
       if ($element['#multiple']) {
         $html = bef_checkbox(
-          $element, 
-          $option_value, 
-          ltrim($option_label, '-'),              // Remove prefixed '-' characters 
+          $element,
+          $option_value,
+          ltrim($option_label, '-'),              // Remove prefixed '-' characters
           (array_search($option_value, $selected_options) !== FALSE)
-        ); 
+        );
       }
       else {
         $html = theme('radio', $element[$option_value]);
@@ -257,7 +257,7 @@ function theme_select_as_tree($element) {
       }
       else {
         // Remain at same level as previous entry
-        $output .= "</li><li>$html";        
+        $output .= "</li><li>$html";
       }
     }
   }                             // foreach ($element['#options'] as $option_value => $option_label)
@@ -287,20 +287,66 @@ function theme_select_as_tree($element) {
   return "<div $class>$description$output</div>";
 }
 
-
-
 /**
- * Themes a sort select drop-down as a collection of radio buttons
+ * Themes a select drop-down as a collection of links
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
  * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: title, value, options, description, extra, multiple, required
+ *                          Properties used: title, value, options, description, name
  * @return HTML string representing the form element.
  */
-//function theme_sort_select_as_radio($element) {
-//
-//}
+function theme_select_as_links($element) {
+  $output = '';
+  $name = $element['#name'];
+  $selected_options = (array)$element['#post'][$name];   // the selected keys from #options
+  if (empty($_REQUEST[$name])) {
+    $selected_options[] = $element["#$name"];
+  }
 
+  foreach ($element['#options'] as $option => $elem) {
+    // Check for Taxonomy-based filters
+    if (is_object($elem)) {
+      list($option, $elem) = each(array_slice($elem->option, 0, 1, TRUE));
+    }
+
+    /*
+     * Check for optgroups.  Put subelements in the $element_set array and add a group heading.
+     * Otherwise, just add the element to the set
+     */
+    $element_set = array();
+    if (is_array($elem)) {
+      $element_set = $elem;
+    }
+    else {
+      $element_set[$option] = $elem;
+    }
+
+    $links = array();
+    $multiple = !empty($element['#multiple']);
+
+    foreach ($element_set as $key => $value) {
+      // Custom ID for each link based on the <select>'s original ID
+      $id = form_clean_id($element['#id'] . '-' . $key);
+      if (array_search($key, $selected_options) === FALSE) {
+        $link = l($value, bef_replace_query_string_arg($name, $key, $multiple));
+        $output .= theme('form_element', array('#id' => $id), $link);
+      } else {
+        // Selected value is output without a link
+        // TODO: Does that look funny in the display?  Should add a "current" class to this elem?
+        $output .= theme('form_element', array('#id' => $id), $value);
+      }
+    }
+  }
+
+  $properties = array(
+    '#title' => $element['#title'],
+    '#description' => $element['#description'],
+  );
+  
+  return '<div class="bef-select-as-links">'
+    . theme('form_element', $properties, $output)
+    . '</div>';
+}
 
 
 /*
@@ -308,9 +354,9 @@ function theme_select_as_tree($element) {
  */
 
 /**
- * Build a BEF checkbox -- very similar to theme_checkbox 
+ * Build a BEF checkbox -- very similar to theme_checkbox
  * (http://api.drupal.org/api/function/theme_checkbox/6)
- *   
+ *
  * @param $element - array: original <select> element generated by Views
  * @param $value - string: value of this checkbox option
  * @param $label - string: label for this checkbox option
@@ -324,7 +370,7 @@ function bef_checkbox($element, $value, $label, $selected) {
   // Custom ID for each checkbox based on the <select>'s original ID
   $properties = array(
     '#required' => FALSE,
-    '#id' => form_clean_id($element['#id'] . '-' . $value), 
+    '#id' => form_clean_id($element['#id'] . '-' . $value),
   );
   
   $checkbox = '<input type="checkbox" '
@@ -336,4 +382,36 @@ function bef_checkbox($element, $value, $label, $selected) {
   $item = "<label class='option' for='$id'>$checkbox $label</label>";
   $output .= theme('form_element', $properties, $item);
   return $output;
+}
+
+/**
+ * Replaces/adds a given query string argument to the current URL
+ *
+ * @param string $key query string key (argument)
+ * @param string $value query string value
+ * @param bool $multiple TRUE if this key/value pair allows multiple values
+ */
+function bef_replace_query_string_arg($key, $value, $multiple = FALSE) {
+  $path = arg();
+  $urllist = parse_url(request_uri());
+  $fragment = urldecode($urllist['fragment']);
+  $query = array();
+  parse_str(urldecode($urllist['query']), $query);
+  if (is_array($query[$key])) {
+    // multiple values allowed for this key
+    $query[$key][] = $value;
+  }
+  else {
+    if ($multiple) {
+      $query[$key] = array($value);
+    }
+    else {
+      $query[$key] = $value;
+    }
+  }
+  return url(implode('/', $path), array(
+    'query' => drupal_query_string_encode($query),
+    'fragment' => $fragment,
+    'absolute' => TRUE,
+  ));
 }
