@@ -366,11 +366,11 @@ function theme_select_as_links($element) {
 function bef_checkbox($element, $value, $label, $selected) {
   $value = check_plain($value);
   $label = check_plain($label);
-    
+  $id = form_clean_id($element['#id'] . '-' . $value);
   // Custom ID for each checkbox based on the <select>'s original ID
   $properties = array(
     '#required' => FALSE,
-    '#id' => form_clean_id($element['#id'] . '-' . $value),
+    '#id' => $id,
   );
   
   $checkbox = '<input type="checkbox" '
@@ -379,7 +379,7 @@ function bef_checkbox($element, $value, $label, $selected) {
     . 'value="'. $value .'" '
     . ($selected ? 'checked="checked" ' : '')
     . drupal_attributes($element['#attributes']) .' />';
-  $item = "<label class='option' for='$id'>$checkbox $label</label>";
+  $item = "$checkbox <label class='option' for='$id'>$label</label>";
   $output .= theme('form_element', $properties, $item);
   return $output;
 }
