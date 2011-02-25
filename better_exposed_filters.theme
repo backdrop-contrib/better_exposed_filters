@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Themes a select element as a collection of checkboxes enclosed in a collapsible fieldset

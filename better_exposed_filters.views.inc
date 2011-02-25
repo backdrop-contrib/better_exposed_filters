@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file better_exposed_filters.views.inc

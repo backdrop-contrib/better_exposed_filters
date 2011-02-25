@@ -1,4 +1,3 @@
-// $Id$
 
 Better Exposed Filters change log
 ---------------------------------

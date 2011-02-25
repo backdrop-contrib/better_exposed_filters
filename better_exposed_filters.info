@@ -1,4 +1,3 @@
-; $Id$
 name = Better Exposed Filters
 description = Allow the use of checkboxes or radio buttons for exposed Views filters 
 core = 6.x
