@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 /**
  * @file
@@ -50,11 +51,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#type' => 'checkbox',
         '#title' => t('Combine sort order with sort by'),
         '#default_value' => $this->options['bef']['sort']['combine'],
-        '#description' => t('
-          Combines the sort by options and order (ascending or decending) into a single list.  Use this to
+        '#description' => t(
+          'Combines the sort by options and order (ascending or decending) into a single list.  Use this to
           display "Option1 (ascending)", "Option1 (descending)", "Option2 (ascending)", "Option2 (descending)"
-          in a single form element.
-        '),
+          in a single form element.'
+        ),
       );
       $bef_options['sort']['reset'] = array(
         '#type' => 'checkbox',
@@ -86,12 +87,12 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('Select a format for the exposed pager options.'),
       );
     }
-    
+
     /*
      * Changes to the options form need to be mirrored in hook_form_alter in
      * better_exposed_filters.module to maintain Views 2.x support
      */
-    
+
     // Go through each filter and add the same options we used to add in hook_form_alter()
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
@@ -126,11 +127,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
            unchecked, checkboxes will be used.'
         ),
       );
-      
+
       // Link option is available if "Force single" is selected
-//      if ($filter->options['expose']['single']) {
-//
-//      }
+      //      if ($filter->options['expose']['single']) {
+      //
+      //      }
 
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
@@ -153,7 +154,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             in the "Live Preview" which is loaded dynamically.'
         ),
       );
-      
+
       // Put filter in collapsible fieldset option
       $bef_options[$label]['more_options']['bef_collapsible'] = array(
         '#type' => 'checkbox',
@@ -163,7 +164,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'Puts this filter in a collapsible fieldset'
         ),
       );
-      
+
       // Build a description option form element
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
         '#type' => 'textarea',
@@ -172,7 +173,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('Adds descriptive text to the exposed filter.  This is usually
                               rendered in smaller print under the label or the options.'),
       );
-    }             // foreach ($filters as $filter) {
+    } // foreach ($filters as $filter) {
 
     // Add BEF form elements to the exposed form options form
     $form['bef'] = $bef_options;
@@ -183,7 +184,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
    */
   function exposed_form_alter(&$form, &$form_state) {
     parent::exposed_form_alter($form, $form_state);
-    
+
     /*
      * Handle exposed sort elements
      */
@@ -198,7 +199,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         if ($this->options['bef']['sort']['reset']) {
           $options[' '] = t($this->options['bef']['sort']['reset_label']);
         }
-        
+
         $selected = '';
         foreach ($form['sort_by']['#options'] as $by_key => $by_val) {
           foreach ($form['sort_order']['#options'] as $order_key => $order_val) {
@@ -206,51 +207,57 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $options["$by_key $order_key"] = "$by_val $order_val";
           }
         }
-        
+
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
           '#options' => $options,
-          '#title' => $form['sort_by']['#title'],
+          '#title' => $form['sort_by']['#title'],   // Already sanitized by Views
         );
-        
+
         // Handle display-specific details
         switch ($this->options['bef']['sort']['bef_format']) {
           case 'bef':
             $form['sort_bef_combine']['#prefix'] = '<div class="bef-sort-combined bef-select-as-radios">';
             $form['sort_bef_combine']['#suffix'] = '</div>';
             break;
-            
+
           case 'bef_links':
             $form['sort_bef_combine']['#theme'] = 'select_as_links';
             unset($form['sort_bef_combine']['#title']);
             break;
-            
+
           case 'default':
             $form['sort_bef_combine']['#type'] = 'select';
             break;
         }
-        
+
         // Add our submit routine to process
         $form['#submit'][] = 'bef_sort_combine_submit';
 
         // Remove the existing sort_by and sort_order elements
         unset($form['sort_by']);
         unset($form['sort_order']);
-      }                 // if ($this->options['bef']['sort']['combine']) {
+      } // if ($this->options['bef']['sort']['combine']) {
       else {
         // Leave sort_by and sort_order as separate elements
         if ('bef' == $this->options['bef']['sort']['bef_format']) {
           $form['sort_by']['#type'] = 'radios';
-          $form['sort_by']['#process'] = array('expand_radios', 'views_process_dependency');
+          if (empty($form['sort_by']['#process'])) {
+            $form['sort_by']['#process'] = array();
+          }
+          array_unshift($form['sort_by']['#process'], 'form_process_radios');
           $form['sort_by']['#prefix'] = '<div class="bef-sortby bef-select-as-radios">';
           $form['sort_by']['#suffix'] = '</div>';
 
           $form['sort_order']['#type'] = 'radios';
-          $form['sort_order']['#process'] = array('expand_radios', 'views_process_dependency');
+          if (empty($form['sort_order']['#process'])) {
+            $form['sort_order']['#process'] = array();
+          }
+          array_unshift($form['sort_order']['#process'], 'form_process_radios');
           $form['sort_order']['#prefix'] = '<div class="bef-sortorder bef-select-as-radios">';
           $form['sort_order']['#suffix'] = '</div>';
         }
-        else if ('bef_links' == $this->options['bef']['sort']['bef_format']) {
+        elseif ('bef_links' == $this->options['bef']['sort']['bef_format']) {
           $form['sort_by']['#theme'] = 'select_as_links';
           $form['sort_order']['#theme'] = 'select_as_links';
         }
@@ -259,38 +266,41 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         if ($this->options['bef']['sort']['reset']) {
           array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
         }
-      }                 // if ($this->options['bef']['sort']['combine']) { ... } else {
-    }                   // if (isset($this->options['bef']['sort'])) {
+      } // if ($this->options['bef']['sort']['combine']) { ... } else {
+    } // if (isset($this->options['bef']['sort'])) {
 
     /*
      * Handle exposed pager elements
      */
     if (isset($this->options['bef']['pager'])) {
-      switch($this->options['bef']['pager']['bef_format']) {
+      switch ($this->options['bef']['pager']['bef_format']) {
         case 'bef':
           $form['items_per_page']['#type'] = 'radios';
-          $form['items_per_page']['#process'] = array('expand_radios', 'views_process_dependency');
+          if (empty($form['items_per_page']['#process'])) {
+            $form['items_per_page']['#process'] = array();
+          }
+          array_unshift($form['items_per_page']['#process'], 'form_process_radios');
           $form['items_per_page']['#prefix'] = '<div class="bef-sortby bef-select-as-radios">';
           $form['items_per_page']['#suffix'] = '</div>';
           break;
-          
+
         case 'bef_links':
           if (count($form['items_per_page']['#options']) > 1) {
             $form['items_per_page']['#theme'] = 'select_as_links';
             $form['items_per_page']['#items_per_page'] = max($form['items_per_page']['#default_value'], key($form['items_per_page']['#options']));
           }
-        break;
+          break;
       }
     }
-    
+
     /*
      * Changes to the display of BEF filters need to be mirrored in hook_form_alter in
      * better_exposed_filters.module to maintain Views 2.x support
      */
-    
+
     // Shorthand for all filters in this view
     $filters = $form_state['view']->display_handler->handlers['filter'];
-    
+
     // Go through each saved option looking for Better Exposed Filter settings
     foreach ($this->options['bef'] as $label => $options) {
 
@@ -298,7 +308,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       if (empty($filters[$label]) || !$filters[$label]->options['exposed']) {
         continue;
       }
-      
+
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
 
@@ -306,22 +316,25 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       if (!empty($options['more_options']['bef_filter_description'])) {
         $form[$field_id]['#description'] = $options['more_options']['bef_filter_description'];
       }
-      
+
       switch ($options['bef_format']) {
         case 'bef_links':
           $form[$field_id]['#theme'] = 'select_as_links';
           break;
-          
+
         case 'bef_ul':
           $form[$field_id]['#bef_nested'] = TRUE;
           // Intentionally falling through to case 'bef':
-          
+
         case 'bef':
           if (empty($form[$field_id]['#multiple'])) {
             // Single-select -- display as radio buttons
             $form[$field_id]['#type'] = 'radios';
-            $form[$field_id]['#process'] = array('expand_radios', 'views_process_dependency');
-        
+            if (empty($form[$field_id]['#process'])) {
+              $form[$field_id]['#process'] = array();
+            }
+            array_unshift($form[$field_id]['#process'], 'form_process_radios');
+
             // Clean up objects from the options array (happens for taxonomy-based filters)
             $opts = $form[$field_id]['#options'];
             $form[$field_id]['#options'] = array();
@@ -347,20 +360,20 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 $form[$field_id]['#options']['All'] = check_plain($form[$field_id]['#options']['All']);
               }
             }
-          
+
             // Render as radio buttons or radio buttons in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
               // Use the option label for the title of the fieldset
               $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
               unset($form['#info']["filter-$label"]['label']);
-              
+
               // Pass the description and title along in a way such that it doesn't get rendered as part of
               // the exposed form widget.  We'll render them as part of the fieldset.
               $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
               unset($form[$field_id]['#description']);
               $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
               unset($form[$field_id]['#title']);
-              
+
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_radios_fieldset';
             }
@@ -368,23 +381,23 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               // Render select element as radio buttons
               $form[$field_id]['#theme'] = 'select_as_radios';
             }
-          }           // if (empty($form[$field_id]['#multiple'])) {
+          } // if (empty($form[$field_id]['#multiple'])) {
           else {
             // Render as checkboxes or checkboxes enclosed in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
               // Use exposed filter widget label as legend for this fieldset
               $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
               unset($form['#info']["filter-$label"]['label']);
-              
+
               $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
             }
             else {
               $form[$field_id]['#theme'] = 'select_as_checkboxes';
             }
-            
+
             if ($options['more_options']['bef_select_all_none']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
-              drupal_add_js(drupal_get_path('module', 'better_exposed_filters') .'/better_exposed_filters.js');
+              drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
 
               // Add select all/none functionality to this filter.
               if (!isset($form[$field_id]['#attributes']['class'])) {
@@ -392,11 +405,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               }
               $form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
             }
-          }           // if (empty($form[$field_id]['#multiple'])) { ... } else {
-          break;      // case 'bef':
-              
+          } // if (empty($form[$field_id]['#multiple'])) { ... } else {
+          break; // case 'bef':
+
         case 'bef_hidden':
-          $form['#info']["filter-$field_id"]['label'] = '';     // Hide the label
+          $form['#info']["filter-$field_id"]['label'] = ''; // Hide the label
           if (empty($form[$field_id]['#multiple'])) {
             $form[$field_id]['#type'] = 'hidden';
           }
@@ -405,7 +418,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           }
           break;
 
-      }     // switch ($options['bef_format'])
-    }       // foreach ($this->options['bef']...)
-  }         // function exposed_form_alter(...)
+      } // switch ($options['bef_format'])
+    } // foreach ($this->options['bef']...)
+  } // function exposed_form_alter(...)
 }

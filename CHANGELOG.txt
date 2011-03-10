@@ -2,6 +2,9 @@
 Better Exposed Filters change log
 ---------------------------------
 
+Better Exposed Filters 7.x-x.x  xxxx-xx-xx
+------------------------------------------
+Issue #975376 by mikeker, gordon: Inital port.  Note: only supports Views 3.x as there is no 2.x release planned for D7. 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------

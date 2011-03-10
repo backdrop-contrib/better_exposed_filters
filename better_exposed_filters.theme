@@ -1,13 +1,15 @@
 <?php
+// $Id$
 
 /**
  * Themes a select element as a collection of checkboxes enclosed in a collapsible fieldset
  *
- * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
-function theme_select_as_checkboxes_fieldset($element) {
+function theme_select_as_checkboxes_fieldset($vars) {
+  $element = $vars['element'];
   $fieldset = array(
     '#title' => $element['#title'],
     '#collapsible' => TRUE,
@@ -20,24 +22,25 @@ function theme_select_as_checkboxes_fieldset($element) {
   unset($element['#description']);
   
   $fieldset['#children'] = theme('select_as_checkboxes', $element);
-  return theme('fieldset', $fieldset);
+  return theme('fieldset', array('element' => $fieldset));
 }
 
 /**
  * Themes a select element as a set of checkboxes
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
- * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
-function theme_select_as_checkboxes($element) {
+function theme_select_as_checkboxes($vars) {
+  $element = $vars['element'];
   if (!empty($element['#bef_nested'])) {
-    return theme('select_as_tree', $element);
+    return theme('select_as_tree', array('element' => $element));
   }
   
   // the selected keys from #options
-  $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : $element['#default_value'];
+  $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : ($element['#default_value'] ? $element['#default_value'] : $element['#value']);
   
   $output = '<div class="bef-checkboxes">';
   foreach ($element['#options'] as $option => $elem) {
@@ -98,11 +101,12 @@ function theme_select_as_checkboxes($element) {
  * Themes a select element as a series of hidden fields
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
- * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: title, value, options, description
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
-function theme_select_as_hidden($element) {
+function theme_select_as_hidden($vars) {
+  $element = $vars['element'];
   $output = '';
   $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
   $properties = array(
@@ -142,7 +146,7 @@ function theme_select_as_hidden($element) {
           . 'id="'. $id .'" '
           . 'value="'. check_plain($key) .'" '
           . drupal_attributes($element['#attributes']) .' />';
-        $output .= theme('form_element', array_merge($properties, array('#id' => $id)), $hidden);
+        $output .= theme('form_element', array('element' => array_merge($properties, array('#id' => $id, '#children' => $hidden))));
       }
     }
   }
@@ -152,11 +156,13 @@ function theme_select_as_hidden($element) {
 /**
  * Themes a select element as a collection of radio buttons enclosed in a collapsible fieldset
  *
- * @param array $element - An associative array containing the properties of the element.
- *                         Properties used: title, value, options, description
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: title, value, options, description
  * @return HTML string representing the form element.
  */
-function theme_select_as_radios_fieldset($element) {
+function theme_select_as_radios_fieldset($vars) {
+  $element = $vars['element'];
+  
   // The "all" option is the first in the list. If the selected radio button is the all
   // option, then leave the fieldset collapsed.  Otherwise, render it opened.
   $all = array_shift(array_keys($element['#options']));
@@ -169,37 +175,53 @@ function theme_select_as_radios_fieldset($element) {
     '#attribute' => array('class' => 'bef-select-as-radios-fieldset'),
   );
   $fieldset['#children'] = theme('select_as_radios', $element);
-  return theme('fieldset', $fieldset);
+  return theme('fieldset', array('element' => $fieldset));
 }
 
 /**
  * Themes a select drop-down as a collection of radio buttons
  *
- * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
- * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: return_value, value, attributes, title, description
+ * @see theme_select(), http://api.drupal.org/api/function/theme_select/7
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: return_value, value, attributes, title, description
  * @return HTML string representing the form element.
  */
-function theme_select_as_radios($element) {
-  if (!empty($element['#bef_nested'])) {
-    return theme('select_as_tree', $element);
-  }
+function theme_select_as_radios($vars) {
+  $element = $vars['element'];
   
+  if (!empty($element['#bef_nested'])) {
+    return theme('select_as_tree', $vars);
+  }
+
+  dsm($element);
+  $attributes = array();
+  if (isset($element['#id'])) {
+    $attributes['id'] = $element['#id'];
+  }
+  $attributes['class'] = 'bef-select-as-radios form-radios';
+  if (!empty($element['#attributes']['class'])) {
+    $attributes['class'] .= ' ' . implode(' ', $element['#attributes']['class']);
+  }
+
   $output = '';
   foreach (element_children($element) as $key) {
-    $output .= theme('radio', $element[$key]);
+    dsm(theme('radio', array('element' => $element[$key])));
+    $output .= theme('radio', array('element' => $element[$key]));
   }
-  return '<div class="bef-select-as-radios">'. $output .'</div>';
+  return '<div' . drupal_attributes($attributes) . '>' . $output . '</div>';
+//  return '<div class="bef-select-as-radios">'. $output .'</div>';
 }
 
 /**
  * Themes a taxonomy-based exposed filter select element as a nested unordered list.  Note: this
  * routine depends on the '-' char prefixed on the term names by Views to determine depth.
  *
- * @param $element
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
  * @return HTML
  */
-function theme_select_as_tree($element) {
+function theme_select_as_tree($vars) {
+  $element = $vars['element'];
+  
   // The selected keys from #options
   $selected_options = (array)$element['#post'][$element['#name']];
 
@@ -236,7 +258,7 @@ function theme_select_as_tree($element) {
         );
       }
       else {
-        $html = theme('radio', $element[$option_value]);
+        $html = theme('radio', array('element' => $element[$option_value]));
       }
       
       if ($depth > $curr_depth) {
@@ -290,11 +312,13 @@ function theme_select_as_tree($element) {
  * Themes a select drop-down as a collection of links
  *
  * @see theme_select(), http://api.drupal.org/api/function/theme_select/6
- * @param object $element - An associative array containing the properties of the element.
- *                          Properties used: title, value, options, description, name
+ * @param array $vars - An array of arrays, the 'element' item holds the properties of the element.
+ *                      Properties used: title, value, options, description, name
  * @return HTML string representing the form element.
  */
-function theme_select_as_links($element) {
+function theme_select_as_links($vars) {
+  $element = $vars['element'];
+  
   $output = '';
   $name = $element['#name'];
   $selected_options = (array)$element['#post'][$name];   // the selected keys from #options
@@ -328,11 +352,11 @@ function theme_select_as_links($element) {
       $id = form_clean_id($element['#id'] . '-' . $key);
       if (array_search($key, $selected_options) === FALSE) {
         $link = l($value, bef_replace_query_string_arg($name, $key, $multiple));
-        $output .= theme('form_element', array('#id' => $id), $link);
+        $output .= theme('form_element', array('element' => array('#id' => $id, '#children' => $link)));
       } else {
         // Selected value is output without a link
         // TODO: Does that look funny in the display?  Should add a "current" class to this elem?
-        $output .= theme('form_element', array('#id' => $id), $value);
+        $output .= theme('form_element', array('element' => array('#id' => $id, '#children' => $value)));
       }
     }
   }
@@ -340,10 +364,11 @@ function theme_select_as_links($element) {
   $properties = array(
     '#title' => $element['#title'],
     '#description' => $element['#description'],
+    '#children' => $output,
   );
   
   return '<div class="bef-select-as-links">'
-    . theme('form_element', $properties, $output)
+    . theme('form_element', array('element' => $properties))
     . '</div>';
 }
 
@@ -365,7 +390,7 @@ function theme_select_as_links($element) {
 function bef_checkbox($element, $value, $label, $selected) {
   $value = check_plain($value);
   $label = check_plain($label);
-  $id = form_clean_id($element['#id'] . '-' . $value);
+  $id = drupal_html_id($element['#id'] . '-' . $value);
   // Custom ID for each checkbox based on the <select>'s original ID
   $properties = array(
     '#required' => FALSE,
@@ -379,7 +404,8 @@ function bef_checkbox($element, $value, $label, $selected) {
     . ($selected ? 'checked="checked" ' : '')
     . drupal_attributes($element['#attributes']) .' />';
   $item = "$checkbox <label class='option' for='$id'>$label</label>";
-  $output .= theme('form_element', $properties, $item);
+  $properties['#children'] = $item;
+  $output = theme('form_element', array('element' => $properties));
   return $output;
 }
 
