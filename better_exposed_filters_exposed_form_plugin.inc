@@ -312,11 +312,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
 
-      // Add a description to the exposed filter
-      if (!empty($options['more_options']['bef_filter_description'])) {
-        $form[$field_id]['#description'] = $options['more_options']['bef_filter_description'];
-      }
-
       switch ($options['bef_format']) {
         case 'bef_links':
           $form[$field_id]['#theme'] = 'select_as_links';
@@ -397,6 +392,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
             if ($options['more_options']['bef_select_all_none']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
+              // @TODO: move to #attached
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
 
               // Add select all/none functionality to this filter.
@@ -417,7 +413,16 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $form[$field_id]['#theme'] = 'select_as_hidden';
           }
           break;
+          
+        default:
+          // Handle functionality for exposed filters that are not limited to BEF only filters
 
+          // Add a description to the exposed filter
+          if (!empty($options['more_options']['bef_filter_description'])) {
+            $form[$field_id]['#description'] = t($options['more_options']['bef_filter_description']);
+          }
+          break;
+          
       } // switch ($options['bef_format'])
     } // foreach ($this->options['bef']...)
   } // function exposed_form_alter(...)

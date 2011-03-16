@@ -21,7 +21,7 @@ function theme_select_as_checkboxes_fieldset($vars) {
   // Description is rendered as part of the fieldset, don't render it twice.
   unset($element['#description']);
   
-  $fieldset['#children'] = theme('select_as_checkboxes', $element);
+  $fieldset['#children'] = theme('select_as_checkboxes', array('element' => $element));
   return theme('fieldset', array('element' => $fieldset));
 }
 
@@ -41,6 +41,13 @@ function theme_select_as_checkboxes($vars) {
   
   // the selected keys from #options
   $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : ($element['#default_value'] ? $element['#default_value'] : $element['#value']);
+  
+  // Grab exposed filter description.  We'll put it under the label where it makes more sense.
+  $description = '';
+  if (!empty($element['#description'])) {
+    $description = '<div class="description">'. $element['#description'] .'</div>';
+    unset($element['#description']);
+  }
   
   $output = '<div class="bef-checkboxes">';
   foreach ($element['#options'] as $option => $elem) {
@@ -85,14 +92,8 @@ function theme_select_as_checkboxes($vars) {
 
   // Fake theme_checkboxes() which we can't call because it calls theme_form_element() for each option
   $class = 'class="form-checkboxes bef-select-as-checkboxes';
-  $class .= (isset($element['#attributes']['class']) ? ' '. $element['#attributes']['class'] : '');
+  $class .= (isset($element['#attributes']['class']) ? ' ' . $element['#attributes']['class'] : '');
   $class .= '"';
-
-  // Add exposed filter description
-  $description = '';
-  if (!empty($element['#description'])) {
-    $description = '<div class="description">'. $element['#description'] .'</div>';
-  }
 
   return "<div $class>$description$output</div>";
 }
@@ -193,7 +194,7 @@ function theme_select_as_radios($vars) {
     return theme('select_as_tree', $vars);
   }
 
-  dsm($element);
+//  dsm($element);
   $attributes = array();
   if (isset($element['#id'])) {
     $attributes['id'] = $element['#id'];
@@ -205,7 +206,7 @@ function theme_select_as_radios($vars) {
 
   $output = '';
   foreach (element_children($element) as $key) {
-    dsm(theme('radio', array('element' => $element[$key])));
+//    dsm(theme('radio', array('element' => $element[$key])));
     $output .= theme('radio', array('element' => $element[$key]));
   }
   return '<div' . drupal_attributes($attributes) . '>' . $output . '</div>';
@@ -398,11 +399,11 @@ function bef_checkbox($element, $value, $label, $selected) {
   );
   
   $checkbox = '<input type="checkbox" '
-    . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
-    . 'id="'. $id .'" '
-    . 'value="'. $value .'" '
+    . 'name="' . $element['#name'] . '[]" '    // brackets are key -- just like select
+    . 'id="' . $id . '" '
+    . 'value="' . $value . '" '
     . ($selected ? 'checked="checked" ' : '')
-    . drupal_attributes($element['#attributes']) .' />';
+    . drupal_attributes($element['#attributes']) . ' />';
   $item = "$checkbox <label class='option' for='$id'>$label</label>";
   $properties['#children'] = $item;
   $output = theme('form_element', array('element' => $properties));
