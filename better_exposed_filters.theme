@@ -40,7 +40,7 @@ function theme_select_as_checkboxes($vars) {
   }
   
   // the selected keys from #options
-  $selected_options = !empty($element['#post'][$element['#name']]) ? (array)$element['#post'][$element['#name']] : ($element['#default_value'] ? $element['#default_value'] : $element['#value']);
+  $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
   
   // Grab exposed filter description.  We'll put it under the label where it makes more sense.
   $description = '';
@@ -109,7 +109,7 @@ function theme_select_as_checkboxes($vars) {
 function theme_select_as_hidden($vars) {
   $element = $vars['element'];
   $output = '';
-  $selected_options = (array)$element['#post'][$element['#name']];   // the selected keys from #options
+  $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
   $properties = array(
     'title' => $element['#title'],
     'description' => $element['#description'],
@@ -224,8 +224,8 @@ function theme_select_as_tree($vars) {
   $element = $vars['element'];
   
   // The selected keys from #options
-  $selected_options = (array)$element['#post'][$element['#name']];
-
+  $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
+  
   /*
    *  Build a bunch of nested unordered lists to represent the hierarchy based on the '-' prefix
    *  added by Views or optgroup structure.
@@ -250,7 +250,7 @@ function theme_select_as_tree($vars) {
       
       // Build either checkboxes or radio buttons, depending on Views' Force single option
       $html = '';
-      if ($element['#multiple']) {
+      if (!empty($element['#multiple'])) {
         $html = bef_checkbox(
           $element,
           $option_value,
@@ -322,7 +322,7 @@ function theme_select_as_links($vars) {
   
   $output = '';
   $name = $element['#name'];
-  $selected_options = (array)$element['#post'][$name];   // the selected keys from #options
+  $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
   if (empty($_REQUEST[$name])) {
     $selected_options[] = $element["#$name"];
   }
