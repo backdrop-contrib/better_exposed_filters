@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Provides an Better Exposed Filters exposed form plugin for View 3.x.
@@ -345,7 +343,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
             if (isset($form[$field_id]['#options']['All'])) {
               // @TODO: The terms 'All' and 'Any' are customizable in Views
-              if (!$filters[$label]->options['expose']['optional']) {
+              if ($filters[$label]->options['expose']['multiple']) {
                 // Some third-party filter handlers still add the "Any" option even if this is not
                 // an optional filter.  Zap it here if they do.
                 unset($form[$field_id]['#options']['All']);
@@ -364,10 +362,14 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
               // Pass the description and title along in a way such that it doesn't get rendered as part of
               // the exposed form widget.  We'll render them as part of the fieldset.
-              $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
-              unset($form[$field_id]['#description']);
-              $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
-              unset($form[$field_id]['#title']);
+              if (isset($form[$field_id]['#description'])) {
+                $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
+                unset($form[$field_id]['#description']);
+              }
+              if (isset($form[$field_id]['#title'])) {
+                $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
+                unset($form[$field_id]['#title']);
+              }
 
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_radios_fieldset';

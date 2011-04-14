@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * Themes a select element as a collection of checkboxes enclosed in a collapsible fieldset
  *
@@ -9,7 +7,16 @@
  * @return HTML string representing the form element.
  */
 function theme_select_as_checkboxes_fieldset($vars) {
-  $element = $vars['element'];
+  // Merge incoming element with some default values. Prevents a lot of
+  //    $foo = isset($bar) ? $bar : $bar_default;
+  $element = array_merge(
+    array(
+      '#title' => '',
+      '#description' => '',
+    ), 
+    $vars['element']
+  );
+  
   $fieldset = array(
     '#title' => $element['#title'],
     '#collapsible' => TRUE,
@@ -162,8 +169,16 @@ function theme_select_as_hidden($vars) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_radios_fieldset($vars) {
-  $element = $vars['element'];
-  
+  // Merge incoming element with some default values. Prevents a lot of
+  //    $foo = isset($bar) ? $bar : $bar_default;
+  $element = array_merge(
+    array(
+      '#bef_title' => '',
+      '#bef_description' => '',
+    ), 
+    $vars['element']
+  );
+    
   // The "all" option is the first in the list. If the selected radio button is the all
   // option, then leave the fieldset collapsed.  Otherwise, render it opened.
   $all = array_shift(array_keys($element['#options']));
@@ -188,13 +203,12 @@ function theme_select_as_radios_fieldset($vars) {
  * @return HTML string representing the form element.
  */
 function theme_select_as_radios($vars) {
-  $element = $vars['element'];
+  $element = &$vars['element'];
   
   if (!empty($element['#bef_nested'])) {
     return theme('select_as_tree', $vars);
   }
 
-//  dsm($element);
   $attributes = array();
   if (isset($element['#id'])) {
     $attributes['id'] = $element['#id'];
@@ -203,14 +217,14 @@ function theme_select_as_radios($vars) {
   if (!empty($element['#attributes']['class'])) {
     $attributes['class'] .= ' ' . implode(' ', $element['#attributes']['class']);
   }
-
+  
   $output = '';
   foreach (element_children($element) as $key) {
-//    dsm(theme('radio', array('element' => $element[$key])));
-    $output .= theme('radio', array('element' => $element[$key]));
+    $element[$key]['#default_value'] = NULL;
+    $element[$key]['#children'] = theme('radio', array('element' => $element[$key]));
+    $output .= theme('form_element', array('element' => $element[$key]));
   }
   return '<div' . drupal_attributes($attributes) . '>' . $output . '</div>';
-//  return '<div class="bef-select-as-radios">'. $output .'</div>';
 }
 
 /**
