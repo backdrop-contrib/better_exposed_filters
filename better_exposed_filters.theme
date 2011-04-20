@@ -43,6 +43,7 @@ function theme_select_as_checkboxes_fieldset($vars) {
 function theme_select_as_checkboxes($vars) {
   $element = $vars['element'];
   if (!empty($element['#bef_nested'])) {
+    $element['#attributes']['class'] .= ' form-checkboxes';
     return theme('select_as_tree', array('element' => $element));
   }
   
@@ -314,7 +315,7 @@ function theme_select_as_tree($vars) {
   $output .= '</ul>';
   
   // Add exposed filter description
-  $class = (isset($element['#attributes']['class']) ? $element['#attributes']['class'] : '');
+  $class = (isset($element['#attributes']['class']) ? 'class="' . $element['#attributes']['class'] . '"' : '');
   $description = '';
   if (!empty($element['#description'])) {
     $description = '<div class="description">'. $element['#description'] .'</div>';

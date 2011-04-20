@@ -6,7 +6,8 @@ Better Exposed Filters 7.x-x.x  xxxx-xx-xx
 ------------------------------------------
 Issue #975376 by mikeker, gordon: Inital port.  Note: only supports Views 3.x as there is no 2.x release planned for D7.
 Issue #1109950 by mikeker, Francois LR: Fixes errors in taxonomy tree
-Issue #1099528 by mikeker: Radio button labels not displayed 
+Issue #1099528 by mikeker: Radio button labels not displayed
+Issue #1128688 by sreynen: Select All/None not working on nested checkboxes 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------

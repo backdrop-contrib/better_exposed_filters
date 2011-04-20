@@ -20,7 +20,7 @@
             // Select all the checkboxes
             $(this)
               .html(selNone)
-              .siblings('.bef-checkboxes')
+              .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
                   $(this).attr('checked', 'checked');
                 })
@@ -35,7 +35,7 @@
             // Unselect all the checkboxes
             $(this)
               .html(selAll)
-              .siblings('.bef-checkboxes')
+              .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
                   $(this).attr('checked', '');
                 })
@@ -56,7 +56,7 @@
             // Clone the link prototype and insert into the DOM
             var newLink = link.clone(true);
             
-            newLink.insertBefore($('.bef-checkboxes', this));
+            newLink.insertBefore($('.bef-checkboxes, .bef-tree', this));
             
             // If all checkboxes are already checked by default then switch to Select None
             if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
