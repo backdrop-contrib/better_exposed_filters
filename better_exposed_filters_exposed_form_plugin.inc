@@ -6,7 +6,7 @@
 class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_form_basic {
 
   function summary_title() {
-    return t('Better Exposed Filters');
+    return t('BEF Settings');
   }
 
   function option_definition() {
@@ -309,7 +309,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
-
+      
       switch ($options['bef_format']) {
         case 'bef_links':
           $form[$field_id]['#theme'] = 'select_as_links';
