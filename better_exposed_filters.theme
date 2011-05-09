@@ -270,7 +270,7 @@ function theme_select_as_tree($vars) {
       preg_match('/^(-*).*$/', $option_label, $matches);
       $depth = strlen($matches[1]);
       
-      // Build either checkboxes or radio buttons, depending on Views' Force single option
+      // Build either checkboxes or radio buttons, depending on Views' settings
       $html = '';
       if (!empty($element['#multiple'])) {
         $html = bef_checkbox(

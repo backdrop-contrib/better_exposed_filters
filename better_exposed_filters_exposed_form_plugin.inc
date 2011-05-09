@@ -119,7 +119,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_filter_intro = TRUE;
       }
       
-      // Main BEF option: default/checkboxes/hidden
+      // Main BEF option: default/checkboxes/hidden/etc.
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
@@ -133,11 +133,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         ),
       );
 
-      // Link option is available if this is not a "Allow multiple selections" filter
-      // if (empty($filter->options['expose']['multiple'])) {
-        // $bef_options[$label]['bef_format']['#options']['bef_links'] = t('Links');
-      // }
-
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
         '#type' => 'fieldset',
@@ -147,16 +142,16 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       );
 
       // Select all checkbox
+      dsm($filter->options['expose']);
       $bef_options[$label]['more_options']['bef_select_all_none'] = array(
         '#type' => 'checkbox',
         '#title' => t('Add select all/none links'),
         '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
-        '#disabled' => $filter->options['expose']['single'],
+        '#disabled' => !$filter->options['expose']['multiple'],
         '#description' => t(
           'Add a "Select All/None" link when rendering the exposed filter using
-            checkboxes. If this option is disabled, edit the filter and uncheck
-            "Force single". NOTE: The link is built at page load, so it will not appear
-            in the "Live Preview" which is loaded dynamically.'
+            checkboxes. If this option is disabled, edit the filter and check the
+            "Allow multiple selections".'
         ),
       );
 
