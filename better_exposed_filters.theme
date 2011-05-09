@@ -43,7 +43,10 @@ function theme_select_as_checkboxes_fieldset($vars) {
 function theme_select_as_checkboxes($vars) {
   $element = $vars['element'];
   if (!empty($element['#bef_nested'])) {
-    $element['#attributes']['class'] .= ' form-checkboxes';
+    if (empty($element['#attributes']['class'])) {
+      $element['#attributes']['class'] = array();
+    }
+    $element['#attributes']['class'][] = 'form-checkboxes';
     return theme('select_as_tree', array('element' => $element));
   }
   
@@ -99,11 +102,15 @@ function theme_select_as_checkboxes($vars) {
   $output .= '</div>';
 
   // Fake theme_checkboxes() which we can't call because it calls theme_form_element() for each option
-  $class = 'class="form-checkboxes bef-select-as-checkboxes';
-  $class .= (isset($element['#attributes']['class']) ? ' ' . $element['#attributes']['class'] : '');
-  $class .= '"';
+  $attributes['class'] = array('form-checkboxes', 'bef-select-as-checkboxes');
+  if (!empty($element['#bef_select_all_none'])) {
+    $attributes['class'][] = 'bef-select-all-none';
+  }
+  if (!empty($element['#attributes']['class'])) {
+    $attributes['class'] = array_merge($element['#attributes']['class'], $attributes['class']);
+  }  
 
-  return "<div $class>$description$output</div>";
+  return '<div' . drupal_attributes($attributes) . ">$description$output</div>";
 }
 
 /**
@@ -214,9 +221,9 @@ function theme_select_as_radios($vars) {
   if (isset($element['#id'])) {
     $attributes['id'] = $element['#id'];
   }
-  $attributes['class'] = 'bef-select-as-radios form-radios';
+  $attributes['class'] = array('bef-select-as-radios form-radios');
   if (!empty($element['#attributes']['class'])) {
-    $attributes['class'] .= ' ' . implode(' ', $element['#attributes']['class']);
+    $attributes['class'] = array_merge($attributes['class'], $element['#attributes']['class']);
   }
   
   $output = '';
@@ -315,13 +322,20 @@ function theme_select_as_tree($vars) {
   $output .= '</ul>';
   
   // Add exposed filter description
-  $class = (isset($element['#attributes']['class']) ? 'class="' . $element['#attributes']['class'] . '"' : '');
   $description = '';
   if (!empty($element['#description'])) {
     $description = '<div class="description">'. $element['#description'] .'</div>';
   }
   
-  return "<div $class>$description$output</div>";
+  // Add the select all/none option, if needed 
+  if (!empty($element['#bef_select_all_none'])) {
+    if (empty($element['#attributes']['class'])) {
+      $element['#attributes']['class'] = array();
+    }
+    $element['#attributes']['class'][] = 'bef-select-all-none';
+  }
+
+  return '<div' . drupal_attributes($element['#attributes']) . ">$description$output</div>";
 }
 
 /**
@@ -447,14 +461,19 @@ function bef_checkbox($element, $value, $label, $selected) {
     '#id' => $id,
   );
   
+  // Prevent the select-all-none class from cascading to all checkboxes
+  if (!empty($element['#attributes']['class']) 
+      && FALSE !== ($key = array_search('bef-select-all-none', $element['#attributes']['class']))) {
+    unset($element['#attributes']['class'][$key]);
+  }
+  
   $checkbox = '<input type="checkbox" '
     . 'name="' . $element['#name'] . '[]" '    // brackets are key -- just like select
     . 'id="' . $id . '" '
     . 'value="' . $value . '" '
     . ($selected ? 'checked="checked" ' : '')
     . drupal_attributes($element['#attributes']) . ' />';
-  $item = "$checkbox <label class='option' for='$id'>$label</label>";
-  $properties['#children'] = $item;
+  $properties['#children'] = "$checkbox <label class='option' for='$id'>$label</label>";
   $output = theme('form_element', array('element' => $properties));
   return $output;
 }

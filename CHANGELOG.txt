@@ -8,7 +8,8 @@ Issue #975376 by mikeker, gordon: Inital port.  Note: only supports Views 3.x as
 Issue #1109950 by mikeker, Francois LR: Fixes errors in taxonomy tree
 Issue #1099528 by mikeker: Radio button labels not displayed
 Issue #1128688 by sreynen: Select All/None not working on nested checkboxes
-Issue #1111712 by mikeker: Adds Links as an option for filters 
+Issue #1111712 by mikeker: Adds Links as an option for filters
+mikeker: Fixed attributes, select all/none issues
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------

@@ -412,9 +412,9 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
               // Add select all/none functionality to this filter.
               if (!isset($form[$field_id]['#attributes']['class'])) {
-                $form[$field_id]['#attributes']['class'] = '';
+                $form[$field_id]['#attributes']['class'] = array();
               }
-              $form[$field_id]['#attributes']['class'] .= 'bef-select-all-none';
+              $form[$field_id]['#bef_select_all_none'] = TRUE;
             }
           } // if (empty($form[$field_id]['#multiple'])) { ... } else {
           break; // case 'bef':
