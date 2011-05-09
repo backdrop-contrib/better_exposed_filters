@@ -142,7 +142,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       );
 
       // Select all checkbox
-      dsm($filter->options['expose']);
       $bef_options[$label]['more_options']['bef_select_all_none'] = array(
         '#type' => 'checkbox',
         '#title' => t('Add select all/none links'),
