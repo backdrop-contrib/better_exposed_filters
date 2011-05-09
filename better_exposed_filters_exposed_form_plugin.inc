@@ -86,23 +86,39 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       );
     }
 
-    /*
-     * Changes to the options form need to be mirrored in hook_form_alter in
-     * better_exposed_filters.module to maintain Views 2.x support
-     */
-
-    // Go through each filter and add the same options we used to add in hook_form_alter()
+    // Only add the description text once -- it was getting a little long to be added to
+    // each filter
+    $bef_filter_intro = FALSE;
+    
+    // Go through each filter and add BEF options
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
         continue;
       }
 
       // Is this a type of field we can't tweak?  (eg: text fields)
-      if (('=' == $filter->operator) && !is_bool($filter->value)) {
+      if ('=' == $filter->operator && !is_bool($filter->value)) {
         // others?
         continue;
       }
 
+      // If we're adding BEF filter options, add an intro to explain what's going on
+      if (!$bef_filter_intro) {
+        $bef_options['bef_intro'] = array(
+          '#markup' => '<h3>' . t('Exposed Filter Settings') . '</h3><p>' . 
+            t('Select a format for each exposed filter. The "Nested" option 
+              places filter options is an unordered list. Hierarchical taxonomy filters
+              will be rendered as nested, unordered lists. "Links" will render filter
+              options as links, but is only available if "Allow multiple selections" 
+              is NOT checked in the "Configure filter criterion" form. The "Hidden" 
+              option is generally used for multi-step filters.  Note: if "Allow multiple 
+              selections" is checked in the "Configure filter criterion" form, 
+              checkboxes will be used, otherwise radio buttons.'
+            ) . '</p>',
+        );    
+        $bef_filter_intro = TRUE;
+      }
+      
       // Main BEF option: default/checkboxes/hidden
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
@@ -112,24 +128,15 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'default' => t('Default select list'),
           'bef' => t('Checkboxes/Radio Buttons'),
           'bef_ul' => t('Nested Checkboxes/Radio Buttons'),
+          'bef_links' => t('Links'),
           'bef_hidden' => t('Hidden'),
-        ),
-        '#description' => t(
-          'Select a format for the exposed filter. The "Nested" option places
-           filter options is an unordered list. Hierarchical taxonomy filters
-           will be rendered as nested, unordered lists. "Links" will render filter
-           options as links, but may cause problems with AJAX views.
-           The "Hidden" option is
-           generally used for multi-step filters.  Note: if "Force single"
-           is checked, radio buttons will be used.  If "Force single" is
-           unchecked, checkboxes will be used.'
         ),
       );
 
-      // Link option is available if "Force single" is selected
-      //      if ($filter->options['expose']['single']) {
-      //
-      //      }
+      // Link option is available if this is not a "Allow multiple selections" filter
+      // if (empty($filter->options['expose']['multiple'])) {
+        // $bef_options[$label]['bef_format']['#options']['bef_links'] = t('Links');
+      // }
 
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
@@ -172,7 +179,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                               rendered in smaller print under the label or the options.'),
       );
     } // foreach ($filters as $filter) {
-
+  
     // Add BEF form elements to the exposed form options form
     $form['bef'] = $bef_options;
   }
@@ -191,11 +198,18 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       // Check for combined sort_by and sort_order
       if ($this->options['bef']['sort']['combine']) {
         // Combine sort_by and sort_order into a single element
+        $form['sort_bef_combine'] = array(
+          '#type' => 'radios',
+          '#title' => $form['sort_by']['#title'],   // Already sanitized by Views
+        );
         $options = array();
 
         // Add reset sort option at the top of the list
         if ($this->options['bef']['sort']['reset']) {
           $options[' '] = t($this->options['bef']['sort']['reset_label']);
+        }
+        else {
+          $form['sort_bef_combine']['#default_value'] = '';
         }
 
         $selected = '';
@@ -221,7 +235,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
           case 'bef_links':
             $form['sort_bef_combine']['#theme'] = 'select_as_links';
-            unset($form['sort_bef_combine']['#title']);
             break;
 
           case 'default':
