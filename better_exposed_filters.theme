@@ -11,19 +11,27 @@ function theme_select_as_checkboxes_fieldset($vars) {
   //    $foo = isset($bar) ? $bar : $bar_default;
   $element = array_merge(
     array(
-      '#title' => '',
-      '#description' => '',
+      '#bef_title' => '',
+      '#bef_description' => '',
     ), 
     $vars['element']
   );
   
   $fieldset = array(
-    '#title' => $element['#title'],
-    '#collapsible' => TRUE,
-    '#description' => $element['#description'],
-    '#collapsed' => empty($element['#value']),
-    '#attribute' => array('class' => 'bef-select-as-checkboxes-fieldset'),
+    '#title' => $element['#bef_title'],
+    '#description' => $element['#bef_description'],
+    '#attributes' => array(
+      'class' => array(
+        'bef-select-as-checkboxes-fieldset',
+        'collapsible',
+      ),
+    ),
   );
+  if (empty($element['#value'])) {
+    // Using the FAPI #collapsible and #collapsed attribute doesn't work here
+    // TODO: not sure why...
+    $fieldset['#attributes']['class'][] = 'collapsed';
+  }
   
   // Description is rendered as part of the fieldset, don't render it twice.
   unset($element['#description']);
@@ -193,11 +201,20 @@ function theme_select_as_radios_fieldset($vars) {
 
   $fieldset = array(
     '#title' => $element['#bef_title'],
-    '#collapsible' => TRUE,
     '#description' => $element['#bef_description'],
-    '#collapsed' => ($element[$all]['#value'] == $all),
-    '#attribute' => array('class' => 'bef-select-as-radios-fieldset'),
+    '#attributes' => array(
+      'class' => array(
+        'bef-select-as-checkboxes-fieldset',
+        'collapsible',
+      ),
+    ),
   );
+  if (empty($element['#value'])) {
+    // Using the FAPI #collapsible and #collapsed attribute doesn't work here
+    // TODO: not sure why...
+    $fieldset['#attributes']['class'][] = 'collapsed';
+  }
+
   $fieldset['#children'] = theme('select_as_radios', $element);
   return theme('fieldset', array('element' => $fieldset));
 }

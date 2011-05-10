@@ -363,24 +363,41 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
             // Render as radio buttons or radio buttons in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
-              // Use the option label for the title of the fieldset
-              $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
-              unset($form['#info']["filter-$label"]['label']);
-
-              // Pass the description and title along in a way such that it doesn't get rendered as part of
-              // the exposed form widget.  We'll render them as part of the fieldset.
-              if (isset($form[$field_id]['#description'])) {
-                $form[$field_id]['#bef_description'] = $form[$field_id]['#description'];
-                unset($form[$field_id]['#description']);
+              // Pass the description and title along in a way such that it doesn't get rendered 
+              // as part of the exposed form widget.  We'll render them as part of the fieldset.
+              if (isset($form['#info']["filter-$label"]['label'])) {
+                $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
+                unset($form['#info']["filter-$label"]['label']);
               }
-              if (isset($form[$field_id]['#title'])) {
-                $form[$field_id]['#bef_title'] = $form[$field_id]['#title'];
-                unset($form[$field_id]['#title']);
+              if (!empty($options['more_options']['bef_filter_description'])) {
+                $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
+                if (isset($form[$field_id]['#description'])) {
+                  unset($form[$field_id]['#description']);
+                }
+              }
+
+              // Add collapse/expand Javascript and BEF CSS to prevent collapsed
+              // fieldset from disappearing. 
+              if (empty($form[$field_id]['#attached']['js'])) {
+                $form[$field_id]['#attached']['js'] = array(
+                  base_path() . 'misc/form.js',
+                  base_path() . 'misc/collapse.js',
+                );
+              }
+              else {
+                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/form.js';
+                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/collapse.js';
+              }
+              if (empty($form[$field_id]['#attached']['css'])) {
+                $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+              }
+              else {
+                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css'; 
               }
 
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_radios_fieldset';
-            }
+            } // if (!empty($options['more_options']['bef_collapsible'])) {
             else {
               // Render select element as radio buttons
               $form[$field_id]['#theme'] = 'select_as_radios';
@@ -389,10 +406,39 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           else {
             // Render as checkboxes or checkboxes enclosed in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
-              // Use exposed filter widget label as legend for this fieldset
-              $form[$field_id]['#title'] = $form['#info']["filter-$label"]['label'];
-              unset($form['#info']["filter-$label"]['label']);
+              // Pass the description and title along in a way such that it doesn't get rendered 
+              // as part of the exposed form widget.  We'll render them as part of the fieldset.
+              if (isset($form['#info']["filter-$label"]['label'])) {
+                $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
+                unset($form['#info']["filter-$label"]['label']);
+              }
+              if (!empty($options['more_options']['bef_filter_description'])) {
+                $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
+                if (isset($form[$field_id]['#description'])) {
+                  unset($form[$field_id]['#description']);
+                }
+              }
 
+              // Add collapse/expand Javascript and BEF CSS to prevent collapsed
+              // fieldset from disappearing. 
+              if (empty($form[$field_id]['#attached']['js'])) {
+                $form[$field_id]['#attached']['js'] = array(
+                  base_path() . 'misc/form.js',
+                  base_path() . 'misc/collapse.js',
+                );
+              }
+              else {
+                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/form.js';
+                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/collapse.js';
+              }
+              if (empty($form[$field_id]['#attached']['css'])) {
+                $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+              }
+              else {
+                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css'; 
+              }
+              
+              // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
             }
             else {
