@@ -11,6 +11,7 @@ Issue #1128688 by sreynen: Select All/None not working on nested checkboxes
 Issue #1111712 by mikeker: Adds Links as an option for filters
 mikeker: Fixed attributes, select all/none issues
 Issue #1120244 by mikeker: Fixed collapsible filter options
+Issue #1132818 by mikeker: Allows more specific targeting of BEF options based on filter options
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------
