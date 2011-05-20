@@ -317,8 +317,13 @@ function theme_select_as_tree($vars) {
         $output .= "</li><li>$html";
       }
       else {
-        // Remain at same level as previous entry
-        $output .= "</li><li>$html";
+        // Remain at same level as previous entry. No </li> needed if we're at the top level
+        if (0 == $curr_depth) {
+          $output .= "<li>$html";
+        }
+        else {
+          $output .= "</li><li>$html";
+        }
       }
     }
   }                             // foreach ($element['#options'] as $option_value => $option_label)
