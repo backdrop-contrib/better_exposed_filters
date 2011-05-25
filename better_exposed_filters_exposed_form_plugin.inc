@@ -132,7 +132,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_specific = TRUE;
       }
       else {
-        dsm($filter->definition['type']);
+        // dsm($filter->definition['type']);
       }
       
       // Main BEF option: default/checkboxes/hidden/etc.
