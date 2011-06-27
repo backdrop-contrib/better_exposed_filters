@@ -127,7 +127,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_specific = TRUE;
       }
       // ... or any of these specific filters
-      else if ('views_handler_filter_date' == $filter->definition['handler']) {
+      else if (isset($filter->value['type']) && 'date' == $filter->value['type']) {
         // Offer a datepicker option for date fields
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
@@ -355,14 +355,32 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
       switch ($options['bef_format']) {
         case 'bef_datepicker':
-          // Set the ID of the date field so we can point the Datepicker widget at it
-          $id = drupal_html_id('bef_datepicker');
-          $form[$field_id]['#id'] = $id;
+          // Add Datepicker JS and CSS
           drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
           drupal_add_css('misc/ui/jquery.ui.datepicker.css');
-          drupal_add_js("jQuery(document).ready(function () { jQuery('#$id').datepicker(); });",
-            array('type' => 'inline', 'scope' => 'footer')
-          );
+
+          if (isset($form[$field_id]['value']['#type']) && 'date_text' == $form[$field_id]['value']['#type']) {
+            // Date module does it's own processing of the date field so we 
+            // can't really control the ID of the text field element.
+            $matches = array();
+            preg_match('/\bid="(.*?)"/', $form[$field_id]['value']['#prefix'], $matches);
+            $id = $matches[1];
+            drupal_add_js("jQuery(document).ready(function () { jQuery('#$id input').datepicker({dateFormat: 'yy-mm-dd'}); });",
+              array('type' => 'inline', 'scope' => 'footer')
+            );
+          }
+          else {
+            // Plain old date field such as node creation date
+
+            // We need to set the ID of the date textbox so we know where to 
+            // point the datepicker widget.
+            $id = drupal_html_id('bef_datepicker');
+            $form[$field_id]['#id'] = $id;
+            drupal_add_js("jQuery(document).ready(function () { jQuery('#$id').datepicker(); });",
+              array('type' => 'inline', 'scope' => 'footer')
+            );
+          }
+
           break;
           
         case 'bef_links':
