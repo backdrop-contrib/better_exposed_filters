@@ -127,6 +127,18 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_specific = TRUE;
       }
       // ... or any of these specific filters
+      else if ('views_handler_filter_date' == $filter->definition['handler']) {
+        // Offer a datepicker option for date fields
+        $bef_options[$label]['bef_format'] = array(
+          '#type' => 'select',
+          '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
+          '#default_value' => $this->options['bef'][$label]['bef_format'],
+          '#options' => array(
+            'default' => t('Default text field'),
+            'bef_datepicker' => t('jQuery UI Datepicker'),
+          ),
+        );
+      }
       else if ('yes-no' == $filter->definition['type']) {
         // others?
         $bef_specific = TRUE;
@@ -150,7 +162,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           ),
         );
       }
-
+      
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
         '#type' => 'fieldset',
@@ -293,7 +305,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
         }
       } // if ($this->options['bef']['sort']['combine']) { ... } else {
-    } // if (isset($this->options['bef']['sort'])) {
+    }   // if (isset($this->options['bef']['sort'])) {
 
     /*
      * Handle exposed pager elements
@@ -342,6 +354,17 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $options['bef_format'] = '';
       }
       switch ($options['bef_format']) {
+        case 'bef_datepicker':
+          // Set the ID of the date field so we can point the Datepicker widget at it
+          $id = drupal_html_id('bef_datepicker');
+          $form[$field_id]['#id'] = $id;
+          drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
+          drupal_add_css('misc/ui/jquery.ui.datepicker.css');
+          drupal_add_js("jQuery(document).ready(function () { jQuery('#$id').datepicker(); });",
+            array('type' => 'inline', 'scope' => 'footer')
+          );
+          break;
+          
         case 'bef_links':
           $form[$field_id]['#theme'] = 'select_as_links';
           break;

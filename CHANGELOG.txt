@@ -13,6 +13,7 @@ mikeker: Fixed attributes, select all/none issues
 Issue #1120244 by mikeker: Fixed collapsible filter options
 Issue #1132818 by mikeker: Allows more specific targeting of BEF options based on filter options
 Issue #1162488 by klickreflex: Fixes incorrect HTML in nested displays
+By mikeker: Added datepicker option
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------
