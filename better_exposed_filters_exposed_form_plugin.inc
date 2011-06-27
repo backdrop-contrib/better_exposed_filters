@@ -119,7 +119,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
       
       // Is this a type of field we can tweak? If so, we'll display additional options.
-      $valid = array('in', 'or');
+      $valid = array('in', 'or', 'and');
       $bef_specific = FALSE;
 
       // We can work with any of these operators
