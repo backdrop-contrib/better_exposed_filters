@@ -89,7 +89,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     // Only add the description text once -- it was getting a little long to be added to
     // each filter
     $bef_filter_intro = FALSE;
-    
+
     // Go through each filter and add BEF options
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
@@ -99,25 +99,25 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       // If we're adding BEF filter options, add an intro to explain what's going on
       if (!$bef_filter_intro) {
         $bef_options['bef_intro'] = array(
-          '#markup' => '<h3>' . t('Exposed Filter Settings') . '</h3><p>' 
+          '#markup' => '<h3>' . t('Exposed Filter Settings') . '</h3><p>'
             . t('Select a format and additional options for each exposed filter.')
             . '</p><p>'
             . t('The "Nested" option places filter options is an unordered list.
-                Hierarchical taxonomy filters will be rendered as nested, 
-                unordered lists. "Links" will render filter options as links, 
-                but is only available if "Allow multiple selections" 
-                is NOT checked in the "Configure filter criterion" form. The "Hidden" 
-                option is generally used for multi-step filters.  Note: if "Allow multiple 
-                selections" is checked in the "Configure filter criterion" form, 
+                Hierarchical taxonomy filters will be rendered as nested,
+                unordered lists. "Links" will render filter options as links,
+                but is only available if "Allow multiple selections"
+                is NOT checked in the "Configure filter criterion" form. The "Hidden"
+                option is generally used for multi-step filters.  Note: if "Allow multiple
+                selections" is checked in the "Configure filter criterion" form,
                 checkboxes will be used, otherwise radio buttons.')
             . '</p><p>'
             . t('You may also add an optional description for any exposed filter
                 in the "More options" section.')
             . '</p>',
-        );    
+        );
         $bef_filter_intro = TRUE;
       }
-      
+
       // Is this a type of field we can tweak? If so, we'll display additional options.
       $valid = array('in', 'or', 'and');
       $bef_specific = FALSE;
@@ -146,7 +146,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       else {
         // dsm($filter->definition['type']);
       }
-      
+
       // Main BEF option: default/checkboxes/hidden/etc.
       if ($bef_specific) {
         $bef_options[$label]['bef_format'] = array(
@@ -162,7 +162,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           ),
         );
       }
-      
+
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
         '#type' => 'fieldset',
@@ -206,7 +206,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                               rendered in smaller print under the label or the options.'),
       );
     } // foreach ($filters as $filter) {
-  
+
     // Add BEF form elements to the exposed form options form
     $form['bef'] = $bef_options;
   }
@@ -217,10 +217,14 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
   function exposed_form_alter(&$form, &$form_state) {
     parent::exposed_form_alter($form, $form_state);
 
+    // If we have no visible elements, we don't show the Apply button.
+    $show_apply = FALSE;
+
     /*
      * Handle exposed sort elements
      */
     if (isset($this->options['bef']['sort'])) {
+      $show_apply = TRUE;
 
       // Check for combined sort_by and sort_order
       if ($this->options['bef']['sort']['combine']) {
@@ -311,6 +315,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
      * Handle exposed pager elements
      */
     if (isset($this->options['bef']['pager'])) {
+      $show_apply = TRUE;
+
       switch ($this->options['bef']['pager']['bef_format']) {
         case 'bef':
           $form['items_per_page']['#type'] = 'radios';
@@ -331,11 +337,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       }
     }
 
-    /*
-     * Changes to the display of BEF filters need to be mirrored in hook_form_alter in
-     * better_exposed_filters.module to maintain Views 2.x support
-     */
-
     // Shorthand for all filters in this view
     $filters = $form_state['view']->display_handler->handlers['filter'];
 
@@ -349,18 +350,20 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
-      
+
       if (!isset($options['bef_format'])) {
         $options['bef_format'] = '';
       }
       switch ($options['bef_format']) {
         case 'bef_datepicker':
+          $show_apply = TRUE;
+
           // Add Datepicker JS and CSS
           drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
           drupal_add_css('misc/ui/jquery.ui.datepicker.css');
 
           if (isset($form[$field_id]['value']['#type']) && 'date_text' == $form[$field_id]['value']['#type']) {
-            // Date module does it's own processing of the date field so we 
+            // Date module does it's own processing of the date field so we
             // can't really control the ID of the text field element.
             $matches = array();
             preg_match('/\bid="(.*?)"/', $form[$field_id]['value']['#prefix'], $matches);
@@ -372,7 +375,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           else {
             // Plain old date field such as node creation date
 
-            // We need to set the ID of the date textbox so we know where to 
+            // We need to set the ID of the date textbox so we know where to
             // point the datepicker widget.
             $id = drupal_html_id('bef_datepicker');
             $form[$field_id]['#id'] = $id;
@@ -382,16 +385,22 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           }
 
           break;
-          
+
         case 'bef_links':
+          $show_apply = TRUE;
+
           $form[$field_id]['#theme'] = 'select_as_links';
           break;
 
         case 'bef_ul':
+          $show_apply = TRUE;
+
           $form[$field_id]['#bef_nested'] = TRUE;
           // Intentionally falling through to case 'bef':
 
         case 'bef':
+          $show_apply = TRUE;
+
           if (empty($form[$field_id]['#multiple'])) {
             // Single-select -- display as radio buttons
             $form[$field_id]['#type'] = 'radios';
@@ -428,7 +437,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
             // Render as radio buttons or radio buttons in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
-              // Pass the description and title along in a way such that it doesn't get rendered 
+              // Pass the description and title along in a way such that it doesn't get rendered
               // as part of the exposed form widget.  We'll render them as part of the fieldset.
               if (isset($form['#info']["filter-$label"]['label'])) {
                 $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
@@ -442,7 +451,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               }
 
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed
-              // fieldset from disappearing. 
+              // fieldset from disappearing.
               if (empty($form[$field_id]['#attached']['js'])) {
                 $form[$field_id]['#attached']['js'] = array(
                   base_path() . 'misc/form.js',
@@ -457,7 +466,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
               }
               else {
-                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css'; 
+                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
               }
 
               // Take care of adding the fieldset in the theme layer
@@ -471,7 +480,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           else {
             // Render as checkboxes or checkboxes enclosed in a collapsible fieldset
             if (!empty($options['more_options']['bef_collapsible'])) {
-              // Pass the description and title along in a way such that it doesn't get rendered 
+              // Pass the description and title along in a way such that it doesn't get rendered
               // as part of the exposed form widget.  We'll render them as part of the fieldset.
               if (isset($form['#info']["filter-$label"]['label'])) {
                 $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
@@ -485,7 +494,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               }
 
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed
-              // fieldset from disappearing. 
+              // fieldset from disappearing.
               if (empty($form[$field_id]['#attached']['js'])) {
                 $form[$field_id]['#attached']['js'] = array(
                   base_path() . 'misc/form.js',
@@ -500,9 +509,9 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
               }
               else {
-                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css'; 
+                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
               }
-              
+
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
             }
@@ -533,17 +542,23 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $form[$field_id]['#theme'] = 'select_as_hidden';
           }
           break;
-          
+
         default:
           // Handle functionality for exposed filters that are not limited to BEF only filters
+          $show_apply = TRUE;
 
           // Add a description to the exposed filter
           if (!empty($options['more_options']['bef_filter_description'])) {
             $form[$field_id]['#description'] = t($options['more_options']['bef_filter_description']);
           }
           break;
-          
+
       } // switch ($options['bef_format'])
     } // foreach ($this->options['bef']...)
+
+    // If our form has no visible filters, hide the submit button.
+    $form['submit']['#access'] = $show_apply;
+    $form['reset']['#access'] = $show_apply;
+
   } // function exposed_form_alter(...)
 }

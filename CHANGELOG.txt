@@ -15,6 +15,7 @@ Issue #1132818 by mikeker: Allows more specific targeting of BEF options based o
 Issue #1162488 by klickreflex: Fixes incorrect HTML in nested displays
 By mikeker: Added datepicker option
 Issue #1194102 by dj1999: Adds BEF options to 'is all of' filters
+Issue #1149254 by aaronbauman: Hides Apply button when exposed filters are set to hidden
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------
@@ -27,7 +28,7 @@ Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 #965388 by mikeker: Adds support for collapsible fieldsets
 mikeker: Adds nested list display for hierarchical taxonomy filters
 #894312 by kenorb, mikeker: Adds links as a BEF option
-#1006716 by attiks: Corrects <label>/<input> tag order 
+#1006716 by attiks: Corrects <label>/<input> tag order
 
 Better Exposed Filters 6.x-1.0  2010-05-25
 ------------------------------------------
