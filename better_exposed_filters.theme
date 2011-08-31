@@ -437,14 +437,14 @@ function theme_select_as_links($vars) {
         $output .= theme('form_element', array('element' => array('#id' => $id, '#children' => $link, '#markup' => '')));
       } else {
         // Selected value is output without a link
-        // TODO: add link to remove this option from the filter?
+        $link = l($value, bef_replace_query_string_arg($name, $key, $multiple, true));
         $elem = array(
           '#id' => $id,
-          '#children' => $value,
+          '#children' => $link,
           '#markup' => ''
         );
         _form_set_class($elem, array('bef-select-as-links-selected'));
-        $output .= theme('form_element', array('element' => $elem));
+        $output .= str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
       }
     }
   }
@@ -507,8 +507,9 @@ function bef_checkbox($element, $value, $label, $selected) {
  * @param string $key query string key (argument)
  * @param string $value query string value
  * @param bool $multiple TRUE if this key/value pair allows multiple values
+ * @param bool $remove TRUE if this key/value should be a link to remove/unset the filter
  */
-function bef_replace_query_string_arg($key, $value, $multiple = FALSE) {
+function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove = FALSE) {
   $path = arg();
 
   // Prevents us from having to check for each index from parse_url that we may use
@@ -519,14 +520,17 @@ function bef_replace_query_string_arg($key, $value, $multiple = FALSE) {
   parse_str(urldecode($urllist['query']), $query);
   if (isset($query[$key]) && is_array($query[$key])) {
     // multiple values allowed for this existing key
-    $query[$key][] = $value;
+    if ($remove && ($key_remove = array_search($value, $query[$key])) !== false)
+      unset($query[$key][$key_remove]);
+    else
+      $query[$key][] = $value;
   }
   else {
     // Create a new key
-    if ($multiple) {
+    if ($multiple && !$remove) {
       $query[$key] = array($value);
     }
-    else {
+    elseif (!$remove) {
       $query[$key] = $value;
     }
   }

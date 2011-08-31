@@ -17,6 +17,8 @@ By mikeker: Added datepicker option
 Issue #1194102 by dj1999: Adds BEF options to 'is all of' filters
 Issue #1149254 by aaronbauman: Hides Apply button when exposed filters are set to hidden
 Issue #1227168 by gionnibgud: Adds IDs to select_as_links filter options
+Issue #1260194 by zhuber: Adds toggle functionality to filter links
+
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------
