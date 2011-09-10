@@ -290,6 +290,7 @@ function theme_select_as_tree($vars) {
       else {
         preg_match('/^(-*).*$/', $option_label, $matches);
         $depth = strlen($matches[1]);
+        $option_label = ltrim($option_label, '-');
       }
 
       // Build either checkboxes or radio buttons, depending on Views' settings
@@ -298,12 +299,14 @@ function theme_select_as_tree($vars) {
         $html = bef_checkbox(
           $element,
           $option_value,
-          ltrim($option_label, '-'),              // Remove prefixed '-' characters
+          $option_label,
           (array_search($option_value, $selected_options) !== FALSE)
         );
       }
       else {
-        $html = theme('radio', array('element' => $element[$option_value]));
+        $element[$option_value]['#title'] = $option_label;
+        $element[$option_value]['#children'] = theme('radio', array('element' => $element[$option_value]));
+        $html .= theme('form_element', array('element' => $element[$option_value]));
       }
 
       if ($depth > $curr_depth) {
