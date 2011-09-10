@@ -284,8 +284,13 @@ function theme_select_as_tree($vars) {
     }
     else {
       // Build hierarchy based on prefixed '-' on the element label
-      preg_match('/^(-*).*$/', $option_label, $matches);
-      $depth = strlen($matches[1]);
+      if (t('- Any -') == $option_label) {
+        $depth = 0;
+      }
+      else {
+        preg_match('/^(-*).*$/', $option_label, $matches);
+        $depth = strlen($matches[1]);
+      }
 
       // Build either checkboxes or radio buttons, depending on Views' settings
       $html = '';
