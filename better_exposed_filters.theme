@@ -275,7 +275,8 @@ function theme_select_as_tree($vars) {
 
     // Check for Taxonomy-based filters
     if (is_object($option_label)) {
-      list($option_value, $option_label) = each(array_slice($option_label->option, 0, 1, TRUE));
+      $slice = array_slice($option_label->option, 0, 1, TRUE);
+      list($option_value, $option_label) = each($slice);
     }
 
     // Check for optgroups -- which is basically a two-level deep tree
