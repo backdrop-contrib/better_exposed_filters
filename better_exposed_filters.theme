@@ -491,6 +491,8 @@ function bef_checkbox($element, $value, $label, $selected) {
   $properties = array(
     '#required' => FALSE,
     '#id' => $id,
+    '#type' => 'bef-checkbox',
+    '#name' => $id,
   );
 
   // Prevent the select-all-none class from cascading to all checkboxes
