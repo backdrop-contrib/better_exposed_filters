@@ -453,21 +453,15 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed
               // fieldset from disappearing.
               if (empty($form[$field_id]['#attached']['js'])) {
-                $form[$field_id]['#attached']['js'] = array(
-                  base_path() . 'misc/form.js',
-                  base_path() . 'misc/collapse.js',
-                );
+                $form[$field_id]['#attached']['js'] = array();
               }
-              else {
-                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/form.js';
-                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/collapse.js';
-              }
+              $form[$field_id]['#attached']['js'][] = 'misc/form.js';
+              $form[$field_id]['#attached']['js'][] = 'misc/collapse.js';
+
               if (empty($form[$field_id]['#attached']['css'])) {
-                $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+                $form[$field_id]['#attached']['css'] = array();
               }
-              else {
-                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
-              }
+              $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_radios_fieldset';
@@ -496,21 +490,15 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed
               // fieldset from disappearing.
               if (empty($form[$field_id]['#attached']['js'])) {
-                $form[$field_id]['#attached']['js'] = array(
-                  base_path() . 'misc/form.js',
-                  base_path() . 'misc/collapse.js',
-                );
+                $form[$field_id]['#attached']['js'] = array();
               }
-              else {
-                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/form.js';
-                $form[$field_id]['#attached']['js'][] = base_path() . 'misc/collapse.js';
-              }
+              $form[$field_id]['#attached']['js'][] = 'misc/form.js';
+              $form[$field_id]['#attached']['js'][] = 'misc/collapse.js';
+
               if (empty($form[$field_id]['#attached']['css'])) {
-                $form[$field_id]['#attached']['css'] = array(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+                $form[$field_id]['#attached']['css'] = array();
               }
-              else {
-                $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
-              }
+              $form[$field_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer
               $form[$field_id]['#theme'] = 'select_as_checkboxes_fieldset';
