@@ -72,7 +72,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     /*
      * Add options for exposed pager
      */
-    if ($this->display->display_options['pager'] && $this->display->display_options['pager']['options']['expose']['items_per_page']) {
+    if (isset($this->display->display_options['pager']) && $this->display->display_options['pager']['options']['expose']['items_per_page']) {
       $bef_options['pager']['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display exposed pager options as'),
