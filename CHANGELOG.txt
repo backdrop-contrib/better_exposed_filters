@@ -22,7 +22,7 @@ Issue #1099528 by Murz: Fixes incorrect depth of '- Any -' option
 Issue #1241960 by mikeker: Fixes E_STRICT warning
 Issue #1217204 by mikeker: Fixes Undefined index errors when BEF settings page is raised as a standalong page
 Issue #1281348 by mikeker: form.js and collapse.js not being aggregated properly
-Issue #1272694 by samhassell: correctly sets form-item classes for wrapper divs
+Issue #1272694 by samhassell and mikeker: correctly sets form-item classes for wrapper divs
 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx

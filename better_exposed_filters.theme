@@ -441,17 +441,17 @@ function theme_select_as_links($vars) {
     foreach ($element_set as $key => $value) {
       // Custom ID for each link based on the <select>'s original ID
       $id = drupal_html_id($element['#id'] . '-' . $key);
+      $elem = array(
+        '#id' => $id,
+        '#markup' => '',
+        '#type' => 'bef-link',
+        '#name' => $id,
+      );
       if (array_search($key, $selected_options) === FALSE) {
-        $link = l($value, bef_replace_query_string_arg($name, $key, $multiple));
-        $output .= theme('form_element', array('element' => array('#id' => $id, '#children' => $link, '#markup' => '')));
+        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple));
+        $output .= theme('form_element', array('element' => $elem));
       } else {
-        // Selected value is output without a link
-        $link = l($value, bef_replace_query_string_arg($name, $key, $multiple, true));
-        $elem = array(
-          '#id' => $id,
-          '#children' => $link,
-          '#markup' => ''
-        );
+        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, true));
         _form_set_class($elem, array('bef-select-as-links-selected'));
         $output .= str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
       }
