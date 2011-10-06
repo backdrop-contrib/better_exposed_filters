@@ -220,6 +220,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     // If we have no visible elements, we don't show the Apply button.
     $show_apply = FALSE;
 
+    // We only want to add the datepicker code once.
+    // TODO: Does this need to be moved to a behavior.attach()?
+    $add_datepicker = FALSE;
+    $datepicker_format = '';
+
     /*
      * Handle exposed sort elements
      */
@@ -357,33 +362,96 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       switch ($options['bef_format']) {
         case 'bef_datepicker':
           $show_apply = TRUE;
+          $add_datepicker = TRUE;
 
-          // Add Datepicker JS and CSS
-          drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
-          drupal_add_css('misc/ui/jquery.ui.datepicker.css');
+          if ((
+            // Single Date API-based input element
+            isset($form[$field_id]['value']['#type'])
+              && 'date_text' == $form[$field_id]['value']['#type']
+          )
+          || (    // Or ...
+            // Double Date API-based input elements such as "in-between"
+            isset($form[$field_id]['min']) && isset($form[$field_id]['max'])
+            && 'date_text' == $form[$field_id]['min']['#type']
+            && 'date_text' == $form[$field_id]['max']['#type']
+          )) {
+            // Date module date field
 
-          if (isset($form[$field_id]['value']['#type']) && 'date_text' == $form[$field_id]['value']['#type']) {
-            // Date module does it's own processing of the date field so we
-            // can't really control the ID of the text field element.
-            $matches = array();
-            preg_match('/\bid="(.*?)"/', $form[$field_id]['value']['#prefix'], $matches);
-            $id = $matches[1];
-            drupal_add_js("jQuery(document).ready(function () { jQuery('#$id input').datepicker({dateFormat: 'yy-mm-dd'}); });",
-              array('type' => 'inline', 'scope' => 'footer')
+            /*
+             * Convert Date API formatting to jQuery formatDate formatting.
+             *
+             * @TODO: To be honest, I'm not sure this is needed.  Can you
+             * set a Date API field to accept anything other than Y-m-d?
+             * Well, better safe than sorry...
+             *
+             * @see
+             *  http://us3.php.net/manual/en/function.date.php
+             * and
+             *  http://docs.jquery.com/UI/Datepicker/formatDate
+             *
+             * Array format: PHP date format => jQuery formatDate format
+             * (comments are for the PHP format, lines that are commented out
+             * do not have a jQuery formatDate equivalent)
+             */
+            $convert = array(
+              // Day
+              'd' => 'dd',    // Day of the month, 2 digits with leading zeros 01 to 31
+              'D' => 'D',     // A textual representation of a day, three letters  Mon through Sun
+              'j' => 'd',     // Day of the month without leading zeros  1 to 31
+              'l' => 'DD',    // (lowercase 'L') A full textual representation of the day of the week  Sunday through Saturday
+              // 'N' => ' ',     // ISO-8601 numeric representation of the day of the week (added in PHP 5.1.0) 1 (for Monday) through 7 (for Sunday)
+              // 'S' => ' ',     // English ordinal suffix for the day of the month, 2 characters st, nd, rd or th. Works well with j
+              // 'w' => ' ',     // Numeric representation of the day of the week 0 (for Sunday) through 6 (for Saturday)
+              'z' => 'o',     // The day of the year (starting from 0) 0 through 365
+
+              // Week
+              // 'W' => ' ',     // ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0) Example: 42 (the 42nd week in the year)
+
+              // Month
+              'F' => 'MM',    // A full textual representation of a month, such as January or March  January through December
+              'm' => 'mm',    // Numeric representation of a month, with leading zeros 01 through 12
+              'M' => 'M',     // A short textual representation of a month, three letters  Jan through Dec
+              'n' => 'm',     // Numeric representation of a month, without leading zeros  1 through 12
+              // 't' => ' ',     // Number of days in the given month 28 through 31
+
+              // Year
+              // 'L' => ' ',     // Whether it's a leap year  1 if it is a leap year, 0 otherwise.
+              // 'o' => ' ',     // ISO-8601 year number. This has the same value as Y, except that if the ISO week number (W) belongs to the previous or next year, that year is used instead. (added in PHP 5.1.0)  Examples: 1999 or 2003
+              'Y' => 'yy',    // A full numeric representation of a year, 4 digits Examples: 1999 or 2003
+              'y' => 'y',     // A two digit representation of a year  Examples: 99 or 03
+
+              // Time
+              // 'a' => ' ',     // Lowercase Ante meridiem and Post meridiem am or pm
+              // 'A' => ' ',     // Uppercase Ante meridiem and Post meridiem AM or PM
+              // 'B' => ' ',     // Swatch Internet time  000 through 999
+              // 'g' => ' ',     // 12-hour format of an hour without leading zeros 1 through 12
+              // 'G' => ' ',     // 24-hour format of an hour without leading zeros 0 through 23
+              // 'h' => ' ',     // 12-hour format of an hour with leading zeros  01 through 12
+              // 'H' => ' ',     // 24-hour format of an hour with leading zeros  00 through 23
+              // 'i' => ' ',     // Minutes with leading zeros  00 to 59
+              // 's' => ' ',     // Seconds, with leading zeros 00 through 59
+              // 'u' => ' ',     // Microseconds (added in PHP 5.2.2) Example: 654321
             );
+
+            $format = '';
+            if (isset($form[$field_id]['value'])) {
+              $format = $form[$field_id]['value']['#date_format'];
+              $form[$field_id]['value']['#attributes']['class'][] = 'bef-datepicker';
+            }
+            else {
+              // Both min and max share the same format
+              $format = $form[$field_id]['min']['#date_format'];
+              $form[$field_id]['min']['#attributes']['class'][] = 'bef-datepicker';
+              $form[$field_id]['max']['#attributes']['class'][] = 'bef-datepicker';
+            }
+            $datepicker_format = '{dateFormat: "'
+              . str_replace(array_keys($convert), array_values($convert), $format)
+              . '"}';
           }
           else {
-            // Plain old date field such as node creation date
-
-            // We need to set the ID of the date textbox so we know where to
-            // point the datepicker widget.
-            $id = drupal_html_id('bef_datepicker');
-            $form[$field_id]['#id'] = $id;
-            drupal_add_js("jQuery(document).ready(function () { jQuery('#$id').datepicker(); });",
-              array('type' => 'inline', 'scope' => 'footer')
-            );
+            // Standard Drupal date field.
+            $form[$field_id]['#attributes']['class'][] = 'bef-datepicker';
           }
-
           break;
 
         case 'bef_links':
@@ -548,6 +616,24 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     // If our form has no visible filters, hide the submit button.
     $form['submit']['#access'] = $show_apply;
     $form['reset']['#access'] = $show_apply;
+
+    // Only add datepicker code once
+    if ($add_datepicker) {
+       // Add Datepicker JS and CSS
+      drupal_add_js('misc/ui/jquery.ui.core.min.js');
+      drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
+      drupal_add_css('misc/ui/jquery.ui.core.css');
+      drupal_add_css('misc/ui/jquery.ui.datepicker.css');
+      drupal_add_css('misc/ui/jquery.ui.theme.css');
+
+      drupal_add_js(
+        'jQuery(document).ready(function () { jQuery(".bef-datepicker").datepicker(' . $datepicker_format . '); });',
+        array(
+          'type' => 'inline',
+          'scope' => 'footer'
+        )
+      );
+    }
 
   } // function exposed_form_alter(...)
 }
