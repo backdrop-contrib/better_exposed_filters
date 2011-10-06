@@ -197,7 +197,8 @@ function theme_select_as_radios_fieldset($vars) {
 
   // The "all" option is the first in the list. If the selected radio button is the all
   // option, then leave the fieldset collapsed.  Otherwise, render it opened.
-  $all = array_shift(array_keys($element['#options']));
+  $keys = array_keys($element['#options']);
+  $all = array_shift($keys);
 
   $fieldset = array(
     '#title' => $element['#bef_title'],
