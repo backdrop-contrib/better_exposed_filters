@@ -82,6 +82,13 @@
         .filter(':checked').closest('.form-item', context).addClass('highlight')
       ;
 
+      // Check for and initialize datepickers
+      if (Drupal.settings.better_exposed_filters.bef_datepicker) {
+        $('.bef-datepicker').datepicker({
+          dateFormat: Drupal.settings.better_exposed_filters.bef_dateformat
+        });
+      }
+
     }                   // attach: function() {
   };                    // Drupal.behaviors.better_exposed_filters = {
 

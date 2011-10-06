@@ -391,7 +391,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
              *
              * Array format: PHP date format => jQuery formatDate format
              * (comments are for the PHP format, lines that are commented out
-             * do not have a jQuery formatDate equivalent)
+             * do not have a jQuery formatDate equivalent, but maybe someday
+             * they will...)
              */
             $convert = array(
               // Day
@@ -444,9 +445,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
               $form[$field_id]['min']['#attributes']['class'][] = 'bef-datepicker';
               $form[$field_id]['max']['#attributes']['class'][] = 'bef-datepicker';
             }
-            $datepicker_format = '{dateFormat: "'
-              . str_replace(array_keys($convert), array_values($convert), $format)
-              . '"}';
+            $datepicker_format = str_replace(array_keys($convert), array_values($convert), $format);
           }
           else {
             // Standard Drupal date field.
@@ -618,21 +617,20 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $form['reset']['#access'] = $show_apply;
 
     // Only add datepicker code once
+    drupal_add_js(array('better_exposed_filters' => array('bef_datepicker' => FALSE)), 'setting');
     if ($add_datepicker) {
        // Add Datepicker JS and CSS
       drupal_add_js('misc/ui/jquery.ui.core.min.js');
       drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
       drupal_add_css('misc/ui/jquery.ui.core.css');
-      drupal_add_css('misc/ui/jquery.ui.datepicker.css');
       drupal_add_css('misc/ui/jquery.ui.theme.css');
+      drupal_add_css('misc/ui/jquery.ui.datepicker.css');
 
-      drupal_add_js(
-        'jQuery(document).ready(function () { jQuery(".bef-datepicker").datepicker(' . $datepicker_format . '); });',
-        array(
-          'type' => 'inline',
-          'scope' => 'footer'
-        )
-      );
+      // Trigger datepicker in better_exposed_filters.js
+      drupal_add_js(array('better_exposed_filters' => array(
+        'bef_datepicker' => TRUE,
+        'bef_dateformat' => $datepicker_format,
+      )), 'setting');
     }
 
   } // function exposed_form_alter(...)
