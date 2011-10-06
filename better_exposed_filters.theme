@@ -234,22 +234,14 @@ function theme_select_as_radios($vars) {
     return theme('select_as_tree', $vars);
   }
 
-  $attributes = array();
-  if (isset($element['#id'])) {
-    $attributes['id'] = $element['#id'];
-  }
-  $attributes['class'] = array('bef-select-as-radios form-radios');
-  if (!empty($element['#attributes']['class'])) {
-    $attributes['class'] = array_merge($attributes['class'], $element['#attributes']['class']);
-  }
-
   $output = '';
   foreach (element_children($element) as $key) {
     $element[$key]['#default_value'] = NULL;
     $element[$key]['#children'] = theme('radio', array('element' => $element[$key]));
     $output .= theme('form_element', array('element' => $element[$key]));
   }
-  return '<div' . drupal_attributes($attributes) . '>' . $output . '</div>';
+
+  return $output;
 }
 
 /**

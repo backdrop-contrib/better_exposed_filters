@@ -468,6 +468,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             } // if (!empty($options['more_options']['bef_collapsible'])) {
             else {
               // Render select element as radio buttons
+              $form[$field_id]['#attributes']['class'][] = 'bef-select-as-radios';
               $form[$field_id]['#theme'] = 'select_as_radios';
             }
           } // if (empty($form[$field_id]['#multiple'])) {
