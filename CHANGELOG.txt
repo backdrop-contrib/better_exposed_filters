@@ -25,6 +25,7 @@ Issue #1281348 by mikeker: form.js and collapse.js not being aggregated properly
 Issue #1272694 by samhassell and mikeker: correctly sets form-item classes for wrapper divs
 Issue #1290630 by d.clarke: Removes duplicated IDs from radio buttons
 Issue #1289370 by mikeker: Gets Datepicker working again. Note: needs to be added to behaviors.
+By mikeker: Added/Cleaned up highlight JS
 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
