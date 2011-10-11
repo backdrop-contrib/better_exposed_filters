@@ -449,7 +449,15 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           }
           else {
             // Standard Drupal date field.
-            $form[$field_id]['#attributes']['class'][] = 'bef-datepicker';
+            if (isset($form[$field_id]['min']) && isset($form[$field_id]['max'])) {
+              // Double Drupal date field input elements such as "in-between"
+              $form[$field_id]['min']['#attributes']['class'][] = 'bef-datepicker';
+              $form[$field_id]['max']['#attributes']['class'][] = 'bef-datepicker';
+            }
+            else {
+              // Single Drupal date field input elements such as "less than"
+              $form[$field_id]['#attributes']['class'][] = 'bef-datepicker';
+            }
           }
           break;
 
@@ -577,7 +585,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
             if ($options['more_options']['bef_select_all_none']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
-              // @TODO: move to #attached
+              // @TODO: move to #attached?
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
 
               // Add select all/none functionality to this filter.
@@ -622,6 +630,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
        // Add Datepicker JS and CSS
       drupal_add_js('misc/ui/jquery.ui.core.min.js');
       drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
+      drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
       drupal_add_css('misc/ui/jquery.ui.core.css');
       drupal_add_css('misc/ui/jquery.ui.theme.css');
       drupal_add_css('misc/ui/jquery.ui.datepicker.css');
