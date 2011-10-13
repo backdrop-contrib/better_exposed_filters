@@ -525,6 +525,13 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 }
               }
 
+              // If the operator is exposed as well, put it inside the fieldset
+              if ($filters[$label]->options['expose']['use_operator']) {
+                $operator_id = $filters[$label]->options['expose']['operator_id'];
+                $form[$field_id]['#bef_operator'] = $form[$operator_id];
+                unset ($form[$operator_id]);
+              }
+
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed
               // fieldset from disappearing.
               if (empty($form[$field_id]['#attached']['js'])) {
@@ -561,6 +568,13 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
                 if (isset($form[$field_id]['#description'])) {
                   unset($form[$field_id]['#description']);
                 }
+              }
+
+              // If the operator is exposed as well, put it inside the fieldset
+              if ($filters[$label]->options['expose']['use_operator']) {
+                $operator_id = $filters[$label]->options['expose']['operator_id'];
+                $form[$field_id]['#bef_operator'] = $form[$operator_id];
+                unset ($form[$operator_id]);
               }
 
               // Add collapse/expand Javascript and BEF CSS to prevent collapsed

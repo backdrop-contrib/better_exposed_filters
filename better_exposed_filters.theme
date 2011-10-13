@@ -13,6 +13,7 @@ function theme_select_as_checkboxes_fieldset($vars) {
     array(
       '#bef_title' => '',
       '#bef_description' => '',
+      '#bef_operator' => array(),
     ),
     $vars['element']
   );
@@ -36,7 +37,16 @@ function theme_select_as_checkboxes_fieldset($vars) {
   // Description is rendered as part of the fieldset, don't render it twice.
   unset($element['#description']);
 
-  $fieldset['#children'] = theme('select_as_checkboxes', array('element' => $element));
+  $children = '';
+  if (!empty($element['#bef_operator'])) {
+    // Put an exposed operator inside the fieldset
+    $children = drupal_render($element['#bef_operator']);
+  }
+
+  // Render the checkboxes
+  $children .= theme('select_as_checkboxes', array('element' => $element));
+
+  $fieldset['#children'] = $children;
   return theme('fieldset', array('element' => $fieldset));
 }
 
@@ -191,6 +201,7 @@ function theme_select_as_radios_fieldset($vars) {
     array(
       '#bef_title' => '',
       '#bef_description' => '',
+      '#bef_operator' => array(),
     ),
     $vars['element']
   );
@@ -216,7 +227,19 @@ function theme_select_as_radios_fieldset($vars) {
     $fieldset['#attributes']['class'][] = 'collapsed';
   }
 
-  $fieldset['#children'] = theme('select_as_radios', $element);
+  // Description is rendered as part of the fieldset, don't render it twice.
+  unset($element['#description']);
+
+  $children = '';
+  if (!empty($element['#bef_operator'])) {
+    // Put an exposed operator inside the fieldset
+    $children = drupal_render($element['#bef_operator']);
+  }
+
+  // Render the radio buttons
+  $children .= theme('select_as_radios', $element);
+
+  $fieldset['#children'] = $children;
   return theme('fieldset', array('element' => $fieldset));
 }
 
