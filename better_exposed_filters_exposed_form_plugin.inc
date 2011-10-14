@@ -381,8 +381,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
 
-// dsm($options);
-// dsm($filters[$label]);
       // Token replacement on BEF Description fields
       if (!empty($options['more_options']['bef_filter_description'])) {
         // Collect replacement data
@@ -392,7 +390,6 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           $vocabs = taxonomy_get_vocabularies();
           $data['vocabulary'] = $vocabs[$filters[$label]->options['vid']];
         }
-
         // Others?
 
         // Replace tokens
