@@ -34,8 +34,9 @@ function theme_select_as_checkboxes_fieldset($vars) {
     $fieldset['#attributes']['class'][] = 'collapsed';
   }
 
-  // Description is rendered as part of the fieldset, don't render it twice.
-  unset($element['#description']);
+  // We rendered the description as part of the fieldset element, don't render
+  // it again along with the checkboxes
+  unset($element['#bef_description']);
 
   $children = '';
   if (!empty($element['#bef_operator'])) {
@@ -73,9 +74,8 @@ function theme_select_as_checkboxes($vars) {
 
   // Grab exposed filter description.  We'll put it under the label where it makes more sense.
   $description = '';
-  if (!empty($element['#description'])) {
-    $description = '<div class="description">'. $element['#description'] .'</div>';
-    unset($element['#description']);
+  if (!empty($element['#bef_description'])) {
+    $description = '<div class="description">'. $element['#bef_description'] .'</div>';
   }
 
   $output = '<div class="bef-checkboxes">';
@@ -145,7 +145,7 @@ function theme_select_as_hidden($vars) {
   $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
   $properties = array(
     'title' => isset($element['#title']) ? $element['#title'] : '',
-    'description' => isset($element['#description']) ? $element['#description'] : '',
+    'description' => isset($element['#bef_description']) ? $element['#bef_description'] : '',
     'required' => FALSE,
   );
 
@@ -227,8 +227,9 @@ function theme_select_as_radios_fieldset($vars) {
     $fieldset['#attributes']['class'][] = 'collapsed';
   }
 
-  // Description is rendered as part of the fieldset, don't render it twice.
-  unset($element['#description']);
+  // We rendered the description as part of the fieldset element, don't render
+  // it again along with the checkboxes
+  unset($element['#bef_description']);
 
   $children = '';
   if (!empty($element['#bef_operator'])) {
@@ -370,8 +371,8 @@ function theme_select_as_tree($vars) {
 
   // Add exposed filter description
   $description = '';
-  if (!empty($element['#description'])) {
-    $description = '<div class="description">'. $element['#description'] .'</div>';
+  if (!empty($element['#bef_description'])) {
+    $description = '<div class="description">'. $element['#bef_description'] .'</div>';
   }
 
   // Add the select all/none option, if needed
@@ -475,7 +476,7 @@ function theme_select_as_links($vars) {
   }
 
   $properties = array(
-    '#description' => isset($element['#description']) ? $element['#description'] : '',
+    '#description' => isset($element['#bef_description']) ? $element['#bef_description'] : '',
     '#children' => $output,
   );
 

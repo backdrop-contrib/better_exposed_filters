@@ -205,6 +205,33 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('Adds descriptive text to the exposed filter.  This is usually
                               rendered in smaller print under the label or the options.'),
       );
+
+      // Add token support to the description field
+      $bef_options[$label]['more_options']['tokens'] = array(
+        '#title' => t('Replacement patterns'),
+        '#type' => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+
+      // Collect a list of token types that make sense for this filter
+      $available = array('global_types');
+      if (!empty($filter->options['vid'])) {
+        $available[] = 'vocabulary';
+      }
+      else if ('field_' == substr($filter->options['field'], 0, 6)) {
+        $available[] = 'node';
+      }
+
+      $bef_options[$label]['more_options']['tokens']['list'] = array(
+        '#theme' => 'token_tree',
+        '#token_types' => $available,
+      );
+      $bef_options[$label]['more_options']['tokens']['available'] = array(
+        '#type' => 'value',       // Save us from parsing available tokens again
+        '#value' => $available,
+      );
+
     } // foreach ($filters as $filter) {
 
     // Add BEF form elements to the exposed form options form
@@ -355,6 +382,28 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
       // Form element is designated by the element ID which is user-configurable
       $field_id = $form['#info']["filter-$label"]['value'];
+
+// dsm($options);
+// dsm($filters[$label]);
+      // Token replacement on BEF Description fields
+      if (!empty($options['more_options']['bef_filter_description'])) {
+        // Collect replacement data
+        $data = array();
+        $available = $options['more_options']['tokens']['available'];
+        if (in_array('vocabulary', $available)) {
+          $vocabs = taxonomy_get_vocabularies();
+          $data['vocabulary'] = $vocabs[$filters[$label]->options['vid']];
+        }
+
+        // Others?
+
+        // Replace tokens
+        $options['more_options']['bef_filter_description'] = token_replace(
+          $options['more_options']['bef_filter_description'], $data
+        );
+        $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
+      }
+
 
       if (!isset($options['bef_format'])) {
         $options['bef_format'] = '';

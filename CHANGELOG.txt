@@ -28,6 +28,7 @@ Issue #1289370 by mikeker: Gets Datepicker working again. Note: needs to be adde
 By mikeker: Added/Cleaned up highlight JS, moved datepicker JS to Drupal.behaviors
 Issue #1289370 by ducktape: Adds support for Drupal's default date field and corrects missing JS file
 Issue #1297418 by mikeker: Puts exposed operators inside fieldset
+Issue #1283998 by mikeker: Added token support in description fields
 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
