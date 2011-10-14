@@ -219,9 +219,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       if (!empty($filter->options['vid'])) {
         $available[] = 'vocabulary';
       }
-      else if ('field_' == substr($filter->options['field'], 0, 6)) {
-        $available[] = 'node';
-      }
+      // Other token types?
 
       $bef_options[$label]['more_options']['tokens']['list'] = array(
         '#theme' => 'token_tree',
