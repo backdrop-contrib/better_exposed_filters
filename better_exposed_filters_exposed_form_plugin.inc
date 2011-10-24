@@ -23,6 +23,24 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
     $bef_options = array();
 
+    // Collect existing values or use defaults.  Prevents a lot of
+    // isset($this->options['foo'] ? $this->options['foo'] : ''
+    // Handle sort and pager here and filters later on.
+    $defaults = array(
+      'sort' => array(
+        'bef_format' => 'default',
+        'collapsible' => FALSE,
+        'collapsible_label' => '',
+        'combine' => FALSE,
+        'reset' => FALSE,
+        'reset_label' => '',
+      ),
+      'pager' => array(
+        'bef_format' => 'default',
+      ),
+    );
+    $existing = $this->_bef_set_defaults($defaults, $this->options['bef']);
+
     /*
      * Add options for exposed sorts
      */
@@ -37,7 +55,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['sort']['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display exposed sort options as'),
-        '#default_value' => $this->options['bef']['sort']['bef_format'],
+        '#default_value' => $existing['sort']['bef_format'],
         '#options' => array(
           'default' => t('Default select list'),
           'bef' => t('Radio Buttons'),
@@ -48,7 +66,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['sort']['collapsible'] = array(
         '#type' => 'checkbox',
         '#title' => t('Make sort options collapsible'),
-        '#default_value' => $this->options['bef']['sort']['collapsible'],
+        '#default_value' => $existing['sort']['collapsible'],
         '#description' => t(
           'Puts the sort options in a collapsible fieldset'
         ),
@@ -56,8 +74,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['sort']['collapsible_label'] = array(
         '#type' => 'textfield',
         '#title' => t('Collapsible fieldset title'),
-        '#default_value' => empty($this->options['bef']['sort']['collapsible_label'])
-          ? t('Sort options') : $this->options['bef']['sort']['collapsible_label'],
+        '#default_value' => empty($existing['sort']['collapsible_label'])
+          ? t('Sort options') : $existing['sort']['collapsible_label'],
         '#description' => t(
           'This cannot be left blank or there will be no way to show/hide sort options.'
         ),
@@ -66,7 +84,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['sort']['combine'] = array(
         '#type' => 'checkbox',
         '#title' => t('Combine sort order with sort by'),
-        '#default_value' => $this->options['bef']['sort']['combine'],
+        '#default_value' => $existing['sort']['combine'],
         '#description' => t(
           'Combines the sort by options and order (ascending or decending) into a single list.  Use this to
           display "Option1 (ascending)", "Option1 (descending)", "Option2 (ascending)", "Option2 (descending)"
@@ -76,13 +94,13 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['sort']['reset'] = array(
         '#type' => 'checkbox',
         '#title' => t('Include a "Reset sort" option'),
-        '#default_value' => $this->options['bef']['sort']['reset'],
+        '#default_value' => $existing['sort']['reset'],
         '#description' => t('Adds a "Reset sort" link; Views will use the default sort order.'),
       );
       $bef_options['sort']['reset_label'] = array(
         '#type' => 'textfield',
         '#title' => t('"Reset sort" label'),
-        '#default_value' => $this->options['bef']['sort']['reset_label'],
+        '#default_value' => $existing['sort']['reset_label'],
         '#description' => t('This cannot be left blank if the above option is checked'),
         '#dependency' => array('edit-exposed-form-options-bef-sort-reset' => array(1)),
       );
@@ -95,7 +113,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       $bef_options['pager']['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display exposed pager options as'),
-        '#default_value' => $this->options['bef']['pager']['bef_format'],
+        '#default_value' => $existing['pager']['bef_format'],
         '#options' => array(
           'default' => t('Default select list'),
           'bef' => t('Radio Buttons'),
@@ -109,10 +127,29 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     // each filter
     $bef_filter_intro = FALSE;
 
+    // Filter default values
+    $filter_defaults = array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_collapsible' => FALSE,
+        'bef_filter_description' => '',
+      ),
+    );
+
     // Go through each filter and add BEF options
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
         continue;
+      }
+
+      // Get existing values or use defaults
+      if (!isset($this->options['bef'][$label])) {
+        // First time opening the settings form with a new filter
+        $existing[$label] = $filter_defaults;
+      }
+      else {
+        $existing[$label] = $this->_bef_set_defaults($filter_defaults, $this->options['bef'][$label]);
       }
 
       // If we're adding BEF filter options, add an intro to explain what's going on
@@ -151,7 +188,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
           '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
-          '#default_value' => $this->options['bef'][$label]['bef_format'],
+          '#default_value' => $existing[$label]['bef_format'],
           '#options' => array(
             'default' => t('Default text field'),
             'bef_datepicker' => t('jQuery UI Datepicker'),
@@ -171,7 +208,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
           '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
-          '#default_value' => $this->options['bef'][$label]['bef_format'],
+          '#default_value' => $existing[$label]['bef_format'],
           '#options' => array(
             'default' => t('Default select list'),
             'bef' => t('Checkboxes/Radio Buttons'),
@@ -195,7 +232,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_options[$label]['more_options']['bef_select_all_none'] = array(
           '#type' => 'checkbox',
           '#title' => t('Add select all/none links'),
-          '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none'],
+          '#default_value' => $existing[$label]['more_options']['bef_select_all_none'],
           '#disabled' => !$filter->options['expose']['multiple'],
           '#description' => t(
             'Add a "Select All/None" link when rendering the exposed filter using
@@ -209,18 +246,18 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $bef_options[$label]['more_options']['bef_collapsible'] = array(
           '#type' => 'checkbox',
           '#title' => t('Make this filter collapsible'),
-          '#default_value' => $this->options['bef'][$label]['more_options']['bef_collapsible'],
+          '#default_value' => $existing[$label]['more_options']['bef_collapsible'],
           '#description' => t(
             'Puts this filter in a collapsible fieldset'
           ),
         );
       }
 
-      // Build a description option form element -- available to all exposed filters
+      // Build a description option form element -- available to all exposed filters\
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
         '#type' => 'textarea',
         '#title' => t('Description'),
-        '#default_value' => $this->options['bef'][$label]['more_options']['bef_filter_description'],
+        '#default_value' => $existing[$label]['more_options']['bef_filter_description'],
         '#description' => t('Adds descriptive text to the exposed filter.  This is usually
                               rendered in smaller print under the label or the options.'),
       );
@@ -755,4 +792,53 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     }
 
   } // function exposed_form_alter(...)
+
+  /**
+   * Similar to array_merge_recursive, but latter numeric keys overwrites earlier
+   * values.  Use this to set defaults for missing values in a multi-dimensional
+   * array.  Eg:
+   *
+   *  $existing = $this->_bef_array_merge_recursive($defaults, $existing);
+   *
+   * @return the resulting array
+   */
+  function _bef_set_defaults() {
+    $count = func_num_args();
+    if (!$count) {
+      return;
+    }
+    else if (1 == $count) {
+      return (func_get_arg(0));
+    }
+
+    // First array is the default values
+    $params = func_get_args();
+    $return = array_shift($params);
+
+    // Merge the rest of the arrays onto the default array
+    foreach ($params as $array) {
+      foreach ($array as $key => $value) {
+        // Numeric keyed values are added (unless already there)
+        if (is_numeric($key) && !in_array ($value, $return)) {
+          if (is_array($value)) {
+            $return [] = $this->_bef_set_defaults($return[$key], $value);
+          } else {
+            $return [] = $value;
+          }
+
+        // String keyed values are replaced
+        } else {
+          if (isset($return[$key]) && is_array($value) && is_array($return[$key])) {
+            $return[$key] = $this->_bef_set_defaults($return[$key], $value);
+          } else {
+            $return[$key] = $value;
+          }
+        }
+      }
+    }
+    return $return;
+  }
+
+
 }
+
