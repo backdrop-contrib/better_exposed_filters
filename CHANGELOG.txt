@@ -29,6 +29,7 @@ By mikeker: Added/Cleaned up highlight JS, moved datepicker JS to Drupal.behavio
 Issue #1289370 by ducktape: Adds support for Drupal's default date field and corrects missing JS file
 Issue #1297418 by mikeker: Puts exposed operators inside fieldset
 Issue #1283998 by mikeker: Added token support in description fields
+Issue #1212744 by mikeker: Collapsible option for sort
 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx

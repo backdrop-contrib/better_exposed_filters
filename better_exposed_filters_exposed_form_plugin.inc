@@ -45,6 +45,24 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         ),
         '#description' => t('Select a format for the exposed sort options.'),
       );
+      $bef_options['sort']['collapsible'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Make sort options collapsible'),
+        '#default_value' => $this->options['bef']['sort']['collapsible'],
+        '#description' => t(
+          'Puts the sort options in a collapsible fieldset'
+        ),
+      );
+      $bef_options['sort']['collapsible_label'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Collapsible fieldset title'),
+        '#default_value' => empty($this->options['bef']['sort']['collapsible_label'])
+          ? t('Sort options') : $this->options['bef']['sort']['collapsible_label'],
+        '#description' => t(
+          'This cannot be left blank or there will be no way to show/hide sort options.'
+        ),
+        '#dependency' => array('edit-exposed-form-options-bef-sort-collapsible' => array(1)),
+      );
       $bef_options['sort']['combine'] = array(
         '#type' => 'checkbox',
         '#title' => t('Combine sort order with sort by'),
@@ -65,7 +83,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#type' => 'textfield',
         '#title' => t('"Reset sort" label'),
         '#default_value' => $this->options['bef']['sort']['reset_label'],
-        '#description' => t('Text to use if the above option is checked'),
+        '#description' => t('This cannot be left blank if the above option is checked'),
+        '#dependency' => array('edit-exposed-form-options-bef-sort-reset' => array(1)),
       );
     }
 
@@ -256,6 +275,12 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     if (isset($this->options['bef']['sort'])) {
       $show_apply = TRUE;
 
+      // If selected, collect all sort-related form elements and put them
+      // in a collapsible fieldset
+      $collapse = $this->options['bef']['sort']['collapsible']
+        && !empty($this->options['bef']['sort']['collapsible_label']);
+      $sort_elems = array();
+
       // Check for combined sort_by and sort_order
       if ($this->options['bef']['sort']['combine']) {
         // Combine sort_by and sort_order into a single element
@@ -309,6 +334,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         // Remove the existing sort_by and sort_order elements
         unset($form['sort_by']);
         unset($form['sort_order']);
+
+        if ($collapse) {
+          $sort_elems[] = 'sort_bef_combine';
+        }
+
       } // if ($this->options['bef']['sort']['combine']) {
       else {
         // Leave sort_by and sort_order as separate elements
@@ -334,11 +364,29 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           $form['sort_order']['#theme'] = 'select_as_links';
         }
 
+        if ($collapse) {
+          $sort_elems[] = 'sort_by';
+          $sort_elems[] = 'sort_order';
+        }
+
         // Add reset sort option if selected
         if ($this->options['bef']['sort']['reset']) {
           array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
         }
       } // if ($this->options['bef']['sort']['combine']) { ... } else {
+
+      if ($collapse) {
+        $form['bef_sort_options'] = array(
+          '#type' => 'fieldset',
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#title' => $this->options['bef']['sort']['collapsible_label'],
+        );
+        foreach ($sort_elems as $elem) {
+          $form['bef_sort_options'][$elem] = $form[$elem];
+          unset($form[$elem]);
+        }
+      }
     }   // if (isset($this->options['bef']['sort'])) {
 
     /*
