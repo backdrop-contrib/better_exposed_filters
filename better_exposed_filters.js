@@ -84,9 +84,15 @@
 
       // Check for and initialize datepickers
       if (Drupal.settings.better_exposed_filters.bef_datepicker) {
-        $('.bef-datepicker').datepicker({
-          dateFormat: Drupal.settings.better_exposed_filters.bef_dateformat
-        });
+        // Note: JavaScript does not treat "" as null
+        if (Drupal.settings.better_exposed_filters.bef_dateformat) {
+          $('.bef-datepicker').datepicker({
+            dateFormat: Drupal.settings.better_exposed_filters.bef_dateformat
+          });
+        }
+        else {
+          $('.bef-datepicker').datepicker();
+        }
       }
 
     }                   // attach: function() {

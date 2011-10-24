@@ -540,14 +540,20 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
             $datepicker_format = str_replace(array_keys($convert), array_values($convert), $format);
           }
           else {
-            // Standard Drupal date field.
-            if (isset($form[$field_id]['min']) && isset($form[$field_id]['max'])) {
-              // Double Drupal date field input elements such as "in-between"
-              $form[$field_id]['min']['#attributes']['class'][] = 'bef-datepicker';
-              $form[$field_id]['max']['#attributes']['class'][] = 'bef-datepicker';
+            /*
+             * Standard Drupal date field.  Depending on the settings, the field
+             * can be at $form[$field_id] (single field) or $form[$field_id][subfield]
+             * for two-value date fields or filters with exposed operators.
+             */
+            $fields = array('min', 'max', 'value');
+            if (count(array_intersect($fields, array_keys($form[$field_id])))) {
+              foreach ($fields as $field) {
+                if (isset($form[$field_id][$field])) {
+                  $form[$field_id][$field]['#attributes']['class'][] = 'bef-datepicker';
+                }
+              }
             }
             else {
-              // Single Drupal date field input elements such as "less than"
               $form[$field_id]['#attributes']['class'][] = 'bef-datepicker';
             }
           }
