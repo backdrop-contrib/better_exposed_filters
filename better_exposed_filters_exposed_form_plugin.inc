@@ -309,7 +309,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     /*
      * Handle exposed sort elements
      */
-    if (isset($this->options['bef']['sort'])) {
+    if (isset($this->options['bef']['sort'])
+      && !empty($form['sort_by'])       // Sanity check
+      && !empty($form['sort_order'])    // Sanity check
+    ) {
       $show_apply = TRUE;
 
       // If selected, collect all sort-related form elements and put them
