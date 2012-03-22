@@ -23,23 +23,31 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
     $bef_options = array();
 
+    // Update legacy settings in the exposed form settings form. This
+    // keep us from losing settings when an option is put into an
+    // 'advanced options' fieldset.
+    $existing = $this->_bef_update_legacy_settings($this->options['bef']);
+
     // Collect existing values or use defaults.  Prevents a lot of
     // isset($this->options['foo'] ? $this->options['foo'] : ''
     // Handle sort and pager here and filters later on.
     $defaults = array(
       'sort' => array(
         'bef_format' => 'default',
-        'collapsible' => FALSE,
-        'collapsible_label' => '',
-        'combine' => FALSE,
-        'reset' => FALSE,
-        'reset_label' => '',
+        'advanced' => array(
+          'collapsible' => FALSE,
+          'collapsible_label' => '',
+          'combine' => FALSE,
+          'combine_rewrite' => '',
+          'reset' => FALSE,
+          'reset_label' => '',
+        ),
       ),
       'pager' => array(
         'bef_format' => 'default',
       ),
     );
-    $existing = $this->_bef_set_defaults($defaults, $this->options['bef']);
+    $existing = $this->_bef_set_defaults($defaults, $existing);
 
     /*
      * Add options for exposed sorts
@@ -63,46 +71,67 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         ),
         '#description' => t('Select a format for the exposed sort options.'),
       );
-      $bef_options['sort']['collapsible'] = array(
+      $bef_options['sort']['advanced'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Advanced sort options'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $bef_options['sort']['advanced']['collapsible'] = array(
         '#type' => 'checkbox',
         '#title' => t('Make sort options collapsible'),
-        '#default_value' => $existing['sort']['collapsible'],
+        '#default_value' => $existing['sort']['advanced']['collapsible'],
         '#description' => t(
           'Puts the sort options in a collapsible fieldset'
         ),
       );
-      $bef_options['sort']['collapsible_label'] = array(
+      $bef_options['sort']['advanced']['collapsible_label'] = array(
         '#type' => 'textfield',
         '#title' => t('Collapsible fieldset title'),
-        '#default_value' => empty($existing['sort']['collapsible_label'])
-          ? t('Sort options') : $existing['sort']['collapsible_label'],
+        '#default_value' => empty($existing['sort']['advanced']['collapsible_label'])
+          ? t('Sort options') : $existing['sort']['advanced']['collapsible_label'],
         '#description' => t(
           'This cannot be left blank or there will be no way to show/hide sort options.'
         ),
-        '#dependency' => array('edit-exposed-form-options-bef-sort-collapsible' => array(1)),
+        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-collapsible' => array(1)),
       );
-      $bef_options['sort']['combine'] = array(
+      $bef_options['sort']['advanced']['combine'] = array(
         '#type' => 'checkbox',
         '#title' => t('Combine sort order with sort by'),
-        '#default_value' => $existing['sort']['combine'],
+        '#default_value' => $existing['sort']['advanced']['combine'],
         '#description' => t(
           'Combines the sort by options and order (ascending or decending) into a single list.  Use this to
           display "Option1 (ascending)", "Option1 (descending)", "Option2 (ascending)", "Option2 (descending)"
           in a single form element.'
         ),
       );
-      $bef_options['sort']['reset'] = array(
+      $bef_options['sort']['advanced']['combine_rewrite'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Rewrite the text displayed'),
+        '#default_value' => $existing['sort']['advanced']['combine_rewrite'],
+        '#description' => t('
+          Use this field to rewrite the text displayed for combined sort options and sort order.
+          Use the format of current_value|replacement_value, one replacement per line.
+          For example: <pre>
+Post date Asc|Oldest first
+Post date Desc|Newest first
+Title Asc|A -> Z
+Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option altogether.
+        '),
+        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-combine' => array(1)),
+      );
+      $bef_options['sort']['advanced']['reset'] = array(
         '#type' => 'checkbox',
         '#title' => t('Include a "Reset sort" option'),
-        '#default_value' => $existing['sort']['reset'],
+        '#default_value' => $existing['sort']['advanced']['combine'],
         '#description' => t('Adds a "Reset sort" link; Views will use the default sort order.'),
       );
-      $bef_options['sort']['reset_label'] = array(
+      $bef_options['sort']['advanced']['reset_label'] = array(
         '#type' => 'textfield',
         '#title' => t('"Reset sort" label'),
-        '#default_value' => $existing['sort']['reset_label'],
+        '#default_value' => $existing['sort']['advanced']['reset_label'],
         '#description' => t('This cannot be left blank if the above option is checked'),
-        '#dependency' => array('edit-exposed-form-options-bef-sort-reset' => array(1)),
+        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-reset' => array(1)),
       );
     }
 
@@ -306,20 +335,23 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $add_datepicker = FALSE;
     $datepicker_format = '';
 
+    // Grab settings options and adjust for legacy settings
+    $settings = $this->_bef_update_legacy_settings($this->options['bef']);
+
     /*
      * Handle exposed sort elements
      */
-    if (isset($this->options['bef']['sort'])) {
+    if (isset($settings['sort'])) {
       $show_apply = TRUE;
 
       // If selected, collect all sort-related form elements and put them
       // in a collapsible fieldset
-      $collapse = $this->options['bef']['sort']['collapsible']
-        && !empty($this->options['bef']['sort']['collapsible_label']);
+      $collapse = $settings['sort']['advanced']['collapsible']
+        && !empty($settings['sort']['advanced']['collapsible_label']);
       $sort_elems = array();
 
       // Check for combined sort_by and sort_order
-      if ($this->options['bef']['sort']['combine']) {
+      if ($settings['sort']['advanced']['combine']) {
         // Combine sort_by and sort_order into a single element
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
@@ -328,8 +360,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         $options = array();
 
         // Add reset sort option at the top of the list
-        if ($this->options['bef']['sort']['reset']) {
-          $options[' '] = t($this->options['bef']['sort']['reset_label']);
+        if ($settings['sort']['advanced']['combine']) {
+          $options[' '] = t($settings['sort']['advanced']['reset_label']);
         }
         else {
           $form['sort_bef_combine']['#default_value'] = '';
@@ -343,6 +375,26 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           }
         }
 
+        // Rewrite the option values if any were specified
+        if (!empty($settings['sort']['advanced']['combine_rewrite'])) {
+          $lines = explode("\n", $settings['sort']['advanced']['combine_rewrite']);
+          $rewrite = array();
+          foreach ($lines as $line) {
+            list($search, $replace) = explode('|', $line);
+            $rewrite[$search] = $replace;
+          }
+          foreach ($options as $index => $option) {
+            if (isset($rewrite[$option])) {
+              if ('' == $rewrite[$option]) {
+                unset($options[$index]);
+              }
+              else {
+                $options[$index] = $rewrite[$option];
+              }
+            }
+          }
+        }
+
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
           '#options' => $options,
@@ -350,7 +402,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         );
 
         // Handle display-specific details
-        switch ($this->options['bef']['sort']['bef_format']) {
+        switch ($settings['sort']['bef_format']) {
           case 'bef':
             $form['sort_bef_combine']['#prefix'] = '<div class="bef-sort-combined bef-select-as-radios">';
             $form['sort_bef_combine']['#suffix'] = '</div>';
@@ -376,10 +428,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           $sort_elems[] = 'sort_bef_combine';
         }
 
-      } // if ($this->options['bef']['sort']['combine']) {
+      } // if ($settings['sort']['advanced']['combine']) {
       else {
         // Leave sort_by and sort_order as separate elements
-        if ('bef' == $this->options['bef']['sort']['bef_format']) {
+        if ('bef' == $settings['sort']['bef_format']) {
           $form['sort_by']['#type'] = 'radios';
           if (empty($form['sort_by']['#process'])) {
             $form['sort_by']['#process'] = array();
@@ -396,7 +448,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           $form['sort_order']['#prefix'] = '<div class="bef-sortorder bef-select-as-radios">';
           $form['sort_order']['#suffix'] = '</div>';
         }
-        elseif ('bef_links' == $this->options['bef']['sort']['bef_format']) {
+        elseif ('bef_links' == $settings['sort']['bef_format']) {
           $form['sort_by']['#theme'] = 'select_as_links';
           $form['sort_order']['#theme'] = 'select_as_links';
         }
@@ -407,32 +459,32 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         }
 
         // Add reset sort option if selected
-        if ($this->options['bef']['sort']['reset']) {
-          array_unshift($form['sort_by']['#options'], $this->options['bef']['sort']['reset_label']);
+        if ($settings['sort']['advanced']['combine']) {
+          array_unshift($form['sort_by']['#options'], $settings['sort']['advanced']['reset_label']);
         }
-      } // if ($this->options['bef']['sort']['combine']) { ... } else {
+      } // if ($settings['sort']['advanced']['combine']) { ... } else {
 
       if ($collapse) {
         $form['bef_sort_options'] = array(
           '#type' => 'fieldset',
           '#collapsible' => TRUE,
           '#collapsed' => TRUE,
-          '#title' => $this->options['bef']['sort']['collapsible_label'],
+          '#title' => $settings['sort']['advanced']['collapsible_label'],
         );
         foreach ($sort_elems as $elem) {
           $form['bef_sort_options'][$elem] = $form[$elem];
           unset($form[$elem]);
         }
       }
-    }   // if (isset($this->options['bef']['sort'])) {
+    }   // if (isset($settings['sort'])) {
 
     /*
      * Handle exposed pager elements
      */
-    if (isset($this->options['bef']['pager'])) {
+    if (isset($settings['pager'])) {
       $show_apply = TRUE;
 
-      switch ($this->options['bef']['pager']['bef_format']) {
+      switch ($settings['pager']['bef_format']) {
         case 'bef':
           $form['items_per_page']['#type'] = 'radios';
           if (empty($form['items_per_page']['#process'])) {
@@ -456,7 +508,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $filters = $form_state['view']->display_handler->handlers['filter'];
 
     // Go through each saved option looking for Better Exposed Filter settings
-    foreach ($this->options['bef'] as $label => $options) {
+    foreach ($settings as $label => $options) {
 
       // Sanity check: Ensure this filter is an exposed filter
       if (empty($filters[$label]) || !$filters[$label]->options['exposed']) {
@@ -767,7 +819,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           break;
 
       } // switch ($options['bef_format'])
-    } // foreach ($this->options['bef']...)
+    } // foreach ($settings...)
 
     // If our form has no visible filters, hide the submit button.
     $form['submit']['#access'] = $show_apply;
@@ -798,7 +850,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
    * values.  Use this to set defaults for missing values in a multi-dimensional
    * array.  Eg:
    *
-   *  $existing = $this->_bef_array_merge_recursive($defaults, $existing);
+   *  $existing = $this->_bef_set_defaults($defaults, $existing);
+   *
+   * Also checks for settings in legacy parts of the array, such as when settings
+   * are moved into an 'Advanced options' fieldset.
    *
    * @return the resulting array
    */
@@ -821,6 +876,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         // Numeric keyed values are added (unless already there)
         if (is_numeric($key) && !in_array ($value, $return)) {
           if (is_array($value)) {
+            dsm($value, 'calling recursively');
             $return [] = $this->_bef_set_defaults($return[$key], $value);
           } else {
             $return [] = $value;
@@ -839,6 +895,33 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     return $return;
   }
 
+  /**
+   * Updates legacy settings to their current location 
+   */
+  function _bef_update_legacy_settings($settings) {
+    // There has got to be a better way... But for now, this works.
+    if (isset($settings['sort']['collapsible'])) {
+      $settings['sort']['advanced']['collapsible'] = $settings['sort']['collapsible'];
+      unset($settings['sort']['collapsible']);
+    }
+    if (isset($settings['sort']['collapsible_label'])) {
+      $settings['sort']['advanced']['collapsible_label'] = $settings['sort']['collapsible_label'];
+      unset($settings['sort']['collapsible_label']);
+    }
+    if (isset($settings['sort']['combine'])) {
+      $settings['sort']['advanced']['combine'] = $settings['sort']['combine'];
+      unset($settings['sort']['combine']);
+    }
+    if (isset($settings['sort']['reset'])) {
+      $settings['sort']['advanced']['reset'] = $settings['sort']['reset'];
+      unset($settings['sort']['reset']);
+    }
+    if (isset($settings['sort']['reset_label'])) {
+      $settings['sort']['advanced']['reset_label'] = $settings['sort']['reset_label'];
+      unset($settings['sort']['reset_label']);
+    }
 
+    return $settings;
+  }
 }
 
