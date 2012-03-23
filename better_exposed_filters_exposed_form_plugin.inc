@@ -341,7 +341,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     /*
      * Handle exposed sort elements
      */
-    if (isset($settings['sort'])) {
+    if (isset($settings['sort']) && !empty($form['sort_by']) && !empty($form['sort_order'])) {
       $show_apply = TRUE;
 
       // If selected, collect all sort-related form elements and put them
