@@ -30,6 +30,7 @@ Issue #1289370 by ducktape: Adds support for Drupal's default date field and cor
 Issue #1297418 by mikeker: Puts exposed operators inside fieldset
 Issue #1283998 by mikeker: Added token support in description fields
 Issue #1212744 by mikeker: Collapsible option for sort
+Issue #1398048 by mikeker: Rewritable combined sort options
 
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
