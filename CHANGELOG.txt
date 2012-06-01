@@ -17,7 +17,7 @@ By mikeker: Added datepicker option
 Issue #1194102 by dj1999: Adds BEF options to 'is all of' filters
 Issue #1149254 by aaronbauman: Hides Apply button when exposed filters are set to hidden
 Issue #1227168 by gionnibgud: Adds IDs to select_as_links filter options
-Issue #1260194 by zhuber: Adds toggle functionality to filter links
+Issue #1260194 by zhuber: Adds toggle functionality to filter links (added --author attribution in a later commit)
 Issue #1099528 by Murz: Fixes incorrect depth of '- Any -' option
 Issue #1241960 by mikeker: Fixes E_STRICT warning
 Issue #1217204 by mikeker: Fixes Undefined index errors when BEF settings page is raised as a standalong page
