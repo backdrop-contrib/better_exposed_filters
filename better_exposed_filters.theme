@@ -517,9 +517,12 @@ function bef_checkbox($element, $value, $label, $selected) {
       && FALSE !== ($key = array_search('bef-select-all-none', $element['#attributes']['class']))) {
     unset($element['#attributes']['class'][$key]);
   }
-
+  
+  // Unset the name attribute as we are setting it manually.
+  unset($element['#attributes']['name']);
+  
   $checkbox = '<input type="checkbox" '
-    . 'name="' . $element['#name'] . '[]" '    // brackets are key -- just like select
+   . 'name="' . $element['#name'] . '[]" '    // brackets are key -- just like select
     . 'id="' . $id . '" '
     . 'value="' . $value . '" '
     . ($selected ? 'checked="checked" ' : '')
