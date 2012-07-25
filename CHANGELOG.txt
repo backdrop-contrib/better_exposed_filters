@@ -32,8 +32,8 @@ Issue #1283998 by mikeker: Added token support in description fields
 Issue #1212744 by mikeker: Collapsible option for sort
 Issue #1398048 by mikeker: Rewritable combined sort options
 Issue #1439216 by KeyboardCowboy: Remove duplicate name attributes on checkboxes (W3C validation)
+Issue #1548292 by richard.thomas: Use drupal_add_library() for datepicker option
 Issue #1171952 by mikeker: Added single on/off checkbox support
-
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------

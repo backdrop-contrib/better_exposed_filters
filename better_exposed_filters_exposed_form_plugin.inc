@@ -854,13 +854,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     // Only add datepicker code once
     drupal_add_js(array('better_exposed_filters' => array('bef_datepicker' => FALSE)), 'setting');
     if ($add_datepicker) {
-      // Add Datepicker JS and CSS
-      drupal_add_js('misc/ui/jquery.ui.core.min.js');
-      drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
+       // Add Datepicker JS and CSS
+      drupal_add_library('system', 'ui.datepicker');
       drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
-      drupal_add_css('misc/ui/jquery.ui.core.css');
-      drupal_add_css('misc/ui/jquery.ui.theme.css');
-      drupal_add_css('misc/ui/jquery.ui.datepicker.css');
 
       // Trigger datepicker in better_exposed_filters.js
       drupal_add_js(array('better_exposed_filters' => array(
