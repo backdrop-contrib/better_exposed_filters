@@ -234,17 +234,31 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Main BEF option: default/checkboxes/hidden/etc.
       if ($bef_specific) {
+        // Main BEF option: default or radios/checkboxes
+        $display_options = array(
+          'default' => t('Default select list'),
+          'bef' => t('Checkboxes/Radio Buttons'),
+        );
+
+        // Taxonomy filters get the "nested" option
+        if ($filter instanceof views_handler_filter_term_node_tid) {
+          $display_options['bef_ul'] = t('Nested Checkboxes/Radio Buttons');
+        }
+
+        // Check for other display options based on the filter
+        if ($filter instanceof views_handler_filter_boolean_operator && !$filter->options['expose']['multiple']) {
+          $display_options['bef_single'] = t('Single on/off checkbox');
+        }
+
+        // Less used options, so put them last.
+        $display_options['bef_links'] = t('Links');
+        $display_options['bef_hidden'] = t('Hidden');
+
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
           '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
           '#default_value' => $existing[$label]['bef_format'],
-          '#options' => array(
-            'default' => t('Default select list'),
-            'bef' => t('Checkboxes/Radio Buttons'),
-            'bef_ul' => t('Nested Checkboxes/Radio Buttons'),
-            'bef_links' => t('Links'),
-            'bef_hidden' => t('Hidden'),
-          ),
+          '#options' => $display_options,
         );
       }
 
@@ -282,7 +296,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         );
       }
 
-      // Build a description option form element -- available to all exposed filters\
+      // Build a description option form element -- available to all exposed filters
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
         '#type' => 'textarea',
         '#title' => t('Description'),
@@ -536,7 +550,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
       }
 
-
       if (!isset($options['bef_format'])) {
         $options['bef_format'] = '';
       }
@@ -654,7 +667,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $form[$field_id]['#theme'] = 'select_as_links';
           break;
 
-        case 'bef_ul':
+        case 'bef_single':
+          $show_apply = TRUE;
+
+          // Use filter label as checkbox label
+          $form[$field_id]['#title'] = $filters[$label]->options['expose']['label'];
+          $form[$field_id]['#description'] = $options['more_options']['bef_filter_description'];
+          $form[$field_id]['#return_value'] = 1;
+          $form[$field_id]['#type'] = 'checkbox';
+
+          // Handoff to the theme layer
+          $form[$field_id]['#theme'] = 'checkbox';
+          break;
+
+       case 'bef_ul':
           $show_apply = TRUE;
 
           $form[$field_id]['#bef_nested'] = TRUE;
@@ -828,7 +854,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     // Only add datepicker code once
     drupal_add_js(array('better_exposed_filters' => array('bef_datepicker' => FALSE)), 'setting');
     if ($add_datepicker) {
-       // Add Datepicker JS and CSS
+      // Add Datepicker JS and CSS
       drupal_add_js('misc/ui/jquery.ui.core.min.js');
       drupal_add_js('misc/ui/jquery.ui.datepicker.min.js');
       drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
@@ -896,7 +922,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
   }
 
   /**
-   * Updates legacy settings to their current location 
+   * Updates legacy settings to their current location
    */
   function _bef_update_legacy_settings($settings) {
     // There has got to be a better way... But for now, this works.
