@@ -123,7 +123,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       $bef_options['sort']['advanced']['reset'] = array(
         '#type' => 'checkbox',
         '#title' => t('Include a "Reset sort" option'),
-        '#default_value' => $existing['sort']['advanced']['combine'],
+        '#default_value' => $existing['sort']['advanced']['reset'],
         '#description' => t('Adds a "Reset sort" link; Views will use the default sort order.'),
       );
       $bef_options['sort']['advanced']['reset_label'] = array(
@@ -366,7 +366,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $options = array();
 
         // Add reset sort option at the top of the list
-        if ($settings['sort']['advanced']['combine']) {
+        if ($settings['sort']['advanced']['reset']) {
           $options[' '] = t($settings['sort']['advanced']['reset_label']);
         }
         else {
@@ -465,7 +465,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         }
 
         // Add reset sort option if selected
-        if ($settings['sort']['advanced']['combine']) {
+        if ($settings['sort']['advanced']['reset']) {
           array_unshift($form['sort_by']['#options'], $settings['sort']['advanced']['reset_label']);
         }
       } // if ($settings['sort']['advanced']['combine']) { ... } else {
