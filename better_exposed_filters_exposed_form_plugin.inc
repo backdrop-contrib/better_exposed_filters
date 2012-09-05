@@ -817,7 +817,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           break; // case 'bef':
 
         case 'bef_hidden':
-          $form['#info']["filter-$field_id"]['label'] = ''; // Hide the label
+          $form['#info']["filter-$label"]['label'] = ''; // Hide the label
           if (empty($form[$field_id]['#multiple'])) {
             $form[$field_id]['#type'] = 'hidden';
           }
