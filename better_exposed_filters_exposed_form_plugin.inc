@@ -468,6 +468,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           foreach ($form['sort_order']['#options'] as $order_key => $order_val) {
             // Use a space to separate the two keys, we'll unpack them in our submit handler
             $options["$by_key $order_key"] = "$by_val $order_val";
+
+            if ($form['sort_order']['#default_value'] == $order_key && empty($selected)) {
+              // Respect default sort order set in Views. The default sort field
+              // will be the first one if there are multiple sort criteria.
+              $selected = "$by_key $order_key";
+            }
           }
         }
 
@@ -494,6 +500,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
           '#options' => $options,
+          '#default_value' => $selected,
           '#title' => $form['sort_by']['#title'],   // Already sanitized by Views
         );
 
