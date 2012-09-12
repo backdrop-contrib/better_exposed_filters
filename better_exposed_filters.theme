@@ -486,7 +486,26 @@ function theme_select_as_links($vars) {
     $output .= '<input type="hidden" name="' . $name . '" value="' . $element['#value'] . '" />';
   }
   $output .= '</div>';
-  
+
+  return $output;
+}
+
+/**
+ * Themes some exposed form elements in a collapsible fieldset
+ *
+ * @param array $vars - An array of arrays, the 'element' item holds the
+ *        properties of the element.
+ * @return HTML
+ */
+function theme_secondary_exposed_elements($vars) {
+  $element = $vars['element'];
+
+  $output = '<div class="bef-secondary-options">';
+  foreach(element_children($element) as $id) {
+    $output .= drupal_render($element[$id]);
+  }
+  $output .= '</div>';
+
   return $output;
 }
 

@@ -35,6 +35,7 @@ Issue #1439216 by KeyboardCowboy: Remove duplicate name attributes on checkboxes
 Issue #1548292 by richard.thomas: Use drupal_add_library() for datepicker option
 Issue #1171952 by mikeker: Added single on/off checkbox support
 Issue #1286378 by m4olivei: Fixes link filter state being list when non-link filter is used
+Issue #1362344 by mikeker, arkz: Adds option to put exposed form elements in a secondary options fieldset.
 
 Better Exposed Filters 6.x-x.x  xxxx-xx-xx
 ------------------------------------------

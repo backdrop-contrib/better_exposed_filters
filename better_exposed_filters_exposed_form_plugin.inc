@@ -32,6 +32,10 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     // isset($this->options['foo'] ? $this->options['foo'] : ''
     // Handle sort and pager here and filters later on.
     $defaults = array(
+      'general' => array(
+        'allow_secondary' => FALSE,
+        'secondary_label' => t('Advanced options'),
+      ),
       'sort' => array(
         'bef_format' => 'default',
         'advanced' => array(
@@ -41,13 +45,41 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'combine_rewrite' => '',
           'reset' => FALSE,
           'reset_label' => '',
+          'is_secondary' => FALSE,
         ),
       ),
       'pager' => array(
         'bef_format' => 'default',
+        'is_secondary' => FALSE,
       ),
     );
     $existing = $this->_bef_set_defaults($defaults, $existing);
+
+    /*
+     * Add general options for exposed form items
+     */
+    $bef_options['general']['allow_secondary'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable secondary exposed form options'),
+      '#default_value' => $existing['general']['allow_secondary'],
+      '#description' => t('Allows you to specify some exposed form elements as being secondary options and places those elements in a collapsible fieldset. Use this option to place some exposed filters in an "Advanced Search" area of the form, for example.'),
+    );
+    $bef_options['general']['secondary_label'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $existing['general']['secondary_label'],
+      '#title' => t('Secondary options label'),
+      '#description' => t(
+        'The name of the fieldset to hold secondary options. This cannot be left blank or there will be no way to show/hide these options.'
+      ),
+      '#states' => array(
+        'required' => array(
+          ':input[name="allow_secondary"]' => array('checked' => TRUE),
+        ),
+      ),
+      // Use CTool's #dependency as it adds some margin-left which looks nice.
+      // Also, you can't change the required state via #dependency...
+      '#dependency' => array('edit-exposed-form-options-bef-general-allow-secondary' => array(1)),
+    );
 
     /*
      * Add options for exposed sorts
@@ -133,6 +165,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#description' => t('This cannot be left blank if the above option is checked'),
         '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-reset' => array(1)),
       );
+      $bef_options['sort']['advanced']['is_secondary'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('This is a secondary option'),
+        '#default_value' => $existing['sort']['advanced']['is_secondary'],
+        '#states' => array(
+          'visible' => array(
+            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+          ),
+        ),
+        '#description' => t('Places this element in the secondary options portion of the exposed form.'),
+      );
     }
 
     /*
@@ -150,6 +193,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         ),
         '#description' => t('Select a format for the exposed pager options.'),
       );
+      $bef_options['pager']['is_secondary'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('This is a secondary option'),
+        '#default_value' => $existing['pager']['is_secondary'],
+        '#states' => array(
+          'visible' => array(
+            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+          ),
+        ),
+        '#description' => t('Places this element in the secondary options portion of the exposed form.'),
+      );
     }
 
     // Only add the description text once -- it was getting a little long to be added to
@@ -162,6 +216,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       'more_options' => array(
         'bef_select_all_none' => FALSE,
         'bef_collapsible' => FALSE,
+        'is_secondary' => FALSE,
         'bef_filter_description' => '',
       ),
     );
@@ -288,6 +343,19 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         );
       }
 
+      // Allow any filter to be moved into the secondary options fieldset
+      $bef_options[$label]['more_options']['is_secondary'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('This is a secondary option'),
+        '#default_value' => $existing[$label]['more_options']['is_secondary'],
+        '#states' => array(
+          'visible' => array(
+            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+          ),
+        ),
+        '#description' => t('Places this element in the secondary options portion of the exposed form.'),
+      );
+
       // Build a description option form element -- available to all exposed filters
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
         '#type' => 'textarea',
@@ -343,6 +411,28 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
     // Grab settings options and adjust for legacy settings
     $settings = $this->_bef_update_legacy_settings($this->options['bef']);
+
+    // Some elements may be placed in a secondary fieldset (eg: "Advanced
+    // search options"). Place this after the exposed filters and before the
+    // rest of the items in the exposed form.
+    if ($allow_secondary = $settings['general']['allow_secondary']) {
+      // $secondary = array('bef_secondary_options' => array(
+      //   '#type' => 'fieldset',
+      //   '#title' => $settings['general']['secondary_label'],
+      //   '#collapsible' => TRUE,
+      //   '#collapsed' => TRUE,
+      //   '#theme' => 'secondary_exposed_elements',
+      // ));
+      // $remaining = array_splice($form, count($form['#info']) +1);
+      // $form = array_merge($form, $secondary, $remaining);
+      $secondary = array(
+        '#type' => 'fieldset',
+        '#title' => $settings['general']['secondary_label'],
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#theme' => 'secondary_exposed_elements',
+      );
+    }
 
     /*
      * Handle exposed sort elements
@@ -482,6 +572,16 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           unset($form[$elem]);
         }
       }
+
+      // Check if this is a secondary form element
+      if ($allow_secondary && $settings['sort']['advanced']['is_secondary']) {
+        foreach (array('sort_bef_combine', 'sort_by', 'sort_order') as $elem) {
+          if (!empty($form[$elem])) {
+            $secondary[$elem] = $form[$elem];
+            unset($form[$elem]);
+          }
+        }
+      }
     }   // if (isset($settings['sort'])) {
 
     /*
@@ -507,6 +607,16 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             $form['items_per_page']['#items_per_page'] = max($form['items_per_page']['#default_value'], key($form['items_per_page']['#options']));
           }
           break;
+      }
+
+      // Check if this is a secondary form element
+      if ($allow_secondary && $settings['pager']['is_secondary']) {
+        foreach (array('items_per_page', 'offset') as $elem) {
+          if (!empty($form[$elem])) {
+            $secondary[$elem] = $form[$elem];
+            unset($form[$elem]);
+          }
+        }
       }
     }
 
@@ -837,6 +947,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           break;
 
       } // switch ($options['bef_format'])
+
+      // Check if this is a secondary form element
+      if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
+        if (!empty($form[$label])) {
+          $secondary[$label] = $form[$label];
+          unset($form[$label]);
+          $secondary[$label]['#title'] = $form['#info']["filter-$label"]['label'];
+          unset($form['#info']["filter-$label"]);
+        }
+      }
+
     } // foreach ($settings...)
 
     // If our form has no visible filters, hide the submit button.
@@ -857,10 +978,19 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       )), 'setting');
     }
 
+    // Check for secondary elements
+    if ($allow_secondary && !empty($secondary)) {
+      // Add secondary elements after regular exposed filter elements
+      $remaining = array_splice($form, count($form['#info']) +1);
+      $form['secondary'] = $secondary;
+      $form = array_merge($form, $remaining);
+      $form['#info']['filter-secondary']['value'] = 'secondary';
+    }
+
   } // function exposed_form_alter(...)
 
   /**
-   * Similar to array_merge_recursive, but latter numeric keys overwrites earlier
+   * Similar to array_merge_recursive, but later numeric keys overwrites earlier
    * values.  Use this to set defaults for missing values in a multi-dimensional
    * array.  Eg:
    *
@@ -890,7 +1020,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // Numeric keyed values are added (unless already there)
         if (is_numeric($key) && !in_array ($value, $return)) {
           if (is_array($value)) {
-            dsm($value, 'calling recursively');
             $return [] = $this->_bef_set_defaults($return[$key], $value);
           } else {
             $return [] = $value;
