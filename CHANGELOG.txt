@@ -4,6 +4,9 @@ Better Exposed Filters change log
 
 Better Exposed Filters 7.x-x.x  xxxx-xx-xx
 ------------------------------------------
+
+Better Exposed Filters 7.x-3.0-beta2  2012-09-13
+------------------------------------------------
 Issue #975376 by mikeker, gordon: Inital port.  Note: only supports Views 3.x as there is no 2.x release planned for D7.
 Issue #1109950 by mikeker, Francois LR: Fixes errors in taxonomy tree
 Issue #1099528 by mikeker: Radio button labels not displayed
