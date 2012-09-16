@@ -214,7 +214,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // Offer a datepicker option for date fields
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
-          '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
+          '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
           '#default_value' => $existing[$label]['bef_format'],
           '#options' => array(
             'default' => t('Default text field'),
@@ -254,7 +254,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
-          '#title' => t('Display "@label" exposed filter as', array('@label' => $filter->options['expose']['label'])),
+          '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
           '#default_value' => $existing[$label]['bef_format'],
           '#options' => $display_options,
         );
@@ -263,7 +263,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
         '#type' => 'fieldset',
-        '#title' => t('More options for "@label"', array('@label' => $filter->options['expose']['label'])),
+        '#title' => t('More options for "@identifier"', array('@identifier' => $filter->options['expose']['identifier'])),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       );
