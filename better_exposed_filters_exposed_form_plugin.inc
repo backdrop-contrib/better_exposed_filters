@@ -23,37 +23,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
     $bef_options = array();
 
-    // Update legacy settings in the exposed form settings form. This
-    // keep us from losing settings when an option is put into an
-    // 'advanced options' fieldset.
-    $existing = $this->_bef_update_legacy_settings($this->options['bef']);
-
-    // Collect existing values or use defaults.  Prevents a lot of
-    // isset($this->options['foo'] ? $this->options['foo'] : ''
-    // Handle sort and pager here and filters later on.
-    $defaults = array(
-      'general' => array(
-        'allow_secondary' => FALSE,
-        'secondary_label' => t('Advanced options'),
-      ),
-      'sort' => array(
-        'bef_format' => 'default',
-        'advanced' => array(
-          'collapsible' => FALSE,
-          'collapsible_label' => '',
-          'combine' => FALSE,
-          'combine_rewrite' => '',
-          'reset' => FALSE,
-          'reset_label' => '',
-          'is_secondary' => FALSE,
-        ),
-      ),
-      'pager' => array(
-        'bef_format' => 'default',
-        'is_secondary' => FALSE,
-      ),
-    );
-    $existing = $this->_bef_set_defaults($defaults, $existing);
+    // Get current settings and default values for new filters
+    $existing = $this->_bef_get_settings();
 
     /*
      * Add general options for exposed form items
@@ -210,30 +181,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     // each filter
     $bef_filter_intro = FALSE;
 
-    // Filter default values
-    $filter_defaults = array(
-      'bef_format' => 'default',
-      'more_options' => array(
-        'bef_select_all_none' => FALSE,
-        'bef_collapsible' => FALSE,
-        'is_secondary' => FALSE,
-        'bef_filter_description' => '',
-      ),
-    );
-
     // Go through each filter and add BEF options
     foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
       if (!$filter->options['exposed']) {
         continue;
-      }
-
-      // Get existing values or use defaults
-      if (!isset($this->options['bef'][$label])) {
-        // First time opening the settings form with a new filter
-        $existing[$label] = $filter_defaults;
-      }
-      else {
-        $existing[$label] = $this->_bef_set_defaults($filter_defaults, $this->options['bef'][$label]);
       }
 
       // If we're adding BEF filter options, add an intro to explain what's going on
@@ -409,22 +360,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     $add_datepicker = FALSE;
     $datepicker_format = '';
 
-    // Grab settings options and adjust for legacy settings
-    $settings = $this->_bef_update_legacy_settings($this->options['bef']);
+    // Grab BEF settings
+    $settings = $this->_bef_get_settings();
 
     // Some elements may be placed in a secondary fieldset (eg: "Advanced
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
     if ($allow_secondary = $settings['general']['allow_secondary']) {
-      // $secondary = array('bef_secondary_options' => array(
-      //   '#type' => 'fieldset',
-      //   '#title' => $settings['general']['secondary_label'],
-      //   '#collapsible' => TRUE,
-      //   '#collapsed' => TRUE,
-      //   '#theme' => 'secondary_exposed_elements',
-      // ));
-      // $remaining = array_splice($form, count($form['#info']) +1);
-      // $form = array_merge($form, $secondary, $remaining);
       $secondary = array(
         '#type' => 'fieldset',
         '#title' => $settings['general']['secondary_label'],
@@ -1003,9 +945,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
    *
    *  $existing = $this->_bef_set_defaults($defaults, $existing);
    *
-   * Also checks for settings in legacy parts of the array, such as when settings
-   * are moved into an 'Advanced options' fieldset.
-   *
    * @return the resulting array
    */
   function _bef_set_defaults() {
@@ -1073,5 +1012,77 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
     return $settings;
   }
-}
 
+  /**
+   * Returns an array of default or current existing values for BEF settings.
+   * This helps us as we add new options and prevents a lot of
+   *    if (isset($settings['new_settings'])) { ... }
+   *  as there will be a default value at all positions in the settings array.
+   *  Also updates legacy settings to their new locations via
+   *  _bef_update_legacy_settings().
+   *
+   * @return array - multi-dimensional settings array
+   */
+  function _bef_get_settings() {
+    // General, sort, pagers, etc.
+    $defaults = array(
+      'general' => array(
+        'allow_secondary' => FALSE,
+        'secondary_label' => t('Advanced options'),
+      ),
+      'sort' => array(
+        'bef_format' => 'default',
+        'advanced' => array(
+          'collapsible' => FALSE,
+          'collapsible_label' => '',
+          'combine' => FALSE,
+          'combine_rewrite' => '',
+          'reset' => FALSE,
+          'reset_label' => '',
+          'is_secondary' => FALSE,
+          ),
+      ),
+      'pager' => array(
+        'bef_format' => 'default',
+        'is_secondary' => FALSE,
+      ),
+    );
+
+    // Update legacy settings in the exposed form settings form. This
+    // keep us from losing settings when an option is put into an
+    // 'advanced options' fieldset.
+    $current = $this->_bef_update_legacy_settings($this->options['bef']);
+
+    // Collect existing values or use defaults.  Prevents a lot of
+    // isset($this->options['foo'] ? $this->options['foo'] : ''
+    $settings = $this->_bef_set_defaults($defaults, $current);
+
+    // Filter default values
+    $filter_defaults = array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_collapsible' => FALSE,
+        'is_secondary' => FALSE,
+        'bef_filter_description' => '',
+      ),
+    );
+
+    // Go through each exposed filter and collect settings
+    foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
+      if (!$filter->options['exposed']) {
+        continue;
+      }
+
+      // Get existing values or use defaults
+      if (!isset($this->options['bef'][$label])) {
+        // First time opening the settings form with a new filter
+        $settings[$label] = $filter_defaults;
+      }
+      else {
+        $settings[$label] = $this->_bef_set_defaults($filter_defaults, $this->options['bef'][$label]);
+      }
+    }
+    return $settings;
+  }
+}
