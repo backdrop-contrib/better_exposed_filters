@@ -5,6 +5,7 @@ Better Exposed Filters change log
 Better Exposed Filters 7.x-x.x  xxxx-xx-xx
 ------------------------------------------
 Issue #1784424 by mikeker: Refactored getting existing and default values.
+Issue #1666896 by Staratel: Fixed Filter captions on BEF settings form are empty if filter labels are empty.
 
 Better Exposed Filters 7.x-3.0-beta2  2012-09-13
 ------------------------------------------------
