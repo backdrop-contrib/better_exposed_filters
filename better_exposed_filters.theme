@@ -486,7 +486,14 @@ function theme_select_as_links($vars) {
   $output = '<div class="bef-select-as-links">';
   $output .= theme('form_element', array('element' => $properties));
   if (!empty($element['#value'])) {
-    $output .= '<input type="hidden" name="' . $name . '" value="' . $element['#value'] . '" />';
+    if (is_array($element['#value'])) {
+      foreach ($element['#value'] as $value) {
+        $output .= '<input type="hidden" name="' . $name . '[]" value="' . $value . '" />';
+      }
+    }
+    else {
+      $output .= '<input type="hidden" name="' . $name . '" value="' . $element['#value'] . '" />';
+    }
   }
   $output .= '</div>';
 
