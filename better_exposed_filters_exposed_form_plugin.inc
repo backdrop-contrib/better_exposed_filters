@@ -899,10 +899,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Check if this is a secondary form element
       if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
-        if (!empty($form[$label])) {
-          $secondary[$label] = $form[$label];
-          unset($form[$label]);
-          $secondary[$label]['#title'] = $form['#info']["filter-$label"]['label'];
+        $identifier = $form['#info']["filter-$label"]['value'];
+        if (!empty($form[$identifier])) {
+          $secondary[$identifier] = $form[$identifier];
+          unset($form[$identifier]);
+          $secondary[$identifier]['#title'] = $form['#info']["filter-$label"]['label'];
           unset($form['#info']["filter-$label"]);
         }
       }
