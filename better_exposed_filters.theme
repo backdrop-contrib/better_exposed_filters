@@ -170,7 +170,6 @@ function theme_select_as_hidden($vars) {
     }
 
     foreach ($element_set as $key => $value) {
-
       // Only render fields for selected values -- no selected values renders zero fields
       if (array_search($key, $selected_options) !== FALSE) {
         // Custom ID for each hidden field based on the <select>'s original ID
@@ -178,7 +177,7 @@ function theme_select_as_hidden($vars) {
 
         // Very similar to theme_hidden (http://api.drupal.org/api/function/theme_hidden/6)
         $hidden = '<input type="hidden" '
-          . 'name="'. $element['#name'] .'[]" '    // brackets are key -- just like select
+          . 'name="'. filter_xss($element['#name']) .'[]" '    // brackets are key -- just like select
           . 'id="'. $id .'" '
           . 'value="'. check_plain($key) .'" '
           . drupal_attributes($element['#attributes']) .' />';
@@ -433,6 +432,17 @@ function theme_select_as_links($vars) {
         $selected_options[] = $value;
       }
     }
+  }
+
+  // Clean incoming values to prevent XSS attacks
+  if (is_array($element['#value'])) {
+    foreach($element['#value'] as $index => $item) {
+      unset($element['#value'][$index]);
+      $element['#value'][filter_xss($index)] = filter_xss($item);
+    }
+  }
+  else if (is_string($element['#value'])) {
+    $element['#value'] = filter_xss($element['#value']);
   }
 
   // Go through each filter option and build the appropriate link or plain text
