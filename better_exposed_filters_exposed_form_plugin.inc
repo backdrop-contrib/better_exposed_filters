@@ -348,6 +348,27 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#value' => $available,
       );
 
+      // Allow rewriting of filter options for any filter
+      $bef_options[$label]['more_options']['rewrite'] = array(
+        '#title' => t('Rewrite filter options'),
+        '#type' => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $bef_options[$label]['more_options']['rewrite']['filter_rewrite_values'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Rewrite the text displayed'),
+        '#default_value' => $existing[$label]['more_options']['rewrite']['filter_rewrite_values'],
+        '#description' => t('
+          Use this field to rewrite the filter options displayed. Use the format
+          of current_value|replacement_value, one replacement per line. For
+          example: <pre>
+0|Zero
+1|One
+2|Two
+</pre> Leave the replacement value blank to remove an option altogether.
+        '),
+      );
     } // foreach ($filters as $filter) {
 
     // Add BEF form elements to the exposed form options form
@@ -609,9 +630,32 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
       }
 
+      // Handle filter value rewrites
+      if (!empty($options['more_options']['rewrite']['filter_rewrite_values'])) {
+        $lines = explode("\n", $options['more_options']['rewrite']['filter_rewrite_values']);
+        $rewrite = array();
+        foreach ($lines as $line) {
+          list($search, $replace) = explode('|', $line);
+          $rewrite[$search] = $replace;
+        }
+        foreach ($form[$field_id]['#options'] as $index => $option) {
+          if (isset($rewrite[$option])) {
+            if ('' == $rewrite[$option]) {
+              unset($form[$field_id]['#options'][$index]);
+            }
+            else {
+              $form[$field_id]['#options'][$index] = $rewrite[$option];
+            }
+          }
+        }
+      }
+
+      // @TODO: Is this conditional needed anymore after the existing settings
+      //        array default values were added?
       if (!isset($options['bef_format'])) {
         $options['bef_format'] = '';
       }
+
       switch ($options['bef_format']) {
         case 'bef_datepicker':
           $show_apply = TRUE;
@@ -1074,6 +1118,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         'bef_collapsible' => FALSE,
         'is_secondary' => FALSE,
         'bef_filter_description' => '',
+        'rewrite' => array(
+          'filter_rewrite_values' => '',
+        ),
       ),
     );
 
