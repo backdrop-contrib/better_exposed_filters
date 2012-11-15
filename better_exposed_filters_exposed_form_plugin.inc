@@ -324,6 +324,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#collapsed' => TRUE,
       );
 
+      if (!module_exists('token')) {
+        $bef_options[$label]['more_options']['tokens']['no_tokens'] = array(
+          '#markup' => '<p>'
+            . t('Enable the !token module to use replacement values.', array('!token' => l('Token', 'http://drupal.org/project/token')))
+            . '</p>'
+        );
+      }
+
       // Collect a list of token types that make sense for this filter
       $available = array('global_types');
       if (!empty($filter->options['vid'])) {
