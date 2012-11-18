@@ -267,9 +267,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $display_options['bef_hidden'] = t('Hidden');
       }
 
+      $identifier = '"' . $filter->options['expose']['identifier'] . '"';
+      if (!empty($filter->options['expose']['label'])) {
+        $identifier .= t(' (Filter label: "@fl")', array('@fl' => $filter->options['expose']['label']));
+      }
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
-        '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
+        '#title' => t('Display @identifier exposed filter as', array('@identifier' => $identifier)),
         '#default_value' => $existing[$label]['bef_format'],
         '#options' => $display_options,
       );
@@ -277,7 +281,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
         '#type' => 'fieldset',
-        '#title' => t('More options for "@identifier"', array('@identifier' => $filter->options['expose']['identifier'])),
+        '#title' => t('More options for @identifier', array('@identifier' => $identifier)),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       );
