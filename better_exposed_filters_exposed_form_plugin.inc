@@ -201,16 +201,37 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_filter_intro = TRUE;
       }
 
-      // Is this a type of field we can tweak? If so, we'll display additional options.
-      $valid = array('in', 'or', 'and');
-      $bef_specific = FALSE;
+      // These filter operators get our standard options: select, radio or
+      // checkboxes, links, etc.
+      $bef_standard = FALSE;
 
-      // We can work with any of these operators
-      if (in_array($filter->operator, $valid)) {
-        $bef_specific = TRUE;
+      // These filters get a single on/off checkbox option for boolean operators
+      $bef_single = FALSE;
+
+      // Used for taxonomy filters with heirarchy.
+      $bef_nested = FALSE;
+
+      /*
+       * Check various filter types and determine what options are available
+       */
+      if ($filter instanceof views_handler_filter_string || $filter instanceof views_handler_filter_in_operator) {
+        if (in_array($filter->operator, array('in', 'or', 'and'))) {
+          $bef_standard = TRUE;
+        }
       }
-      // ... or any of these specific filters
-      else if (isset($filter->value['type']) && 'date' == $filter->value['type']) {
+
+      if ($filter instanceof views_handler_filter_boolean_operator) {
+        $bef_standard = TRUE;
+        if (!$filter->options['expose']['multiple']) {
+          $bef_single = TRUE;
+        }
+      }
+
+      if ($filter instanceof views_handler_filter_term_node_tid) {
+        $bef_nested = TRUE;
+      }
+
+      if (isset($filter->value['type']) && 'date' == $filter->value['type']) {
         // Offer a datepicker option for date fields
         $bef_options[$label]['bef_format'] = array(
           '#type' => 'select',
@@ -222,43 +243,36 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           ),
         );
       }
-      else if ('yes-no' == $filter->definition['type']) {
-        // others?
-        $bef_specific = TRUE;
-      }
-      else {
-        // dsm($filter->definition['type']);
-      }
+
+      // All filters can use the default filter exposed by Views
+      $display_options = array('default' => t('Default select list'));
 
       // Main BEF option: default/checkboxes/hidden/etc.
-      if ($bef_specific) {
-        // Main BEF option: default or radios/checkboxes
-        $display_options = array(
-          'default' => t('Default select list'),
-          'bef' => t('Checkboxes/Radio Buttons'),
-        );
+      if ($bef_standard) {
+        // Main BEF option: radios/checkboxes
+        $display_options['bef'] = t('Checkboxes/Radio Buttons');
+      }
 
-        // Taxonomy filters get the "nested" option
-        if ($filter instanceof views_handler_filter_term_node_tid) {
-          $display_options['bef_ul'] = t('Nested Checkboxes/Radio Buttons');
-        }
+      if ($bef_nested) {
+        $display_options['bef_ul'] = t('Nested Checkboxes/Radio Buttons');
+      }
 
-        // Check for other display options based on the filter
-        if ($filter instanceof views_handler_filter_boolean_operator && !$filter->options['expose']['multiple']) {
-          $display_options['bef_single'] = t('Single on/off checkbox');
-        }
+      if ($bef_single) {
+        $display_options['bef_single'] = t('Single on/off checkbox');
+      }
 
+      if ($bef_standard) {
         // Less used options, so put them last.
         $display_options['bef_links'] = t('Links');
         $display_options['bef_hidden'] = t('Hidden');
-
-        $bef_options[$label]['bef_format'] = array(
-          '#type' => 'select',
-          '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
-          '#default_value' => $existing[$label]['bef_format'],
-          '#options' => $display_options,
-        );
       }
+
+      $bef_options[$label]['bef_format'] = array(
+        '#type' => 'select',
+        '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
+        '#default_value' => $existing[$label]['bef_format'],
+        '#options' => $display_options,
+      );
 
       // Fieldset to keep the UI from getting out of hand
       $bef_options[$label]['more_options'] = array(
@@ -269,7 +283,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       );
 
       // Select all checkbox
-      if ($bef_specific) {
+      if ($bef_standard) {
         $bef_options[$label]['more_options']['bef_select_all_none'] = array(
           '#type' => 'checkbox',
           '#title' => t('Add select all/none links'),
