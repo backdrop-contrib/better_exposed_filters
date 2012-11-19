@@ -218,6 +218,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         if (in_array($filter->operator, array('in', 'or', 'and'))) {
           $bef_standard = TRUE;
         }
+        if (in_array($filter->operator, array('empty', 'not empty'))) {
+          $bef_standard = TRUE;
+          if (!$filter->options['expose']['multiple']) {
+            $bef_single = TRUE;
+          }
+        }
       }
 
       if ($filter instanceof views_handler_filter_boolean_operator) {
@@ -299,6 +305,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               "Allow multiple selections".'
           ),
         );
+
+        if ($bef_nested) {
+          $bef_options[$label]['more_options']['bef_select_all_none_nested'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Add nested all/none selection'),
+            '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none_nested'],
+            '#disabled' => !$filter->options['expose']['multiple'] || !$filter->options['hierarchy'],
+            '#description' => t(
+              'When a parent checkbox is checked, check all its children. If this option
+                is disabled, edit the filter and check "Allow multiple selections" and
+                edit the filter settings and check "Show hierarchy in dropdown".'
+            ),
+          );
+        }
 
         // Put filter in collapsible fieldset option
         // TODO: expand to all exposed filters
@@ -931,17 +951,19 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               $form[$field_id]['#theme'] = 'select_as_checkboxes';
             }
 
-            if ($options['more_options']['bef_select_all_none']) {
+            if ($options['more_options']['bef_select_all_none'] || $options['more_options']['bef_select_all_none_nested']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
               // @TODO: move to #attached?
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
 
-              // Add select all/none functionality to this filter.
-              if (!isset($form[$field_id]['#attributes']['class'])) {
-                $form[$field_id]['#attributes']['class'] = array();
+              if ($options['more_options']['bef_select_all_none']) {
+                $form[$field_id]['#bef_select_all_none'] = TRUE;
               }
-              $form[$field_id]['#bef_select_all_none'] = TRUE;
+              if ($options['more_options']['bef_select_all_none_nested']) {
+                $form[$field_id]['#bef_select_all_none_nested'] = TRUE;
+              }
             }
+
           } // if (empty($form[$field_id]['#multiple'])) { ... } else {
           break; // case 'bef':
 
@@ -1133,6 +1155,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       'bef_format' => 'default',
       'more_options' => array(
         'bef_select_all_none' => FALSE,
+        'bef_select_all_none_nested' => FALSE,
         'bef_collapsible' => FALSE,
         'is_secondary' => FALSE,
         'bef_filter_description' => '',

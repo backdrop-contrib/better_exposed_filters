@@ -8,6 +8,7 @@ Issue #1784424 by mikeker: Refactored getting existing and default values.
 Issue #1666896 by Staratel: Fixed Filter captions on BEF settings form are empty if filter labels are empty.
 Issue #1798350 by mikeker: Fixed: secondary options were using the filter label instead of ID.
 By mikeker: Allow rewriting of filter values (similar to the rewrite combined sort option)
+Issue #1673562 by buzkall, nedjo: Added Automatically select children in nested checkboxes option.
 
 Better Exposed Filters 7.x-3.0-beta2  2012-09-13
 ------------------------------------------------

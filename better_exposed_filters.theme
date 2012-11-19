@@ -125,6 +125,9 @@ function theme_select_as_checkboxes($vars) {
   if (!empty($element['#bef_select_all_none'])) {
     $attributes['class'][] = 'bef-select-all-none';
   }
+  if (!empty($element['#bef_select_all_none_nested'])) {
+    $attributes['class'][] = 'bef-select-all-none-nested';
+  }
   if (!empty($element['#attributes']['class'])) {
     $attributes['class'] = array_merge($element['#attributes']['class'], $attributes['class']);
   }
@@ -382,6 +385,13 @@ function theme_select_as_tree($vars) {
       $element['#attributes']['class'] = array();
     }
     $element['#attributes']['class'][] = 'bef-select-all-none';
+  }
+  // Add the select all/none nested option, if needed
+  if (!empty($element['#bef_select_all_none_nested'])) {
+    if (empty($element['#attributes']['class'])) {
+      $element['#attributes']['class'] = array();
+    }
+    $element['#attributes']['class'][] = 'bef-select-all-none-nested';
   }
 
   return '<div' . drupal_attributes($element['#attributes']) . ">$description$output</div>";
