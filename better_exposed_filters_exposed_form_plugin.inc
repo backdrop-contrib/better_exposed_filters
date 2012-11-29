@@ -211,6 +211,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // Used for taxonomy filters with heirarchy.
       $bef_nested = FALSE;
 
+      // Used for date-based filters
+      $bef_datepicker = FALSE;
+
       /*
        * Check various filter types and determine what options are available
        */
@@ -237,23 +240,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_nested = TRUE;
       }
 
-      if (isset($filter->value['type']) && 'date' == $filter->value['type']) {
-        // Offer a datepicker option for date fields
-        $bef_options[$label]['bef_format'] = array(
-          '#type' => 'select',
-          '#title' => t('Display "@identifier" exposed filter as', array('@identifier' => $filter->options['expose']['identifier'])),
-          '#default_value' => $existing[$label]['bef_format'],
-          '#options' => array(
-            'default' => t('Default text field'),
-            'bef_datepicker' => t('jQuery UI Datepicker'),
-          ),
-        );
+      if ($filter instanceof views_handler_filter_date || !empty($filter->date_handler)) {
+        $bef_datepicker = TRUE;
       }
 
       // All filters can use the default filter exposed by Views
       $display_options = array('default' => t('Default select list'));
 
-      // Main BEF option: default/checkboxes/hidden/etc.
       if ($bef_standard) {
         // Main BEF option: radios/checkboxes
         $display_options['bef'] = t('Checkboxes/Radio Buttons');
@@ -267,8 +260,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $display_options['bef_single'] = t('Single on/off checkbox');
       }
 
+      if ($bef_datepicker) {
+        $display_options['bef_datepicker'] = t('jQuery UI Datepicker');
+      }
+
       if ($bef_standard) {
-        // Less used options, so put them last.
+        // Less used BEF options, so put them last.
         $display_options['bef_links'] = t('Links');
         $display_options['bef_hidden'] = t('Hidden');
       }
