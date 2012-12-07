@@ -845,6 +845,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             $form[$field_id]['#options'] = array();
             foreach ($opts as $index => $opt) {
               if (is_object($opt)) {
+                reset($opt->option);
                 list($key, $val) = each($opt->option);
                 $form[$field_id]['#options'][$key] = $val;
               }
