@@ -4,6 +4,7 @@ Better Exposed Filters change log
 
 Better Exposed Filters 7.x-x.x  xxxx-xx-xx
 ------------------------------------------
+Issue #1842494 by mikeker: Fixed Combined Sort Order - Rendered in Div of Submit Button.
 Issue #1784424 by mikeker: Refactored getting existing and default values.
 Issue #1666896 by Staratel: Fixed Filter captions on BEF settings form are empty if filter labels are empty.
 Issue #1798350 by mikeker: Fixed: secondary options were using the filter label instead of ID.

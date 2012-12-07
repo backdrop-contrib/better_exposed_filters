@@ -529,6 +529,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // Add our submit routine to process
         $form['#submit'][] = 'bef_sort_combine_submit';
 
+        // Pretend we're another exposed form widget
+        $form['#info']['sort-sort_bef_combine'] = array(
+          'value' => 'sort_bef_combine',
+        );
+
         // Remove the existing sort_by and sort_order elements
         unset($form['sort_by']);
         unset($form['sort_order']);
