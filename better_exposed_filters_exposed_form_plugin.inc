@@ -13,7 +13,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $options = parent::option_definition();
 
     // Add Better Exposed Filters options to those saved by Views
-    $options['bef'] = array('default' => array(), 'translatable' => TRUE);
+    $options['bef'] = array('default' => array());
 
     return $options;
   }
@@ -307,36 +307,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $bef_options[$label]['more_options']['bef_select_all_none_nested'] = array(
             '#type' => 'checkbox',
             '#title' => t('Add nested all/none selection'),
-            '#default_value' => $existing[$label]['more_options']['bef_select_all_none_nested'],
+            '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none_nested'],
             '#disabled' => !$filter->options['expose']['multiple'] || !$filter->options['hierarchy'],
             '#description' => t(
               'When a parent checkbox is checked, check all its children. If this option
                 is disabled, edit the filter and check "Allow multiple selections" and
                 edit the filter settings and check "Show hierarchy in dropdown".'
             ),
-            '#dependency' => array("edit-exposed-form-options-bef-$label-bef-format" => array('bef_ul')),
           );
-          $bef_options[$label]['more_options']['bef_nested_collapsible'] = array(
-            '#type' => 'checkbox',
-            '#title' => t('Expand/collapse nested options'),
-            '#default_value' => $existing[$label]['more_options']['bef_nested_collapsible'],
-            '#description' => t('Adds arrows beside options with children that allows site visitors to expand or collapse nested options.'),
-            '#dependency' => array("edit-exposed-form-options-bef-$label-bef-format" => array('bef_ul')),
-
-          );
-          $bef_options[$label]['more_options']['bef_nested_collapsible_state'] = array(
-            '#type' => 'select',
-            '#title' => t('Initial state'),
-            '#options' => array(
-              'bef_nested_state_expanded' => t('Expanded'),
-              'bef_nested_state_collapsed' => t('Collapsed'),
-              'bef_nested_state_expanded_to_selection' => t('Expanded to seletion'),
-            ),
-            '#default_value' => $existing[$label]['more_options']['bef_nested_collapsible_state'],
-            '#description' => t('Sets the intial state of a expandable/collapsible nested list. "Expanded to selected" will expand the list to the depth of any selected options.'),
-            '#dependency' => array("edit-exposed-form-options-bef-$label-bef-format" => array('bef_ul')),
-          );
-
         }
 
         // Put filter in collapsible fieldset option
@@ -507,13 +485,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         // Rewrite the option values if any were specified
         if (!empty($settings['sort']['advanced']['combine_rewrite'])) {
-          $lines = explode("\n", trim($settings['sort']['advanced']['combine_rewrite']));
+          $lines = explode("\n", $settings['sort']['advanced']['combine_rewrite']);
           $rewrite = array();
           foreach ($lines as $line) {
             list($search, $replace) = explode('|', $line);
-            if (!empty($search)) {
-              $rewrite[$search] = $replace;
-            }
+            $rewrite[$search] = $replace;
           }
           foreach ($options as $index => $option) {
             if (isset($rewrite[$option])) {
@@ -978,7 +954,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               $form[$field_id]['#theme'] = 'select_as_checkboxes';
             }
 
-            if ($options['more_options']['bef_select_all_none'] || $options['more_options']['bef_select_all_none_nested'] || $options['bef_nested_collapsible']) {
+            if ($options['more_options']['bef_select_all_none'] || $options['more_options']['bef_select_all_none_nested']) {
               // Add BEF's JavaScript to the mix to handle select all/none functionality
               // @TODO: move to #attached?
               drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
@@ -989,7 +965,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               if ($options['more_options']['bef_select_all_none_nested']) {
                 $form[$field_id]['#bef_select_all_none_nested'] = TRUE;
               }
-
             }
 
           } // if (empty($form[$field_id]['#multiple'])) { ... } else {
@@ -1184,8 +1159,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       'more_options' => array(
         'bef_select_all_none' => FALSE,
         'bef_select_all_none_nested' => FALSE,
-        'bef_nested_collapsible' => FALSE,
-        'bef_nested_collapsible_state' => 'bef_nested_state_expanded',
         'bef_collapsible' => FALSE,
         'is_secondary' => FALSE,
         'bef_filter_description' => '',
