@@ -485,11 +485,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         // Rewrite the option values if any were specified
         if (!empty($settings['sort']['advanced']['combine_rewrite'])) {
-          $lines = explode("\n", $settings['sort']['advanced']['combine_rewrite']);
+          $lines = explode("\n", trim($settings['sort']['advanced']['combine_rewrite']));
           $rewrite = array();
           foreach ($lines as $line) {
             list($search, $replace) = explode('|', $line);
-            $rewrite[$search] = $replace;
+            if (!empty($search)) {
+              $rewrite[$search] = $replace;
+            }
           }
           foreach ($options as $index => $option) {
             if (isset($rewrite[$option])) {
