@@ -1,11 +1,8 @@
 <?php
-// $Id$
-
 /**
  * @file
- * Allows the use of checkboxes, radio buttons or hidden fields for exposed Views filters.
- *
- * Thanks to Ben Buckman (http://benbuckman.net/) for the original concept.
+ * Allows the use of checkboxes, radio buttons or hidden fields for exposed
+ * Views filters.
  */
 
 /**
@@ -56,13 +53,13 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
   );
 }
 
-
 /*
  * Views3 support
  *
- * Views3 adds the concept of exposed forms to the mix.  In addition, elements injected into a Views
- * dialog is no longer saved along with the Views form information (see the unpack_options() and
- * option_definition() methods of the views_object object).
+ * Views3 adds the concept of exposed forms to the mix.  In addition, elements
+ * injected into a Views dialog is no longer saved along with the Views form
+ * information (see the unpack_options() and option_definition() methods of the
+ * views_object object).
  */
 
 /**
@@ -74,16 +71,17 @@ function better_exposed_filters_views_api() {
   );
 }
 
+/**
+ * Unpacks sort_by and sort_order from the sort_bef_combine element.
+ */
 function bef_sort_combine_submit($form, &$form_state) {
-  // Unpack sort_by and sort_order from the sort_bef_combine element
   if (empty($form_state['values']['sort_bef_combine'])) {
     $form_state['values']['sort_by'] = $form_state['values']['sort_order'] = '';
   }
   else {
-    list($form_state['values']['sort_by'], $form_state['values']['sort_order']) =
-        explode(' ', $form_state['values']['sort_bef_combine']);
+    list($form_state['values']['sort_by'], $form_state['values']['sort_order']) = explode(' ', $form_state['values']['sort_bef_combine']);
   }
 
-  // And pass this along to Views
+  // And pass this along to Views.
   views_exposed_form_submit($form, $form_state);
 }
