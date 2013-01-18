@@ -513,6 +513,13 @@ function theme_select_as_links($vars) {
     $links = array();
     $multiple = !empty($element['#multiple']);
 
+    // If we're in an exposed block, we'll get passed a path to use for the
+    // Views results page.
+    $path = '';
+    if (!empty($element['#bef_path'])) {
+      $path = $element['#bef_path'];
+    }
+
     foreach ($element_set as $key => $value) {
       // Custom ID for each link based on the <select>'s original ID.
       $id = drupal_html_id($element['#id'] . '-' . $key);
@@ -523,11 +530,11 @@ function theme_select_as_links($vars) {
         '#name' => $id,
       );
       if (array_search($key, $selected_options) === FALSE) {
-        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple));
+        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, FALSE, $path));
         $output .= theme('form_element', array('element' => $elem));
       }
       else {
-        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, TRUE));
+        $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, TRUE, $path));
         _form_set_class($elem, array('bef-select-as-links-selected'));
         $output .= str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
       }
@@ -641,15 +648,22 @@ function bef_checkbox($element, $value, $label, $selected) {
  * @param string $value
  *   Query string value.
  * @param bool $multiple
- *   TRUE if this key/value pair allows multiple values.
+ *   (optional) TRUE if this key/value pair allows multiple values.
  * @param bool $remove
- *   TRUE if this key/value should be a link to remove/unset the filter.
+ *   (optional) TRUE if this key/value should be a link to remove/unset the
+ *   filter.
+ * @param string $path
+ *   (optional) Use this specify the View results page when the exposed form
+ *   is displayed as a block and may be a different URL from the results.
+ *   Defaults to the current path if unspecified.
  *
  * @return string
  *   URL.
  */
-function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove = FALSE) {
-  $path = arg();
+function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove = FALSE, $path = '') {
+  if (!$path) {
+    $path = implode('/', arg());
+  }
 
   // Prevents us from having to check for each index from parse_url that we may
   // use.
@@ -676,7 +690,7 @@ function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove =
       $query[$key] = $value;
     }
   }
-  return url(implode('/', $path), array(
+  return url($path, array(
     'query' => $query,
     'fragment' => $fragment,
     'absolute' => TRUE,

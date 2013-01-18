@@ -621,6 +621,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
           case 'bef_links':
             $form['sort_bef_combine']['#theme'] = 'select_as_links';
+
+            // Exposed form displayed as blocks can appear on pages other than the view
+            // results appear on. This can cause problems with select_as_links options
+            // as they will use the wrong path. We provide a hint for theme functions to
+            // correct this.
+            if ($this->display->display_options['exposed_block']) {
+              $form['sort_bef_combine']['#bef_path'] = $this->display->display_options['path'];
+            }
             break;
 
           case 'default':
@@ -667,6 +675,15 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         elseif ('bef_links' == $settings['sort']['bef_format']) {
           $form['sort_by']['#theme'] = 'select_as_links';
           $form['sort_order']['#theme'] = 'select_as_links';
+
+          // Exposed form displayed as blocks can appear on pages other than the view
+          // results appear on. This can cause problems with select_as_links options
+          // as they will use the wrong path. We provide a hint for theme functions to
+          // correct this.
+          if ($this->display->display_options['exposed_block']) {
+            $form['sort_by']['#bef_path'] = $this->display->display_options['path'];
+            $form['sort_order']['#bef_path'] = $this->display->display_options['path'];
+          }
         }
 
         if ($collapse) {
@@ -727,6 +744,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           if (count($form['items_per_page']['#options']) > 1) {
             $form['items_per_page']['#theme'] = 'select_as_links';
             $form['items_per_page']['#items_per_page'] = max($form['items_per_page']['#default_value'], key($form['items_per_page']['#options']));
+
+            // Exposed form displayed as blocks can appear on pages other than the view
+            // results appear on. This can cause problems with select_as_links options
+            // as they will use the wrong path. We provide a hint for theme functions to
+            // correct this.
+            if ($this->display->display_options['exposed_block']) {
+              $form['items_per_page']['#bef_path'] = $this->display->display_options['path'];
+            }
           }
           break;
       }
@@ -970,8 +995,15 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         case 'bef_links':
           $show_apply = TRUE;
-
           $form[$field_id]['#theme'] = 'select_as_links';
+
+          // Exposed form displayed as blocks can appear on pages other than the view
+          // results appear on. This can cause problems with select_as_links options
+          // as they will use the wrong path. We provide a hint for theme functions to
+          // correct this.
+          if ($this->display->display_options['exposed_block']) {
+            $form[$field_id]['#bef_path'] = $this->display->display_options['path'];
+          }
           break;
 
         case 'bef_single':
