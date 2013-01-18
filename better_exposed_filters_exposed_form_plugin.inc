@@ -206,6 +206,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // Used for date-based filters.
       $bef_datepicker = FALSE;
 
+      // Used for numeric, non-date filters.
+      $bef_slider = FALSE;
+
       // Check various filter types and determine what options are available.
       if ($filter instanceof views_handler_filter_string || $filter instanceof views_handler_filter_in_operator) {
         if (in_array($filter->operator, array('in', 'or', 'and'))) {
@@ -234,6 +237,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_datepicker = TRUE;
       }
 
+      // The date filter handler extends the numeric filter handler so we have
+      // to exclude it specifically.
+      if ($filter instanceof views_handler_filter_numeric && !($filter instanceof views_handler_filter_date)) {
+        $bef_slider = TRUE;
+      }
+
       // All filters can use the default filter exposed by Views.
       $display_options = array('default' => t('Default select list'));
 
@@ -254,6 +263,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $display_options['bef_datepicker'] = t('jQuery UI Datepicker');
       }
 
+      if ($bef_slider) {
+        $display_options['bef_slider'] = t('jQuery UI slider');
+      }
+
       if ($bef_standard) {
         // Less used BEF options, so put them last.
         $display_options['bef_links'] = t('Links');
@@ -270,6 +283,87 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#default_value' => $existing[$label]['bef_format'],
         '#options' => $display_options,
       );
+
+      if ($bef_slider) {
+        // Fieldset for jQuery slider options.
+        $bef_options[$label]['slider_options'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Slider options for @identifier', array('@identifier' => $identifier)),
+          '#collapsible' => TRUE,
+          '#collapsed' => FALSE,
+          '#states' => array(
+            'visible' => array(
+              ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array('value' => 'bef_slider'),
+            ),
+          ),
+        );
+
+        $bef_options[$label]['slider_options']['bef_slider_min'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Range minimum'),
+          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_min'],
+          '#bef_filter_id' => $label,
+          '#states' => array(
+            'required' => array(
+              ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array('value' => 'bef_slider'),
+            ),
+          ),
+          '#description' => t('The minimum allowed value for the jQuery range slider. It can be positive, negative, or zero and have up to 11 decimal places.'),
+          '#element_validate' => array('element_validate_number', 'better_exposed_filters_element_validate_slider_required', 'better_exposed_filters_element_validate_slider_min_max'),
+        );
+        $bef_options[$label]['slider_options']['bef_slider_max'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Range maximum'),
+          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_max'],
+          '#bef_filter_id' => $label,
+          '#states' => array(
+            'required' => array(
+              ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array('value' => 'bef_slider'),
+            ),
+          ),
+          '#description' => t('The maximum allowed value for the jQuery range slider. It can be positive, negative, or zero and have up to 11 decimal places.'),
+          '#element_validate' => array('element_validate_number', 'better_exposed_filters_element_validate_slider_required', 'better_exposed_filters_element_validate_slider_min_max'),
+        );
+        $bef_options[$label]['slider_options']['bef_slider_step'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Step'),
+          '#default_value' => empty($this->options['bef'][$label]['slider_options']['bef_slider_step']) ? 1 : $this->options['bef'][$label]['slider_options']['bef_slider_step'],
+          '#bef_filter_id' => $label,
+          '#states' => array(
+            'required' => array(
+              ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array('value' => 'bef_slider'),
+            ),
+          ),
+          '#description' => t('Determines the size or amount of each interval or step the slider takes between the min and max.') . '<br />' .
+                            t('The full specified value range of the slider (Range maximum - Range minimum) must be evenly divisible by the step.') . '<br />' .
+                            t('The step must be a positive number of up to 5 decimal places.'),
+          '#element_validate' => array('element_validate_number', 'better_exposed_filters_element_validate_slider_required', 'better_exposed_filters_element_validate_slider_step'),
+        );
+        $bef_options[$label]['slider_options']['bef_slider_animate'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Animate'),
+          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_animate'],
+          '#bef_filter_id' => $label,
+          '#description' => t('Whether to slide handle smoothly when user click outside handle on the bar. Allowed values are "slow", "normal", "fast" or the number of milliseconds to run the animation (e.g. 1000). If left blank, there will be no animation, the slider will just jump to the new value instantly.'),
+          '#element_validate' => array('better_exposed_filters_element_validate_slider_animate'),
+        );
+        $bef_options[$label]['slider_options']['bef_slider_orientation'] = array(
+          '#type' => 'select',
+          '#title' => t('Orientation'),
+          '#options' => array(
+            'horizontal' => t('Horizontal'),
+            'vertical' => t('Vertical'),
+          ),
+          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_orientation'],
+          '#bef_filter_id' => $label,
+          '#states' => array(
+            'required' => array(
+              ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array('value' => 'bef_slider'),
+            ),
+          ),
+          '#description' => t('The orientation of the jQuery range slider.'),
+        );
+      }
 
       // Fieldset to keep the UI from getting out of hand.
       $bef_options[$label]['more_options'] = array(
@@ -416,10 +510,16 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     // If we have no visible elements, we don't show the Apply button.
     $show_apply = FALSE;
 
-    // We only want to add the datepicker code once.
-    // TODO: Does this need to be moved to a behavior.attach()?
-    $add_datepicker = FALSE;
-    $datepicker_format = '';
+    // Collect BEF's Javascript settings, add to Drupal.settings at the end.
+    $bef_add_js = FALSE;
+    $bef_js = array(
+      'datepicker' => FALSE,
+      'slider' => FALSE,
+      'settings' => array(),
+    );
+
+    // Some widgets will require additional CSS.
+    $bef_add_css = FALSE;
 
     // Grab BEF settings.
     $settings = $this->_bef_get_settings();
@@ -704,7 +804,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       switch ($options['bef_format']) {
         case 'bef_datepicker':
           $show_apply = TRUE;
-          $add_datepicker = TRUE;
+          $bef_add_js = TRUE;
+          $bef_js['datepicker'] = TRUE;
+          $bef_js['datepicker_options'] = array();
 
           if ((
             // Single Date API-based input element.
@@ -825,7 +927,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               $form[$field_id]['min']['#attributes']['class'][] = 'bef-datepicker';
               $form[$field_id]['max']['#attributes']['class'][] = 'bef-datepicker';
             }
-            $datepicker_format = str_replace(array_keys($convert), array_values($convert), $format);
+            $bef_js['datepicker_options']['dateformat'] = str_replace(array_keys($convert), array_values($convert), $format);
           }
           else {
             /*
@@ -846,6 +948,24 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               $form[$field_id]['#attributes']['class'][] = 'bef-datepicker';
             }
           }
+          break;
+
+        case 'bef_slider':
+          $show_apply = TRUE;
+          $bef_add_js = TRUE;
+          $bef_add_css = TRUE;
+          $bef_js['slider'] = TRUE;
+
+          // Add js options for the slider for this filter.
+          $bef_js['slider_options'][$field_id] = array(
+            'min' => $options['slider_options']['bef_slider_min'],
+            'max' => $options['slider_options']['bef_slider_max'],
+            'step' => $options['slider_options']['bef_slider_step'],
+            'animate' => $options['slider_options']['bef_slider_animate'],
+            'orientation' => $options['slider_options']['bef_slider_orientation'],
+            'id' => drupal_html_id($field_id),
+            'viewId' => $form['#id'],
+          );
           break;
 
         case 'bef_links':
@@ -1007,10 +1127,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             }
 
             if ($options['more_options']['bef_select_all_none'] || $options['more_options']['bef_select_all_none_nested']) {
-              // Add BEF's JavaScript to the mix to handle select all/none
-              // functionality.
-              // @TODO: move to #attached?
-              drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
+              $bef_add_js = TRUE;
 
               if ($options['more_options']['bef_select_all_none']) {
                 $form[$field_id]['#bef_select_all_none'] = TRUE;
@@ -1064,18 +1181,21 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     $form['submit']['#access'] = $show_apply;
     $form['reset']['#access'] = $show_apply;
 
-    // Only add datepicker code once.
-    drupal_add_js(array('better_exposed_filters' => array('bef_datepicker' => FALSE)), 'setting');
-    if ($add_datepicker) {
-      // Add Datepicker JS and CSS.
-      drupal_add_library('system', 'ui.datepicker');
-      drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
+    // Add Javascript as needed.
+    if ($bef_add_js) {
+      // Add jQuery UI library code as needed.
+      if ($bef_js['datepicker']) {
+        drupal_add_library('system', 'ui.datepicker');
+      }
+      if ($bef_js['slider']) {
+        drupal_add_library('system', 'ui.slider');
+      }
 
-      // Trigger datepicker in better_exposed_filters.js.
-      drupal_add_js(array('better_exposed_filters' => array(
-        'bef_datepicker' => TRUE,
-        'bef_dateformat' => $datepicker_format,
-      )), 'setting');
+      drupal_add_js(array('better_exposed_filters' => $bef_js), 'setting');
+      drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
+    }
+    if ($bef_add_css) {
+      drupal_add_css(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
     }
 
     // Check for secondary elements.
@@ -1230,6 +1350,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         'rewrite' => array(
           'filter_rewrite_values' => '',
         ),
+      ),
+      'slider_options' => array(
+        'bef_slider_min' => 0,
+        'bef_slider_max' => 99999,
+        'bef_slider_step' => 1,
+        'bef_slider_animate' => '',
+        'bef_slider_orientation' => 'horizontal',
       ),
     );
 
