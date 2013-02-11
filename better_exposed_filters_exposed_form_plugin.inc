@@ -230,7 +230,15 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       }
 
       if ($filter instanceof views_handler_filter_term_node_tid) {
-        $bef_nested = TRUE;
+        // Autocomplete and dropdown taxonomy filter are both instances of
+        // view_handler_filter_term_node_tid, but we can't show BEF options for
+        // the autocomplete widget.
+        if ('textfield' == $this->display->display_options['filters'][$label]['type']) {
+          $bef_standard = FALSE;
+        }
+        elseif (!empty($this->display->display_options['filters'][$label]['hierarchy'])) {
+          $bef_nested = TRUE;
+        }
       }
 
       if ($filter instanceof views_handler_filter_date || !empty($filter->date_handler)) {
@@ -828,6 +836,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // array default values were added?
       if (!isset($options['bef_format'])) {
         $options['bef_format'] = '';
+      }
+
+      // These BEF options require a set of given options to work (namely,
+      // $form[$field_id]['#options'] needs to set). But it is possilbe to
+      // adjust settings elsewhere in the view that removes these options from
+      // the form (eg: changing a taxonomy term filter from dropdown to
+      // autocomplete). Check for that here and revert to Views' default filter
+      // in those cases.
+      $requires_options = array('bef', 'bef_ul', 'bef_links', 'bef_hidden');
+      if (in_array($options['bef_format'], $requires_options) && empty($form[$field_id]['#options'])) {
+        $options['bef_format'] = 'default';
       }
 
       switch ($options['bef_format']) {
