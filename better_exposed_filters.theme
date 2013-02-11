@@ -628,6 +628,9 @@ function bef_checkbox($element, $value, $label, $selected) {
   // Unset the name attribute as we are setting it manually.
   unset($element['#attributes']['name']);
 
+  // Unset the multiple attribute as it doesn't apply for checkboxes.
+  unset ($element['#attributes']['multiple']);
+
   $checkbox = '<input type="checkbox" '
     // Brackets are key -- just like select.
     . 'name="' . $element['#name'] . '[]" '
