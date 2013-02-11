@@ -1065,6 +1065,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             }
             array_unshift($form[$field_id]['#process'], 'form_process_radios');
 
+            // Add description
+            if (!empty($form[$field_id]['#bef_description'])) {
+              $form[$field_id]['#description'] = $form[$field_id]['#bef_description'];
+            }
+
             // Clean up objects from the options array (happens for taxonomy-
             // based filters).
             $opts = $form[$field_id]['#options'];
