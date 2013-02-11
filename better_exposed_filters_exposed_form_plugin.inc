@@ -814,16 +814,22 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Handle filter value rewrites.
       if (!empty($options['more_options']['rewrite']['filter_rewrite_values'])) {
-        $lines = explode("\n", $options['more_options']['rewrite']['filter_rewrite_values']);
+        $lines = explode("\n", trim($options['more_options']['rewrite']['filter_rewrite_values']));
         $rewrite = array();
         foreach ($lines as $line) {
           list($search, $replace) = explode('|', $line);
-          $rewrite[$search] = $replace;
+          if (!empty($search)) {
+            $rewrite[$search] = $replace;
+          }
         }
         foreach ($form[$field_id]['#options'] as $index => $option) {
           if (isset($rewrite[$option])) {
             if ('' == $rewrite[$option]) {
               unset($form[$field_id]['#options'][$index]);
+              if ($selected == $index) {
+                // Avoid "Illegal choice" errors.
+                $form[$field_id]['#default_value'] = NULL;
+              }
             }
             else {
               $form[$field_id]['#options'][$index] = $rewrite[$option];
