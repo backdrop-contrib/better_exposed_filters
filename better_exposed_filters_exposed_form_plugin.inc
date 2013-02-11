@@ -596,6 +596,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             if (isset($rewrite[$option])) {
               if ('' == $rewrite[$option]) {
                 unset($options[$index]);
+                if ($selected == $index) {
+                  // Avoid "Illegal choice" errors.
+                  $selected = NULL;
+                }
               }
               else {
                 $options[$index] = $rewrite[$option];
