@@ -494,7 +494,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 0|Zero
 1|One
 2|Two
-</pre> Leave the replacement value blank to remove an option altogether.
+</pre> Leave the replacement value blank to remove an option altogether. If using hierarchical taxonomy filters, do not including leading hyphens in the current value.
         '),
       );
     }
@@ -822,7 +822,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             $rewrite[$search] = $replace;
           }
         }
+
         foreach ($form[$field_id]['#options'] as $index => $option) {
+          $is_object = FALSE;
+          if (is_object($option)) {
+            // Taxonomy filters use objects instead of text.
+            $is_object = TRUE;
+            $option = reset($option->option);
+
+            // Hierarchical filters prepend hyphens to indicate depth. We need
+            // to remove them for comparison, but keep them after replacement to
+            // ensure nested options display correctly.
+            $option = ltrim($option, '-');
+          }
+
           if (isset($rewrite[$option])) {
             if ('' == $rewrite[$option]) {
               unset($form[$field_id]['#options'][$index]);
@@ -832,7 +845,16 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               }
             }
             else {
-              $form[$field_id]['#options'][$index] = $rewrite[$option];
+              if ($is_object) {
+                // dsm($form[$field_id]['#options'][$index]->option, "$field_id at $index");
+                // Taxonomy term filters are stored as objects. Use str_replace
+                // to ensure that keep hyphens for hierarchical filters.
+                list($tid, $original) = each($form[$field_id]['#options'][$index]->option);
+                $form[$field_id]['#options'][$index]->option[$tid] = str_replace($option, $rewrite[$option], $original);
+              }
+              else {
+                $form[$field_id]['#options'][$index] = $rewrite[$option];
+              }
             }
           }
         }
