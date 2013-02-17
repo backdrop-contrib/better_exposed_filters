@@ -1257,6 +1257,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
         $identifier = $form['#info']["filter-$label"]['value'];
         if (!empty($form[$identifier])) {
+          // Move exposed operators with exposed filters
+          if (!empty($this->display->display_options['filters'][$identifier]['expose']['use_operator'])) {
+            $op_id = $this->display->display_options['filters'][$identifier]['expose']['operator_id'];
+            $secondary[$op_id] = $form[$op_id];
+            unset($form[$op_id]);
+          }
           $secondary[$identifier] = $form[$identifier];
           unset($form[$identifier]);
           $secondary[$identifier]['#title'] = $form['#info']["filter-$label"]['label'];
