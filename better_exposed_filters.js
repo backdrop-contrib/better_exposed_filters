@@ -28,7 +28,7 @@
               .html(selNone)
               .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
-                  $(this).attr('checked', 'checked');
+                  $(this).attr('checked', true);
                   _bef_highlight(this, context);
                 })
               .end()
@@ -44,7 +44,7 @@
               .html(selAll)
               .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
-                  $(this).attr('checked', '');
+                  $(this).attr('checked', false);
                   _bef_highlight(this, context);
                 })
               .end()
