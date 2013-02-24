@@ -427,6 +427,14 @@ function theme_select_as_tree($vars) {
     $element['#attributes']['class'][] = 'bef-select-all-none-nested';
   }
 
+  // Name and multiple attributes are not valid for <div>'s.
+  if (isset($element['#attributes']['name'])) {
+    unset($element['#attributes']['name']);
+  }
+  if (isset($element['#attributes']['multiple'])) {
+    unset($element['#attributes']['multiple']);
+  }
+
   return '<div' . drupal_attributes($element['#attributes']) . ">$description$output</div>";
 }
 
