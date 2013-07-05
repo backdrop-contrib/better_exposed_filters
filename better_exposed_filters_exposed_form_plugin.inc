@@ -233,10 +233,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // Autocomplete and dropdown taxonomy filter are both instances of
         // view_handler_filter_term_node_tid, but we can't show BEF options for
         // the autocomplete widget.
-        if ('textfield' == $this->display->display_options['filters'][$label]['type']) {
+        if ('textfield' == $filter->options['type']) {
           $bef_standard = FALSE;
         }
-        elseif (!empty($this->display->display_options['filters'][$label]['hierarchy'])) {
+        elseif (!empty($filter->options['hierarchy'])) {
           $bef_nested = TRUE;
         }
       }
