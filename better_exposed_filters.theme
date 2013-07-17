@@ -82,6 +82,9 @@ function theme_select_as_checkboxes($vars) {
 
   // The selected keys from #options.
   $selected_options = empty($element['#value']) ? $element['#default_value'] : $element['#value'];
+  if (!is_array($selected_options)) {
+    $selected_options = array($selected_options);
+  }
 
   // Grab exposed filter description.  We'll put it under the label where it
   // makes more sense.
