@@ -434,6 +434,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#description' => t('Places this element in the secondary options portion of the exposed form.'),
       );
 
+      // Allow "Any" label to be overridden.
+      $bef_options[$label]['more_options']['any_label'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Override "Any" option label'),
+        '#default_value' => $existing[$label]['more_options']['any_label'],
+        '#description' => t('Leave blank to use views default value. <em>Note: overriding this label will break translations and localizations. Leave this field blank if preserving internationalization is important to your site.</em>'),
+      );
+
       // Build a description option form element -- available to all exposed
       // filters.
       $bef_options[$label]['more_options']['bef_filter_description'] = array(
@@ -1271,6 +1279,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       }
     }
 
+    // Override "Any" label, if applicable.
+    if (!empty($options['more_options']['any_label']) && !empty($form[$field_id]['#options']['All'])) {
+      $form[$field_id]['#options']['All'] = $options['more_options']['any_label'];
+    }
+
     // If our form has no visible filters, hide the submit button.
     $form['submit']['#access'] = $show_apply;
     $form['reset']['#access'] = $show_apply;
@@ -1441,6 +1454,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         'bef_collapsible' => FALSE,
         'is_secondary' => FALSE,
         'bef_filter_description' => '',
+        'any_label' => '',
         'rewrite' => array(
           'filter_rewrite_values' => '',
         ),
