@@ -251,6 +251,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_slider = TRUE;
       }
 
+      // This is the fix for Search API filters, see https://drupal.org/node/1319404
+      if ($filter instanceof SearchApiViewsHandlerFilterOptions) {
+        $bef_standard = TRUE;
+      }
+      elseif ($filter instanceof SearchApiViewsHandlerFilterDate) {
+        $bef_datepicker = TRUE;
+        if ($filter->options['is_grouped']) {
+          $bef_standard = TRUE;
+        }
+      }
+
       // All filters can use the default filter exposed by Views.
       $display_options = array('default' => t('Default select list'));
 
