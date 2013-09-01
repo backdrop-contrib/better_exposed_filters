@@ -1503,6 +1503,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         'is_secondary' => FALSE,
         'bef_filter_description' => '',
         'any_label' => '',
+        'tokens' => array(
+          'list' => array(),
+          'available' => array(),
+        ),
         'rewrite' => array(
           'filter_rewrite_values' => '',
         ),
