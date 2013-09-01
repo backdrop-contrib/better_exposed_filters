@@ -83,7 +83,11 @@
       ;
 
       // Check for and initialize datepickers
-      if (Drupal.settings.better_exposed_filters.datepicker) {
+      if (Drupal.settings.better_exposed_filters.bef_datepicker &&
+        // This setting is undefined when "bef_datepicker" setting is array of
+        // false values and as a result "ui.datepicker" library does not get
+        // included.
+        typeof Drupal.settings.better_exposed_filters.bef_dateformat !== 'undefined') {
         // Note: JavaScript does not treat "" as null
         if (Drupal.settings.better_exposed_filters.datepicker_options.dateformat) {
           $('.bef-datepicker').datepicker({
