@@ -251,7 +251,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_slider = TRUE;
       }
 
-      // This is the fix for Search API filters, see https://drupal.org/node/1319404
+      // Search API extends the more general views_handler_filter rather than
+      // operator-specific classes such as views_handler_filter_in_operator.
+      // Handle those options here.
       if ($filter instanceof SearchApiViewsHandlerFilterOptions) {
         $bef_standard = TRUE;
       }
@@ -260,6 +262,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         if ($filter->options['is_grouped']) {
           $bef_standard = TRUE;
         }
+      }
+      elseif ($filter instanceof SearchApiViewsHandlerFilterBoolean) {
+        $bef_single = TRUE;
       }
 
       // All filters can use the default filter exposed by Views.
