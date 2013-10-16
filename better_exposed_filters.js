@@ -4,6 +4,19 @@
  * Provides some client-side functionality for the Better Exposed Filters module
  */
 (function ($) {
+  Drupal.behaviors.betterExposedFilters = {
+    attach: function(context) {
+      // Add highlight class to checked checkboxes for better theming
+      $('.bef-tree input[type=checkbox], .bef-checkboxes input[type=checkbox]')
+        // Highlight newly selected checkboxes
+        .change(function() {
+          _bef_highlight(this, context);
+        })
+        .filter(':checked').closest('.form-item', context).addClass('highlight')
+      ;
+    }
+  };
+
   Drupal.behaviors.betterExposedFiltersSelectAllNone = {
     attach: function(context) {
 
@@ -72,15 +85,6 @@
           })
         ;
       }
-
-      // Add highlight class to checked checkboxes for better theming
-      $('.bef-tree input[type="checkbox"], .bef-checkboxes input[type="checkbox"]')
-        // Highlight newly selected checkboxes
-        .change(function() {
-          _bef_highlight(this, context);
-        })
-        .filter(':checked').closest('.form-item', context).addClass('highlight')
-      ;
 
       // Check for and initialize datepickers
       if (Drupal.settings.better_exposed_filters.bef_datepicker &&

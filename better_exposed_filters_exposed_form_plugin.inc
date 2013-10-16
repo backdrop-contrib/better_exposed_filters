@@ -575,7 +575,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     $show_apply = FALSE;
 
     // Collect BEF's Javascript settings, add to Drupal.settings at the end.
-    $bef_add_js = FALSE;
+    // Historical note: We used to only add BEF's Javascript when absolutely
+    // needed. Eventually, much of that functionality worked its way into the
+    // normal usage of BEF so that we now turn those Jvaascript behaviors on
+    // by default. (See https://drupal.org/node/1807114).
+    $bef_add_js = TRUE;
     $bef_js = array(
       'datepicker' => FALSE,
       'slider' => FALSE,
