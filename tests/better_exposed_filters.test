@@ -13,7 +13,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   protected $view_name;
   protected $privileged_user;
   protected $views_version;
-  
+
   public static function getInfo() {
     return array(
       'name' => 'BEF Basic functionality tests',
@@ -21,7 +21,7 @@ class BEF_TestCase extends DrupalWebTestCase {
       'group' => 'Better Exposed Filters',
     );
   }
-  
+
   /**
    * After setup() runs, the test suite will have access to:
    *
@@ -31,11 +31,12 @@ class BEF_TestCase extends DrupalWebTestCase {
    *        - node->title as a displayed field
    */
   public function setUp() {
-    parent::setUp('views', 'views_ui', 'better_exposed_filters');  // Enable any modules required for the test
-    
+    // Enable any modules required for the test.
+    parent::setUp('views', 'views_ui', 'better_exposed_filters');
+
     // @TODO: Is there a better way?  Hopefully...
     $this->views_version = substr(views_api_version(), 0, 1);
-      
+
     // User with edit views perms
     $this->privileged_user = $this->drupalCreateUser(array('access content', 'administer views'));
     $this->drupalLogin($this->privileged_user);
@@ -43,18 +44,18 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Build a basic view
     $this->view_name = $this->randomName(8);
     $this->drupalPost('admin/build/views/add', array('name' => $this->view_name), 'Next');
-    
+
     // Add filters to the default display
-    $this->_befAddFilter('node.title');
-    $this->_befAddFilter('node.status');
-    $this->_befAddFilter('node.type');
+    $this->befAddFilter('node.title');
+    $this->befAddFilter('node.status');
+    $this->befAddFilter('node.type');
 
     // Add field to default display
-    $this->_befAddField('node.title');
-    
-    $this->_befSaveView();
+    $this->befAddField('node.title');
+
+    $this->befSaveView();
   }
-  
+
   /**
    * Verify BEF options display for binary and unlimited option fields
    */
@@ -107,14 +108,14 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_filter_description' => $this->randomName(16),
       'bef_select_all_none' => TRUE,
     );
-    $this->_befExposedFilterSettings('status', $bef_settings);
+    $this->befExposedFilterSettings('status', $bef_settings);
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
@@ -136,14 +137,14 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_select_all_none' => TRUE,
       'bef_collapsible' => TRUE,
     );
-    $this->_befExposedFilterSettings('status', $bef_settings);
+    $this->befExposedFilterSettings('status', $bef_settings);
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
@@ -172,14 +173,14 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_select_all_none' => TRUE,
       'single' => FALSE,
     );
-    $this->_befExposedFilterSettings('type', $bef_settings);
+    $this->befExposedFilterSettings('type', $bef_settings);
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
@@ -209,14 +210,14 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_collapsible' => TRUE,
       'single' => FALSE,
     );
-    $this->_befExposedFilterSettings('type', $bef_settings);
+    $this->befExposedFilterSettings('type', $bef_settings);
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     $this->drupalGet($settings['path']['path']);
     $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
@@ -241,21 +242,21 @@ class BEF_TestCase extends DrupalWebTestCase {
     );
   }
 
-  
+
 
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
    * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
    */
   public function testsimpletest_befPageDisplayHidden() {
-    $this->_befExposedFilterSettings('type', array('bef_format' => 'bef_hidden'));
+    $this->befExposedFilterSettings('type', array('bef_format' => 'bef_hidden'));
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     $this->drupalGet($settings['path']['path']);
     $this->assertNoText(t('Node: Type'), 'Verify hidden label does not appear', 'Better Exposed Filters');
@@ -286,21 +287,21 @@ class BEF_TestCase extends DrupalWebTestCase {
       'options[type]' => 'select',
       'options[hierarchy]' => FALSE,
     );
-    $this->_befAddFilter('term_node.tid', TRUE, 'default', $addl);
+    $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
 
     // Exposed filter settings
     $bef_settings = array(
       'bef_format' => 'bef',
       'bef_filter_description' => $this->randomName(16),
     );
-    $this->_befExposedFilterSettings('tid', $bef_settings);
+    $this->befExposedFilterSettings('tid', $bef_settings);
 
     // Add a page view to the default view
     $settings = array(
       'path' => array('path' => $this->randomName(8)),
     );
-    $this->_befCreateDisplay('page', $settings);
-    $this->_befSaveView();
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
     // Verify taxonomy filter as radio buttons
     $this->drupalGet($settings['path']['path']);
@@ -317,8 +318,8 @@ class BEF_TestCase extends DrupalWebTestCase {
       'bef_select_all_none' => TRUE,
       'single' => FALSE,
     );
-    $this->_befExposedFilterSettings('tid', $bef_settings);
-    $this->_befSaveView();
+    $this->befExposedFilterSettings('tid', $bef_settings);
+    $this->befSaveView();
 
     // Verify taxonomy filter as checkboxes
     $this->drupalGet($settings['path']['path']);
@@ -336,12 +337,12 @@ class BEF_TestCase extends DrupalWebTestCase {
       'Beter Exposed Filters'
     );
   }
-  
-  
+
+
   /*******************************************************************************
    * Helper functions -- mostly to deal with differences between Views 2.x and 3.x
    *******************************************************************************/
-  
+
   /**
    * Creates a display of $type.  Currently supports:
    *    'page'
@@ -358,12 +359,12 @@ class BEF_TestCase extends DrupalWebTestCase {
    * For example, to create a new page and set the path to a random name:
    *
    *      $settings = array('path' => $this->randomName(16);
-   *      $this->_befCreateDisplay('page', $settings);
+   *      $this->befCreateDisplay('page', $settings);
    *
    */
-  protected function _befCreateDisplay($type = 'page', $settings = NULL) {
+  protected function befCreateDisplay($type = 'page', $settings = NULL) {
     $view_edit_url = "admin/build/views/edit/$this->view_name";
-    
+
     // Add a display of $type to the view
     $this->drupalPost($view_edit_url, array('display' => $type), 'Add display');
 
@@ -376,11 +377,11 @@ class BEF_TestCase extends DrupalWebTestCase {
     foreach ($settings as $path => $page_settings) {
       $this->drupalPost("$display_edit_url/$path", $page_settings, 'Update');
     }
-    
+
     // Save the view
     $this->drupalPost($view_edit_url, array(), 'Save');
   }
-  
+
   /**
    * Adds a specified filter to the view.
    *
@@ -388,15 +389,15 @@ class BEF_TestCase extends DrupalWebTestCase {
    * @param $exposed
    * @param $display
    */
-  protected function _befAddFilter($field, $exposed = TRUE, $display = 'default', $additional = array()) {
+  protected function befAddFilter($field, $exposed = TRUE, $display = 'default', $additional = array()) {
     $edit = array(
       "name[$field]" => TRUE,
     );
     $field_name = preg_replace('/.*\./', '', $field);
     $view = $this->view_name;
-    
+
     $this->drupalPost("admin/build/views/nojs/add-item/$view/$display/filter", $edit, 'Add');
-    
+
     // For taxonomy filters, use info in $additional to configure the filter.
     if (0 === strpos($field, 'term_node.')) {
       $this->drupalPost (
@@ -405,24 +406,24 @@ class BEF_TestCase extends DrupalWebTestCase {
         'Update'
       );
     }
-    
+
     if ($exposed) {
       $this->drupalPost("admin/build/views/nojs/config-item/$view/$display/filter/$field_name", array(), 'Expose');
     }
     $this->drupalPost("admin/build/views/nojs/config-item/$view/$display/filter/$field_name", array(), 'Update');
   }
 
-  protected function _befAddField($field, $settings = array(), $display = 'default') {
+  protected function befAddField($field, $settings = array(), $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
     );
     $field_name = preg_replace('/.*\./', '', $field);
     $view = $this->view_name;
-    
+
     $this->drupalPost("admin/build/views/nojs/add-item/$view/$display/field", $edit, 'Add');
     $this->drupalPost("admin/build/views/nojs/config-item/$view/$display/field/$field_name", $settings, 'Update');
   }
-  
+
   /**
    * Specifies specific settings for an exposed filter for a given display
    *
@@ -433,18 +434,18 @@ class BEF_TestCase extends DrupalWebTestCase {
    * @param array $settings - array of form elements => value entries
    * @return $settings array merged with default values
    */
-  protected function _befExposedFilterSettings($filter, $settings = array(), $display = 'default') {
+  protected function befExposedFilterSettings($filter, $settings = array(), $display = 'default') {
     $processed_settings = array();
     foreach ($settings as $elem => $setting) {
       $processed_settings["options[expose][$elem]"] = $setting;
     }
-    
+
     //DEBUG:
 //    foreach ($processed_settings as $item) {
 //      $this->verbose("processed_setting: $item");
 //    }
     //END_DEBUG:
-    
+
     if ($this->views_version == 2) {
 //      $this->drupalGet("admin/build/views/nojs/config-item/$this->view_name/$display/filter/$filter");
       $this->drupalPost(
@@ -456,17 +457,17 @@ class BEF_TestCase extends DrupalWebTestCase {
     }
     else {
       // All BEF settings are now in the Exposed Form dialog.
-      
+
       //@TODO
     }
     return $settings;
   }
-  
+
   /**
    * Saves the view
    * @return unknown_type
    */
-  protected function _befSaveView() {
+  protected function befSaveView() {
     $this->drupalPost("admin/build/views/edit/$this->view_name", array(), 'Save');
   }
 }
