@@ -32,7 +32,7 @@ class BEF_TestCase extends DrupalWebTestCase {
    */
   public function setUp() {
     // Enable any modules required for the test.
-    parent::setUp('views', 'views_ui', 'better_exposed_filters');
+    parent::setUp('views', 'views_ui', 'better_exposed_filters', 'bef_test_content');
 
     // @TODO: Is there a better way?  Hopefully...
     $this->views_version = substr(views_api_version(), 0, 1);
