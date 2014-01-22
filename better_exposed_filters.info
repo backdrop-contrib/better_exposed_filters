@@ -5,3 +5,4 @@ core = 7.x
 package = Views
 dependencies[] = views
 files[] = better_exposed_filters_exposed_form_plugin.inc
+files[] = tests/better_exposed_filters.test
