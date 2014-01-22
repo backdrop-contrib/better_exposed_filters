@@ -410,50 +410,76 @@ class BEF_TestCase extends DrupalWebTestCase {
 
   /**
    * Adds a filter to a view display.
+   *
+   * $field: string in the form of node.status or
+   *   field_data_field_example.field_example_value
+   * $display: machine name of the display to add this filter to. NOTE:
+   *   Currently only allows filters on the master display, no overrides.
+   *   @todo: fix that, if needed.
+   * $exposed: (bool) (optional, default: TRUE) Is this an exposed filter?
+   * $settings: (array) Settings on the "Configure filter criterion" dialog.
+   *   NOTE: called after the "Expose filter" button is pressed if $exposed
+   *   is TRUE so you can set things like "Allow multiple items" or grouped
+   *   filter options.
+   * $additional: (array) settings for any additional configuration forms such
+   *   as taxonomy term settings.
    */
-  protected function befAddFilter($field, $exposed = TRUE, $display = 'default', $additional = array()) {
+  protected function befAddFilter($field, $setting = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
     );
-    $field_name = preg_replace('/.*\./', '', $field);
-    $view = $this->view_name;
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/filter";
+    $this->drupalPost($url, $edit, 'Add and configure filter criteria');
 
-    $this->drupalPost(
-      "admin/structure/views/nojs/add-item/$view/$display/filter",
-      $edit,
-      'Add and configure filter criteria'
-    );
-
-    // For taxonomy filters, use info in $additional to configure the filter.
-    if (0 === strpos($field, 'term_node.')) {
-      $this->drupalPost (
-        "admin/structure/views/nojs/config-item-extra/$view/$display/filter/$field_name",
-        $additional,
-        'Apply'
-      );
+    if (!empty($additional)) {
+      // Handle filter-specific options screen.
+      $this->drupalPost (NULL, $additional, 'Apply');
     }
 
-    // @TODO: other settings on this page such as operator, multiple selection
-    //        exposed operator, etc.
-    $edit = array();
     if ($exposed) {
-      $this->drupalPost("admin/structure/views/nojs/config-item/$view/$display/filter/$field_name", array(), 'Expose filter');
-      $this->drupalPost(NULL, $edit, 'Apply');
+      $this->drupalPost(NULL, array(), 'Expose filter');
     }
-    else {
-      $this->drupalPost("admin/structure/views/nojs/config-item/$view/$display/filter/$field_name", $edit, 'Apply');
-    }
+    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->befSaveView();
   }
 
   protected function befAddField($field, $settings = array(), $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
     );
-    $field_name = preg_replace('/.*\./', '', $field);
-    $view = $this->view_name;
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
+    $this->drupalPost($url, $edit, 'Add and configure fields');
+    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->befSaveView();
+  }
 
-    $this->drupalPost("admin/structure/views/nojs/add-item/$view/$display/field", $edit, 'Add and configure fields');
-    $this->drupalPost("admin/structure/views/nojs/config-item/$view/$display/field/$field_name", $settings, 'Apply');
+  /**
+   * Ensures that BEF is selected as the exposed form option
+   */
+  protected function befSetBefExposedForm($display = 'default') {
+    $edit = array(
+      "exposed_form[type]" => 'better_exposed_filters',
+    );
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/exposed_form";
+    $this->drupalPost($url, $edit, 'Apply');
+
+    // BEF settings is covered under befSetBefSettings() so we just accept the
+    // default values and move on.
+    $this->drupalPost(NULL, array(), 'Apply');
+    $this->befSaveView();
+  }
+
+  protected function befSetBefSettings($settings) {
+    $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
+    $this->drupalPost($url, $settings, 'Apply');
+    $this->befSaveView();
+  }
+
+  /**
+   * Saves the view
+   */
+  protected function befSaveView() {
+    $this->drupalPost($this->view['edit_url'], array(), 'Save');
   }
 
   /**
@@ -466,40 +492,33 @@ class BEF_TestCase extends DrupalWebTestCase {
    * @param array $settings - array of form elements => value entries
    * @return $settings array merged with default values
    */
-  protected function befExposedFilterSettings($filter, $settings = array(), $display = 'default') {
-    $processed_settings = array();
-    foreach ($settings as $elem => $setting) {
-      $processed_settings["options[expose][$elem]"] = $setting;
-    }
+//   protected function befExposedFilterSettings($filter, $settings = array(), $display = 'default') {
+//     $processed_settings = array();
+//     foreach ($settings as $elem => $setting) {
+//       $processed_settings["options[expose][$elem]"] = $setting;
+//     }
 
-    //DEBUG:
-//    foreach ($processed_settings as $item) {
-//      $this->verbose("processed_setting: $item");
-//    }
-    //END_DEBUG:
+//     //DEBUG:
+// //    foreach ($processed_settings as $item) {
+// //      $this->verbose("processed_setting: $item");
+// //    }
+//     //END_DEBUG:
 
-    if ($this->views_version == 2) {
-//      $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
-      $this->drupalPost(
-        "admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter",
-        $processed_settings,
-        'Update'
-      );
-      $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
-    }
-    else {
-      // All BEF settings are now in the Exposed Form dialog.
+//     if ($this->views_version == 2) {
+// //      $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
+//       $this->drupalPost(
+//         "admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter",
+//         $processed_settings,
+//         'Update'
+//       );
+//       $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
+//     }
+//     else {
+//       // All BEF settings are now in the Exposed Form dialog.
 
-      //@TODO
-    }
-    return $settings;
-  }
-
-  /**
-   * Saves the view
-   */
-  protected function befSaveView() {
-    $this->drupalPost($this->view['edit_url'], array(), 'Save');
-  }
+//       //@TODO
+//     }
+//     return $settings;
+//   }
 }
 
