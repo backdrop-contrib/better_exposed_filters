@@ -43,62 +43,93 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Build a basic view for use in tests.
     $this->befCreateView();
 
-    $this->befCreateDisplay('Page', array('path' => array('path' => 'bef_test_page')));
+    // $this->befCreateDisplay('Page', array('path' => array('path' => 'bef_test_page')));
 
-    // Add filters to the default display
-    $this->befAddFilter('node.title');
-    $this->befAddFilter('node.status');
-    $this->befAddFilter('node.type');
-
-    // // Add field to default display
+    // Add field to default display
     // $this->befAddField('node.title');
 
-    // $this->befSaveView();
+    // Turn of Better Exposed Filters
+    $this->befSetBefExposedForm();
   }
 
   public function tearDown() {
     debug('This test run took ' . (time() - $this->start) . ' seconds.');
+    unset($this->view);
     parent::tearDown();
   }
 
   /**
    * Verify BEF options display for binary and unlimited option fields
    */
-  public function test_befOptionsExist() {
-    // Check node->status (binary type)
-    $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/default/filter/status");
-    $this->assertText(
-      t('Display exposed filter as'),
-      'Verify BEF settings dropdown label displays',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldById('edit-options-expose-bef-format');
+  // public function test_befOptionsExist() {
+  //   // Add filters to the default display
+  //   $this->befAddFilter('node.title');
+  //   $this->befAddFilter('node.status');
+  //   $this->befAddFilter('node.type');
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
 
-    // Check node->status (binary type)
-    $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/default/filter/type");
-    $this->assertText(
-      t('Display exposed filter as'),
-      'Verify BEF settings dropdown label displays',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldById('edit-options-expose-bef-format');
-  }
+  //   $settings = array(
+  //     'status_1' => 'Published',
+  //     'type' => 'Type',
+  //     'title' => 'Title'
+  //   );
+
+  //   foreach ($settings as $id => $label) {
+  //     $translation = array(
+  //       '!id' => $id,
+  //       '!label' => $label,
+  //     );
+  //     $this->assertRaw(
+  //       htmlentities(t('Display "!id" (Filter label: "!label") exposed filter as', $translation)),
+  //       t('BEF options exist for exposed "!id" filter', $translation)
+  //     );
+  //     $this->assertRaw(
+  //       htmlentities(t('More options for "!id" (Filter label: "!label")', $translation)),
+  //       t('BEF "More options" fieldset exists for exposed "!id" filter', $translation)
+  //     );
+  //     $this->assertField(
+  //       'edit-exposed-form-options-bef-' . str_replace('_', '-', $id) . '-bef-format',
+  //       t('BEF options dropdown exists for "!id"', $translation)
+  //     );
+  //   }
+  // }
 
   /**
    * Verify BEF options are saved and redisplayed properly
-   *
-   * @TODO: Need to extend this to cover filters in derived vs. default displays as well as editing
-   *        default filter options from derived displays
    */
-  public function commented_out_test_befOptionsSave() {
-    $edit = array(
-      'options[expose][bef_format]' => 'bef',
-      'options[expose][bef_filter_description]' => $this->randomName(16),
-      'options[expose][bef_select_all_none]' => TRUE,
-      'options[expose][bef_collapsible]' => TRUE,
+  public function test_befOptionsSave() {
+    // Add filters to the default display
+    $this->befAddFilter('node.status');
+    $this->befAddFilter('node.type');
+    $settings = array(
+      'status_1' => 'Published',
+      'type' => 'Type',
     );
-    $this->drupalPost("admin/structure/views/nojs/config-item/$this->view_name/default/filter/status", $edit, 'Update');
-    $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/default/filter/status");
+
+    // Ensure basic BEF settings are preserved on save.
+    foreach ($settings as $id => $label) {
+      $edit = array(
+        "exposed_form_options[bef][$id][bef_format]" => 'bef',
+        "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
+        "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
+      );
+      $this->befSetBefSettings($edit);
+      $this->drupalGet($this->befGetBefSettingsUrl());
+      foreach ($edit as $name => $expected) {
+        $this->assertFieldByName($name, $expected);
+      }
+    }
+
+    // This filter cannot use BEF settings. Ensure only generic settings are
+    // available for open text filters.
+    $this->befAddFilter('node.title');
+    $this->drupalGet($this->befGetBefSettingsUrl());
+    $this->assertNoFieldByName('exposed_form_options[bef][title][bef_format]', 'bef');
+    $edit = array(
+      "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
+      "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
+    );
+    $this->befSetBefSettings($edit);
     foreach ($edit as $name => $expected) {
       $this->assertFieldByName($name, $expected);
     }
@@ -107,243 +138,251 @@ class BEF_TestCase extends DrupalWebTestCase {
   /**
    * Verify BEF radio buttons are rendered correctly on a page view
    */
-  public function commented_out_test_befPageDisplayRadios() {
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-      'bef_select_all_none' => TRUE,
-    );
-    $this->befExposedFilterSettings('status', $bef_settings);
+  // public function commented_out_test_befPageDisplayRadios() {
+  //   $bef_settings = array(
+  //     'bef_format' => 'bef',
+  //     'bef_filter_description' => $this->randomName(16),
+  //     'bef_select_all_none' => TRUE,
+  //   );
+  //   $this->befExposedFilterSettings('status', $bef_settings);
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="status" and @type="radio"]',
-      NULL,
-      'Exposed filter is shown as radio buttons',
-      'Better Exposed Filters'
-    );
-  }
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->assertFieldByXpath(
+  //     '//input[@name="status" and @type="radio"]',
+  //     NULL,
+  //     'Exposed filter is shown as radio buttons',
+  //     'Better Exposed Filters'
+  //   );
+  // }
 
   /**
    * Verify BEF radio buttons are rendered correctly in a fieldset (collapsible == TRUE)
    */
-  public function commented_out_test_befPageDisplayRadiosFieldset() {
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-      'bef_select_all_none' => TRUE,
-      'bef_collapsible' => TRUE,
-    );
-    $this->befExposedFilterSettings('status', $bef_settings);
+  // public function commented_out_test_befPageDisplayRadiosFieldset() {
+  //   $bef_settings = array(
+  //     'bef_format' => 'bef',
+  //     'bef_filter_description' => $this->randomName(16),
+  //     'bef_select_all_none' => TRUE,
+  //     'bef_collapsible' => TRUE,
+  //   );
+  //   $this->befExposedFilterSettings('status', $bef_settings);
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//fieldset//input[@name="status" and @type="radio"]',
-      NULL,
-      'Radio buttons are enclosed by a fieldset',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//fieldset/legend',
-      t('Published'),
-      'Filter label is used as the fieldset legend',
-      'Better Exposed Filters'
-    );
-  }
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Published'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->assertFieldByXpath(
+  //     '//fieldset//input[@name="status" and @type="radio"]',
+  //     NULL,
+  //     'Radio buttons are enclosed by a fieldset',
+  //     'Better Exposed Filters'
+  //   );
+  //   $this->assertFieldByXpath(
+  //     '//fieldset/legend',
+  //     t('Published'),
+  //     'Filter label is used as the fieldset legend',
+  //     'Better Exposed Filters'
+  //   );
+  // }
 
   /**
    * Verify that checkboxes are rendered correctly on a page display
    */
-  public function commented_out_test_befPageDisplayCheckboxes() {
-    // Exposed the type filter such that it allows multiple selections
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-      'bef_select_all_none' => TRUE,
-      'single' => FALSE,
-    );
-    $this->befExposedFilterSettings('type', $bef_settings);
+  // public function commented_out_test_befPageDisplayCheckboxes() {
+  //   // Exposed the type filter such that it allows multiple selections
+  //   $bef_settings = array(
+  //     'bef_format' => 'bef',
+  //     'bef_filter_description' => $this->randomName(16),
+  //     'bef_select_all_none' => TRUE,
+  //     'single' => FALSE,
+  //   );
+  //   $this->befExposedFilterSettings('type', $bef_settings);
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="type[]" and @type="checkbox"]',
-      NULL,
-      'Exposed filter is shown as checkboxes',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//div[contains(@class, "bef-select-all-none")]',
-      NULL,
-      'Class is set correctly for JS to build select all/none links',
-      'Beter Exposed Filters'
-    );
-  }
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->assertFieldByXpath(
+  //     '//input[@name="type[]" and @type="checkbox"]',
+  //     NULL,
+  //     'Exposed filter is shown as checkboxes',
+  //     'Better Exposed Filters'
+  //   );
+  //   $this->assertFieldByXpath(
+  //     '//div[contains(@class, "bef-select-all-none")]',
+  //     NULL,
+  //     'Class is set correctly for JS to build select all/none links',
+  //     'Beter Exposed Filters'
+  //   );
+  // }
 
 /**
   * Verify that checkboxes are rendered correctly on a page display
   */
-  public function commented_out_test_befPageDisplayCheckboxesFieldset() {
-    // Exposed the type filter such that it allows multiple selections
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-      'bef_select_all_none' => TRUE,
-      'bef_collapsible' => TRUE,
-      'single' => FALSE,
-    );
-    $this->befExposedFilterSettings('type', $bef_settings);
+  // public function commented_out_test_befPageDisplayCheckboxesFieldset() {
+  //   // Exposed the type filter such that it allows multiple selections
+  //   $bef_settings = array(
+  //     'bef_format' => 'bef',
+  //     'bef_filter_description' => $this->randomName(16),
+  //     'bef_select_all_none' => TRUE,
+  //     'bef_collapsible' => TRUE,
+  //     'single' => FALSE,
+  //   );
+  //   $this->befExposedFilterSettings('type', $bef_settings);
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
 
-    $this->assertFieldByXpath(
-      '//fieldset//input[@name="type[]" and @type="checkbox"]',
-      NULL,
-      'Radio buttons are enclosed by a fieldset',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//fieldset//div[contains(@class, "bef-select-all-none")]',
-      NULL,
-      'Class is set correctly for JS to build select all/none links',
-      'Beter Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//fieldset/legend',
-      t('Node: Type'),
-      'Filter label is used as the fieldset legend',
-      'Better Exposed Filters'
-    );
-  }
+  //   $this->assertFieldByXpath(
+  //     '//fieldset//input[@name="type[]" and @type="checkbox"]',
+  //     NULL,
+  //     'Radio buttons are enclosed by a fieldset',
+  //     'Better Exposed Filters'
+  //   );
+  //   $this->assertFieldByXpath(
+  //     '//fieldset//div[contains(@class, "bef-select-all-none")]',
+  //     NULL,
+  //     'Class is set correctly for JS to build select all/none links',
+  //     'Beter Exposed Filters'
+  //   );
+  //   $this->assertFieldByXpath(
+  //     '//fieldset/legend',
+  //     t('Node: Type'),
+  //     'Filter label is used as the fieldset legend',
+  //     'Better Exposed Filters'
+  //   );
+  // }
 
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
    * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
    */
-  public function commented_out_test_befPageDisplayHidden() {
-    $this->befExposedFilterSettings('type', array('bef_format' => 'bef_hidden'));
+  // public function commented_out_test_befPageDisplayHidden() {
+  //   $this->befExposedFilterSettings('type', array('bef_format' => 'bef_hidden'));
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    $this->drupalGet($settings['path']['path']);
-    $this->assertNoText(t('Node: Type'), 'Verify hidden label does not appear', 'Better Exposed Filters');
-  }
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertNoText(t('Node: Type'), 'Verify hidden label does not appear', 'Better Exposed Filters');
+  // }
 
   /**
    * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
    */
-  public function commented_out_test_befTaxonomyFilters() {
-    $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
-    $this->drupalLogin($this->taxonomy_user);
+  // public function commented_out_test_befTaxonomyFilters() {
+  //   $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
+  //   $this->drupalLogin($this->taxonomy_user);
 
-    // Add a vocabulary and populate with a few terms
-    $edit = array(
-      'name' => 'BEF test vocab',
-      'nodes[page]' => TRUE,
-      'nodes[story]' => TRUE,
-    );
-    $this->drupalPost('admin/content/taxonomy/add/vocabulary', $edit, 'Save');
-    $terms = array('test1', 'test2', 'test3', 'test4');
-    foreach ($terms as $term) {
-      $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
-    }
+  //   // Add a vocabulary and populate with a few terms
+  //   $edit = array(
+  //     'name' => 'BEF test vocab',
+  //     'nodes[page]' => TRUE,
+  //     'nodes[story]' => TRUE,
+  //   );
+  //   $this->drupalPost('admin/content/taxonomy/add/vocabulary', $edit, 'Save');
+  //   $terms = array('test1', 'test2', 'test3', 'test4');
+  //   foreach ($terms as $term) {
+  //     $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
+  //   }
 
-    // Exposed the taxonomy filter
-    $addl = array(
-      'options[vid]' => TRUE,
-      'options[type]' => 'select',
-      'options[hierarchy]' => FALSE,
-    );
-    $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
+  //   // Exposed the taxonomy filter
+  //   $addl = array(
+  //     'options[vid]' => TRUE,
+  //     'options[type]' => 'select',
+  //     'options[hierarchy]' => FALSE,
+  //   );
+  //   $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
 
-    // Exposed filter settings
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-    );
-    $this->befExposedFilterSettings('tid', $bef_settings);
+  //   // Exposed filter settings
+  //   $bef_settings = array(
+  //     'bef_format' => 'bef',
+  //     'bef_filter_description' => $this->randomName(16),
+  //   );
+  //   $this->befExposedFilterSettings('tid', $bef_settings);
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+  //   // Add a page view to the default view
+  //   $settings = array(
+  //     'path' => array('path' => $this->randomName(8)),
+  //   );
+  //   $this->befCreateDisplay('page', $settings);
+  //   $this->befSaveView();
 
-    // Verify taxonomy filter as radio buttons
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="tid" and @type="radio"]',
-      NULL,
-      'Exposed filter is shown as radio buttons',
-      'Better Exposed Filters'
-    );
+  //   // Verify taxonomy filter as radio buttons
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->assertFieldByXpath(
+  //     '//input[@name="tid" and @type="radio"]',
+  //     NULL,
+  //     'Exposed filter is shown as radio buttons',
+  //     'Better Exposed Filters'
+  //   );
 
-    // Set Force single to FALSE to display as checkboxes and set select all/none option
-    $bef_settings = array(
-      'bef_select_all_none' => TRUE,
-      'single' => FALSE,
-    );
-    $this->befExposedFilterSettings('tid', $bef_settings);
-    $this->befSaveView();
+  //   // Set Force single to FALSE to display as checkboxes and set select all/none option
+  //   $bef_settings = array(
+  //     'bef_select_all_none' => TRUE,
+  //     'single' => FALSE,
+  //   );
+  //   $this->befExposedFilterSettings('tid', $bef_settings);
+  //   $this->befSaveView();
 
-    // Verify taxonomy filter as checkboxes
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="tid[]" and @type="checkbox"]',
-      NULL,
-      'Exposed filter is shown as checkboxes',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//div[contains(@class, "bef-select-all-none")]',
-      NULL,
-      'Class is set correctly for JS to build select all/none links',
-      'Beter Exposed Filters'
-    );
-  }
+  //   // Verify taxonomy filter as checkboxes
+  //   $this->drupalGet($settings['path']['path']);
+  //   $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
+  //   $this->assertFieldByXpath(
+  //     '//input[@name="tid[]" and @type="checkbox"]',
+  //     NULL,
+  //     'Exposed filter is shown as checkboxes',
+  //     'Better Exposed Filters'
+  //   );
+  //   $this->assertFieldByXpath(
+  //     '//div[contains(@class, "bef-select-all-none")]',
+  //     NULL,
+  //     'Class is set correctly for JS to build select all/none links',
+  //     'Beter Exposed Filters'
+  //   );
+  // }
 
   /*******************************************************************************
    * Helper functions -- mostly to deal with differences between Views 2.x and 3.x
    *******************************************************************************/
+
+  /**
+   * Returns the URL for the BEF exposed form settings page.
+   */
+  protected function befGetBefSettingsUrl() {
+    return 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
+  }
+
   protected function befCreateView($name = '') {
     if (!empty($this->view)) {
       debug('WARNING: befCreateView called after view has already been created.');
@@ -424,7 +463,7 @@ class BEF_TestCase extends DrupalWebTestCase {
    * $additional: (array) settings for any additional configuration forms such
    *   as taxonomy term settings.
    */
-  protected function befAddFilter($field, $setting = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
+  protected function befAddFilter($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
     );
@@ -460,7 +499,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $edit = array(
       "exposed_form[type]" => 'better_exposed_filters',
     );
-    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/exposed_form";
+    $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . "/$display/exposed_form";
     $this->drupalPost($url, $edit, 'Apply');
 
     // BEF settings is covered under befSetBefSettings() so we just accept the
@@ -470,8 +509,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   }
 
   protected function befSetBefSettings($settings) {
-    $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
-    $this->drupalPost($url, $settings, 'Apply');
+    $this->drupalPost($this->befGetBefSettingsUrl(), $settings, 'Apply');
     $this->befSaveView();
   }
 
