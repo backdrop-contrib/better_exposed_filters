@@ -202,6 +202,14 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
     $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
 
+    // Verify classes added for select all/none functionality.
+    $this->assertNoFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][type][more_options][bef_select_all_none]' => TRUE,
+    ));
+    $this->drupalGet('bef_test_page');
+    $this->assertFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
+
     // Now try it in a with the collapsible option.
     $this->befSetBefSettings(array(
       'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
@@ -217,13 +225,8 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Filter label is used as the fieldset legend
     $this->assertFieldByXpath('//fieldset//legend[* = "Type"]');
 
-    // Test the select all/none option in both fieldsets and regular rendering.
-    // $this->assertFieldByXpath(
-    //   '//div[contains(@class, "bef-select-all-none")]',
-    //   NULL,
-    //   'Class is set correctly for JS to build select all/none links',
-    //   'Beter Exposed Filters'
-    // );
+    // Test the select all/none option in fieldsets.
+    $this->assertFieldByXpath('//fieldset//div[contains(@class, "bef-select-all-none")]');
   }
 
 /**
