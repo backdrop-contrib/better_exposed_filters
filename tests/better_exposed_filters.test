@@ -229,50 +229,6 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//fieldset//div[contains(@class, "bef-select-all-none")]');
   }
 
-/**
-  * Verify that checkboxes are rendered correctly on a page display
-  */
-  // public function commented_out_test_befPageDisplayCheckboxesFieldset() {
-  //   // Exposed the type filter such that it allows multiple selections
-  //   $bef_settings = array(
-  //     'bef_format' => 'bef',
-  //     'bef_filter_description' => $this->randomName(16),
-  //     'bef_select_all_none' => TRUE,
-  //     'bef_collapsible' => TRUE,
-  //     'single' => FALSE,
-  //   );
-  //   $this->befExposedFilterSettings('type', $bef_settings);
-
-  //   // Add a page view to the default view
-  //   $settings = array(
-  //     'path' => array('path' => $this->randomName(8)),
-  //   );
-  //   $this->befCreateDisplay('page', $settings);
-  //   $this->befSaveView();
-
-  //   $this->drupalGet($settings['path']['path']);
-  //   $this->assertText(t('Node: Type'), 'Verify exposed filter label', 'Better Exposed Filters');
-
-  //   $this->assertFieldByXpath(
-  //     '//fieldset//input[@name="type[]" and @type="checkbox"]',
-  //     NULL,
-  //     'Radio buttons are enclosed by a fieldset',
-  //     'Better Exposed Filters'
-  //   );
-  //   $this->assertFieldByXpath(
-  //     '//fieldset//div[contains(@class, "bef-select-all-none")]',
-  //     NULL,
-  //     'Class is set correctly for JS to build select all/none links',
-  //     'Beter Exposed Filters'
-  //   );
-  //   $this->assertFieldByXpath(
-  //     '//fieldset/legend',
-  //     t('Node: Type'),
-  //     'Filter label is used as the fieldset legend',
-  //     'Better Exposed Filters'
-  //   );
-  // }
-
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
    * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
