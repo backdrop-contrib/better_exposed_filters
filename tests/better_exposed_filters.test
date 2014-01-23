@@ -130,6 +130,7 @@ class BEF_TestCase extends DrupalWebTestCase {
       "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
     );
     $this->befSetBefSettings($edit);
+    $this->drupalGet($this->befGetBefSettingsUrl());
     foreach ($edit as $name => $expected) {
       $this->assertFieldByName($name, $expected);
     }
