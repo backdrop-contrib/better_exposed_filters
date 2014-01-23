@@ -233,110 +233,110 @@ class BEF_TestCase extends DrupalWebTestCase {
    * Verify hidden exposed filters are rendered correctly on a page display
    * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
    */
-  public function test_befPageDisplayHidden() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
+  // public function test_befPageDisplayHidden() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
 
-    // Verify multi-selection hidden elements with node->type.
-    $this->befAddFilter('node.type', array(
-      'options[expose][multiple]' => TRUE,
-    ));
+  //   // Verify multi-selection hidden elements with node->type.
+  //   $this->befAddFilter('node.type', array(
+  //     'options[expose][multiple]' => TRUE,
+  //   ));
 
-    // Verify single-selection hidden elements with node->status.
-    $this->befAddFilter('node.status');
+  //   // Verify single-selection hidden elements with node->status.
+  //   $this->befAddFilter('node.status');
 
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][bef_format]' => 'bef_hidden',
-      'exposed_form_options[bef][status_1][bef_format]' => 'bef_hidden',
-    ));
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][bef_format]' => 'bef_hidden',
+  //     'exposed_form_options[bef][status_1][bef_format]' => 'bef_hidden',
+  //   ));
 
-    $this->drupalGet('bef_test_page');
-    $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
-    $this->assertNoText(t('Published'), 'Exposed "Published" filter title does not show for hidden elements.');
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
+  //   $this->assertNoText(t('Published'), 'Exposed "Published" filter title does not show for hidden elements.');
 
-    // Exposed filter option render as checkboxes.
-    // @todo: Need to fix these.
-    // $this->assertFieldByXpath('//input[@name="type[]" and @type="hidden"]');
-    // $this->assertFieldByXpath('//input[@name="status_1" and @type="hidden"]');
-  }
+  //   // Exposed filter option render as checkboxes.
+  //   // @todo: Need to fix these.
+  //   // $this->assertFieldByXpath('//input[@name="type[]" and @type="hidden"]');
+  //   // $this->assertFieldByXpath('//input[@name="status_1" and @type="hidden"]');
+  // }
 
   /**
    * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
    */
-  // public function commented_out_test_befTaxonomyFilters() {
-  //   $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
-  //   $this->drupalLogin($this->taxonomy_user);
+  public function test_befTaxonomyFilters() {
+    $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
+    $this->drupalLogin($this->taxonomy_user);
 
-  //   // Add a vocabulary and populate with a few terms
-  //   $edit = array(
-  //     'name' => 'BEF test vocab',
-  //     'nodes[page]' => TRUE,
-  //     'nodes[story]' => TRUE,
-  //   );
-  //   $this->drupalPost('admin/content/taxonomy/add/vocabulary', $edit, 'Save');
-  //   $terms = array('test1', 'test2', 'test3', 'test4');
-  //   foreach ($terms as $term) {
-  //     $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
-  //   }
+    // Add a vocabulary and populate with a few terms
+    $edit = array(
+      'name' => 'BEF test vocab',
+      'nodes[page]' => TRUE,
+      'nodes[story]' => TRUE,
+    );
+    $this->drupalPost('admin/content/taxonomy/add/vocabulary', $edit, 'Save');
+    $terms = array('test1', 'test2', 'test3', 'test4');
+    foreach ($terms as $term) {
+      $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
+    }
 
-  //   // Exposed the taxonomy filter
-  //   $addl = array(
-  //     'options[vid]' => TRUE,
-  //     'options[type]' => 'select',
-  //     'options[hierarchy]' => FALSE,
-  //   );
-  //   $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
+    // Exposed the taxonomy filter
+    $addl = array(
+      'options[vid]' => TRUE,
+      'options[type]' => 'select',
+      'options[hierarchy]' => FALSE,
+    );
+    $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
 
-  //   // Exposed filter settings
-  //   $bef_settings = array(
-  //     'bef_format' => 'bef',
-  //     'bef_filter_description' => $this->randomName(16),
-  //   );
-  //   $this->befExposedFilterSettings('tid', $bef_settings);
+    // Exposed filter settings
+    $bef_settings = array(
+      'bef_format' => 'bef',
+      'bef_filter_description' => $this->randomName(16),
+    );
+    $this->befExposedFilterSettings('tid', $bef_settings);
 
-  //   // Add a page view to the default view
-  //   $settings = array(
-  //     'path' => array('path' => $this->randomName(8)),
-  //   );
-  //   $this->befCreateDisplay('page', $settings);
-  //   $this->befSaveView();
+    // Add a page view to the default view
+    $settings = array(
+      'path' => array('path' => $this->randomName(8)),
+    );
+    $this->befCreateDisplay('page', $settings);
+    $this->befSaveView();
 
-  //   // Verify taxonomy filter as radio buttons
-  //   $this->drupalGet($settings['path']['path']);
-  //   $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-  //   $this->assertFieldByXpath(
-  //     '//input[@name="tid" and @type="radio"]',
-  //     NULL,
-  //     'Exposed filter is shown as radio buttons',
-  //     'Better Exposed Filters'
-  //   );
+    // Verify taxonomy filter as radio buttons
+    $this->drupalGet($settings['path']['path']);
+    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
+    $this->assertFieldByXpath(
+      '//input[@name="tid" and @type="radio"]',
+      NULL,
+      'Exposed filter is shown as radio buttons',
+      'Better Exposed Filters'
+    );
 
-  //   // Set Force single to FALSE to display as checkboxes and set select all/none option
-  //   $bef_settings = array(
-  //     'bef_select_all_none' => TRUE,
-  //     'single' => FALSE,
-  //   );
-  //   $this->befExposedFilterSettings('tid', $bef_settings);
-  //   $this->befSaveView();
+    // Set Force single to FALSE to display as checkboxes and set select all/none option
+    $bef_settings = array(
+      'bef_select_all_none' => TRUE,
+      'single' => FALSE,
+    );
+    $this->befExposedFilterSettings('tid', $bef_settings);
+    $this->befSaveView();
 
-  //   // Verify taxonomy filter as checkboxes
-  //   $this->drupalGet($settings['path']['path']);
-  //   $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-  //   $this->assertFieldByXpath(
-  //     '//input[@name="tid[]" and @type="checkbox"]',
-  //     NULL,
-  //     'Exposed filter is shown as checkboxes',
-  //     'Better Exposed Filters'
-  //   );
-  //   $this->assertFieldByXpath(
-  //     '//div[contains(@class, "bef-select-all-none")]',
-  //     NULL,
-  //     'Class is set correctly for JS to build select all/none links',
-  //     'Beter Exposed Filters'
-  //   );
-  // }
+    // Verify taxonomy filter as checkboxes
+    $this->drupalGet($settings['path']['path']);
+    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
+    $this->assertFieldByXpath(
+      '//input[@name="tid[]" and @type="checkbox"]',
+      NULL,
+      'Exposed filter is shown as checkboxes',
+      'Better Exposed Filters'
+    );
+    $this->assertFieldByXpath(
+      '//div[contains(@class, "bef-select-all-none")]',
+      NULL,
+      'Class is set correctly for JS to build select all/none links',
+      'Beter Exposed Filters'
+    );
+  }
 
   /*******************************************************************************
    * Helper functions -- mostly to deal with differences between Views 2.x and 3.x
