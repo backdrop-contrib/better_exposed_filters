@@ -135,11 +135,6 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['fields']['field_numbers']['id'] = 'field_numbers';
   $handler->display->display_options['fields']['field_numbers']['table'] = 'field_data_field_numbers';
   $handler->display->display_options['fields']['field_numbers']['field'] = 'field_numbers';
-  /* Field: Broken/missing handler */
-  $handler->display->display_options['fields']['ops']['id'] = 'ops';
-  $handler->display->display_options['fields']['ops']['table'] = 'flag_content';
-  $handler->display->display_options['fields']['ops']['field'] = 'ops';
-  $handler->display->display_options['fields']['ops']['relationship'] = 'flag_content_rel';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
