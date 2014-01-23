@@ -115,12 +115,10 @@ function bef_test_content_views_default_views() {
       'empty_column' => 0,
     ),
   );
-  /* Relationship: Flags: bookmarks */
+  /* Relationship: Broken/missing handler */
   $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
   $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
   $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
-  $handler->display->display_options['relationships']['flag_content_rel']['required'] = 0;
-  $handler->display->display_options['relationships']['flag_content_rel']['flag'] = 'bookmarks';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -137,12 +135,11 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['fields']['field_numbers']['id'] = 'field_numbers';
   $handler->display->display_options['fields']['field_numbers']['table'] = 'field_data_field_numbers';
   $handler->display->display_options['fields']['field_numbers']['field'] = 'field_numbers';
-  /* Field: Flags: Flag link */
+  /* Field: Broken/missing handler */
   $handler->display->display_options['fields']['ops']['id'] = 'ops';
   $handler->display->display_options['fields']['ops']['table'] = 'flag_content';
   $handler->display->display_options['fields']['ops']['field'] = 'ops';
   $handler->display->display_options['fields']['ops']['relationship'] = 'flag_content_rel';
-  $handler->display->display_options['fields']['ops']['link_type'] = 'toggle';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
