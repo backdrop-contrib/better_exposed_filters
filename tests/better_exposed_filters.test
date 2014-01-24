@@ -266,76 +266,60 @@ class BEF_TestCase extends DrupalWebTestCase {
    * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
    */
   public function test_befTaxonomyFilters() {
-    $this->taxonomy_user = $this->drupalCreateUser(array('access content', 'administer views', 'administer taxonomy'));
-    $this->drupalLogin($this->taxonomy_user);
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
 
-    // Add a vocabulary and populate with a few terms
-    $edit = array(
-      'name' => 'BEF test vocab',
-      'nodes[page]' => TRUE,
-      'nodes[story]' => TRUE,
-    );
-    $this->drupalPost('admin/content/taxonomy/add/vocabulary', $edit, 'Save');
-    $terms = array('test1', 'test2', 'test3', 'test4');
-    foreach ($terms as $term) {
-      $this->drupalPost('admin/content/taxonomy/1/add/term', array('name' => $term), 'Save');
+    // Add three terms with two children each to the vocab defined in
+    // bef_test_content.
+    $vocab = taxonomy_vocabulary_machine_name_load('location');
+    $parents = array();
+    foreach(array('parent1', 'parent2', 'parent3') as $name) {
+      $term = new stdClass();
+      $term->vid = $vocab->vid;
+      $term->name = $name;
+      taxonomy_term_save($term);
+      $parents[$term->tid] = $term->name;
+    }
+    foreach(array('child1', 'child2') as $name) {
+      foreach($parents as $pid => $pname) {
+        $term = new stdClass();
+        $term->vid = $vocab->vid;
+        $term->name = "$pname $name";
+        $term->parent = $pid;
+        taxonomy_term_save($term);
+      }
     }
 
-    // Exposed the taxonomy filter
-    $addl = array(
-      'options[vid]' => TRUE,
-      'options[type]' => 'select',
-      'options[hierarchy]' => FALSE,
+    // Add a heirarchical taxonomy filter from the BEF test feature.
+    $this->befAddFilter(
+      'field_data_field_location.field_location_tid',
+      array(),
+      array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
     );
-    $this->befAddFilter('term_node.tid', TRUE, 'default', $addl);
 
-    // Exposed filter settings
-    $bef_settings = array(
-      'bef_format' => 'bef',
-      'bef_filter_description' => $this->randomName(16),
-    );
-    $this->befExposedFilterSettings('tid', $bef_settings);
+    $this->drupalGet($this->befGetBefSettingsUrl());
 
-    // Add a page view to the default view
-    $settings = array(
-      'path' => array('path' => $this->randomName(8)),
-    );
-    $this->befCreateDisplay('page', $settings);
-    $this->befSaveView();
+    // Verify settings available to a heirarchical taxonomy filter.
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="default"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_ul"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_links"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_hidden"]');
+
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][field_location_tid][bef_format]' => 'bef_ul',
+    ));
 
     // Verify taxonomy filter as radio buttons
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="tid" and @type="radio"]',
-      NULL,
-      'Exposed filter is shown as radio buttons',
-      'Better Exposed Filters'
-    );
-
-    // Set Force single to FALSE to display as checkboxes and set select all/none option
-    $bef_settings = array(
-      'bef_select_all_none' => TRUE,
-      'single' => FALSE,
-    );
-    $this->befExposedFilterSettings('tid', $bef_settings);
-    $this->befSaveView();
-
-    // Verify taxonomy filter as checkboxes
-    $this->drupalGet($settings['path']['path']);
-    $this->assertText(t('Taxonomy: Term'), 'Verify exposed filter label', 'Better Exposed Filters');
-    $this->assertFieldByXpath(
-      '//input[@name="tid[]" and @type="checkbox"]',
-      NULL,
-      'Exposed filter is shown as checkboxes',
-      'Better Exposed Filters'
-    );
-    $this->assertFieldByXpath(
-      '//div[contains(@class, "bef-select-all-none")]',
-      NULL,
-      'Class is set correctly for JS to build select all/none links',
-      'Beter Exposed Filters'
-    );
+    $this->drupalGet('bef_test_page');
+    $this->assertText(t('Location (field_location)'), 'Verify exposed filter label');
+    $this->assertFieldByXpath('//input[@name="field_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
   }
 
   /*******************************************************************************
