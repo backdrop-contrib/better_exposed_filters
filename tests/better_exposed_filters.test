@@ -474,4 +474,30 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
   }
 
+  /**
+   * Verify rewriting works for filter options
+   */
+  public function test_befFilterRewrite() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Verify checkbox rendering with the node type filter.
+    $this->befAddFilter('node.type', array(
+      'options[expose][multiple]' => TRUE,
+    ));
+    $this->befAddFilter('node.status');
+
+    // Set rewrite for single and multiple selection filters.
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
+      'exposed_form_options[bef][type][more_options][bef_filter_description]' => "bef_test|This is a test\nArticle|",
+    ));
+
+    $this->drupalGet('bef_test_page');
+    $this->assertNoText('Article');
+    $this->assertText('Hell yeah!');
+    $this->assertText('Boo...');
+  }
 }
