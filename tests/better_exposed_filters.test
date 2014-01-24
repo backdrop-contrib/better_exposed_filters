@@ -58,6 +58,158 @@ class BEF_TestCase extends DrupalWebTestCase {
     parent::tearDown();
   }
 
+/*******************************************************************************
+ * Helper functions
+ ******************************************************************************/
+
+  /**
+   * Returns the URL for the BEF exposed form settings page.
+   */
+  protected function befGetBefSettingsUrl() {
+    return 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
+  }
+
+  protected function befCreateView($name = '') {
+    if (!empty($this->view)) {
+      debug('WARNING: befCreateView called after view has already been created.');
+      return;
+    }
+
+    if (empty($name)) {
+      $name = $this->randomName(8);
+    }
+    $this->view['name'] = $name;
+    $this->view['machine_name'] = strtolower($name);
+
+    $edit = array(
+      'human_name' => $this->view['name'],
+      'name' => $this->view['machine_name'],
+
+      // Default is to create a page display.
+      'page[create]' => FALSE,
+    );
+    $this->drupalPost('admin/structure/views/add', $edit, 'Save & exit');
+
+    // URL to edit this view.
+    $this->view['edit_url'] = 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit';
+  }
+
+  /**
+   * Creates a display of $type.  Currently supports:
+   *    'Page'
+   *
+   * @todo: support more types...
+   */
+  protected function befCreateDisplay($type = 'Page', $settings = NULL) {
+    if (!isset($this->view['displays'])) {
+      $this->view['displays'] = array();
+    }
+
+    // Add a display of $type to the view
+    $this->drupalPost($this->view['edit_url'], array() , "Add $type");
+
+    // Grab the name of the newly created display and store some info about it.
+    $url = $this->getUrl();
+    $display_name = substr($url, strrpos($url, '/') +1);
+    $this->view['displays'][$display_name] = array(
+      'machine_name' => $display_name,
+      'edit_url' => 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit/' . $display_name,
+      'settings_base_url' => 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/' . $display_name,
+    );
+
+    // Settings should be in the form of 'path' => array_of_form_settings. Eg:
+    // to set the title for a new display as an override:
+    //  'title' => array(
+    //    'title' => 'This is an override title',
+    //    'override[dropdown]' => display_machine_name_goes_here,
+    //  )
+    //
+    // If you navigate to
+    //  admin/structure/views/nojs/display/<view_name>/<display_name>/title
+    // you will see the form in question.
+    foreach ($settings as $path => $values) {
+      $this->drupalPost($this->view['displays'][$display_name]['settings_base_url'] . "/$path", $values, 'Apply');
+    }
+    $this->befSaveView();
+  }
+
+  /**
+   * Adds a filter to a view display.
+   *
+   * $field: string in the form of node.status or
+   *   field_data_field_example.field_example_value
+   * $display: machine name of the display to add this filter to. NOTE:
+   *   Currently only allows filters on the master display, no overrides.
+   *   @todo: fix that, if needed.
+   * $exposed: (bool) (optional, default: TRUE) Is this an exposed filter?
+   * $settings: (array) Settings on the "Configure filter criterion" dialog.
+   *   NOTE: called after the "Expose filter" button is pressed if $exposed
+   *   is TRUE so you can set things like "Allow multiple items" or grouped
+   *   filter options.
+   * $additional: (array) settings for any additional configuration forms such
+   *   as taxonomy term settings.
+   */
+  protected function befAddFilter($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
+    $edit = array(
+      "name[$field]" => TRUE,
+    );
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/filter";
+    $this->drupalPost($url, $edit, 'Add and configure filter criteria');
+
+    if (!empty($additional)) {
+      // Handle filter-specific options screen.
+      $this->drupalPost (NULL, $additional, 'Apply');
+    }
+
+    if ($exposed) {
+      $this->drupalPost(NULL, array(), 'Expose filter');
+    }
+    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->befSaveView();
+  }
+
+  protected function befAddField($field, $settings = array(), $display = 'default') {
+    $edit = array(
+      "name[$field]" => TRUE,
+    );
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
+    $this->drupalPost($url, $edit, 'Add and configure fields');
+    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->befSaveView();
+  }
+
+  /**
+   * Ensures that BEF is selected as the exposed form option
+   */
+  protected function befSetBefExposedForm($display = 'default') {
+    $edit = array(
+      "exposed_form[type]" => 'better_exposed_filters',
+    );
+    $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . "/$display/exposed_form";
+    $this->drupalPost($url, $edit, 'Apply');
+
+    // BEF settings is covered under befSetBefSettings() so we just accept the
+    // default values and move on.
+    $this->drupalPost(NULL, array(), 'Apply');
+    $this->befSaveView();
+  }
+
+  protected function befSetBefSettings($settings) {
+    $this->drupalPost($this->befGetBefSettingsUrl(), $settings, 'Apply');
+    $this->befSaveView();
+  }
+
+  /**
+   * Saves the view
+   */
+  protected function befSaveView() {
+    $this->drupalPost($this->view['edit_url'], array(), 'Save');
+  }
+
+/*******************************************************************************
+ * Tests
+ ******************************************************************************/
+
   /**
    * Verify BEF options display for binary and unlimited option fields
    */
@@ -322,191 +474,4 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
   }
 
-  /*******************************************************************************
-   * Helper functions -- mostly to deal with differences between Views 2.x and 3.x
-   *******************************************************************************/
-
-  /**
-   * Returns the URL for the BEF exposed form settings page.
-   */
-  protected function befGetBefSettingsUrl() {
-    return 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
-  }
-
-  protected function befCreateView($name = '') {
-    if (!empty($this->view)) {
-      debug('WARNING: befCreateView called after view has already been created.');
-      return;
-    }
-
-    if (empty($name)) {
-      $name = $this->randomName(8);
-    }
-    $this->view['name'] = $name;
-    $this->view['machine_name'] = strtolower($name);
-
-    $edit = array(
-      'human_name' => $this->view['name'],
-      'name' => $this->view['machine_name'],
-
-      // Default is to create a page display.
-      'page[create]' => FALSE,
-    );
-    $this->drupalPost('admin/structure/views/add', $edit, 'Save & exit');
-
-    // URL to edit this view.
-    $this->view['edit_url'] = 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit';
-  }
-
-  /**
-   * Creates a display of $type.  Currently supports:
-   *    'Page'
-   *
-   * @todo: support more types...
-   */
-  protected function befCreateDisplay($type = 'Page', $settings = NULL) {
-    if (!isset($this->view['displays'])) {
-      $this->view['displays'] = array();
-    }
-
-    // Add a display of $type to the view
-    $this->drupalPost($this->view['edit_url'], array() , "Add $type");
-
-    // Grab the name of the newly created display and store some info about it.
-    $url = $this->getUrl();
-    $display_name = substr($url, strrpos($url, '/') +1);
-    $this->view['displays'][$display_name] = array(
-      'machine_name' => $display_name,
-      'edit_url' => 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit/' . $display_name,
-      'settings_base_url' => 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/' . $display_name,
-    );
-
-    // Settings should be in the form of 'path' => array_of_form_settings. Eg:
-    // to set the title for a new display as an override:
-    //  'title' => array(
-    //    'title' => 'This is an override title',
-    //    'override[dropdown]' => display_machine_name_goes_here,
-    //  )
-    //
-    // If you navigate to
-    //  admin/structure/views/nojs/display/<view_name>/<display_name>/title
-    // you will see the form in question.
-    foreach ($settings as $path => $values) {
-      $this->drupalPost($this->view['displays'][$display_name]['settings_base_url'] . "/$path", $values, 'Apply');
-    }
-    $this->befSaveView();
-  }
-
-  /**
-   * Adds a filter to a view display.
-   *
-   * $field: string in the form of node.status or
-   *   field_data_field_example.field_example_value
-   * $display: machine name of the display to add this filter to. NOTE:
-   *   Currently only allows filters on the master display, no overrides.
-   *   @todo: fix that, if needed.
-   * $exposed: (bool) (optional, default: TRUE) Is this an exposed filter?
-   * $settings: (array) Settings on the "Configure filter criterion" dialog.
-   *   NOTE: called after the "Expose filter" button is pressed if $exposed
-   *   is TRUE so you can set things like "Allow multiple items" or grouped
-   *   filter options.
-   * $additional: (array) settings for any additional configuration forms such
-   *   as taxonomy term settings.
-   */
-  protected function befAddFilter($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
-    $edit = array(
-      "name[$field]" => TRUE,
-    );
-    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/filter";
-    $this->drupalPost($url, $edit, 'Add and configure filter criteria');
-
-    if (!empty($additional)) {
-      // Handle filter-specific options screen.
-      $this->drupalPost (NULL, $additional, 'Apply');
-    }
-
-    if ($exposed) {
-      $this->drupalPost(NULL, array(), 'Expose filter');
-    }
-    $this->drupalPost(NULL, $settings, 'Apply');
-    $this->befSaveView();
-  }
-
-  protected function befAddField($field, $settings = array(), $display = 'default') {
-    $edit = array(
-      "name[$field]" => TRUE,
-    );
-    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
-    $this->drupalPost($url, $edit, 'Add and configure fields');
-    $this->drupalPost(NULL, $settings, 'Apply');
-    $this->befSaveView();
-  }
-
-  /**
-   * Ensures that BEF is selected as the exposed form option
-   */
-  protected function befSetBefExposedForm($display = 'default') {
-    $edit = array(
-      "exposed_form[type]" => 'better_exposed_filters',
-    );
-    $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . "/$display/exposed_form";
-    $this->drupalPost($url, $edit, 'Apply');
-
-    // BEF settings is covered under befSetBefSettings() so we just accept the
-    // default values and move on.
-    $this->drupalPost(NULL, array(), 'Apply');
-    $this->befSaveView();
-  }
-
-  protected function befSetBefSettings($settings) {
-    $this->drupalPost($this->befGetBefSettingsUrl(), $settings, 'Apply');
-    $this->befSaveView();
-  }
-
-  /**
-   * Saves the view
-   */
-  protected function befSaveView() {
-    $this->drupalPost($this->view['edit_url'], array(), 'Save');
-  }
-
-  /**
-   * Specifies specific settings for an exposed filter for a given display
-   *
-   * NOTE: In Views 3.x, some of what used to be in the Configure Filteres dialog has moved to the
-   *       Configure Exposed Form dialog.
-   *
-   * @param string $filter - name of the filter
-   * @param array $settings - array of form elements => value entries
-   * @return $settings array merged with default values
-   */
-//   protected function befExposedFilterSettings($filter, $settings = array(), $display = 'default') {
-//     $processed_settings = array();
-//     foreach ($settings as $elem => $setting) {
-//       $processed_settings["options[expose][$elem]"] = $setting;
-//     }
-
-//     //DEBUG:
-// //    foreach ($processed_settings as $item) {
-// //      $this->verbose("processed_setting: $item");
-// //    }
-//     //END_DEBUG:
-
-//     if ($this->views_version == 2) {
-// //      $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
-//       $this->drupalPost(
-//         "admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter",
-//         $processed_settings,
-//         'Update'
-//       );
-//       $this->drupalGet("admin/structure/views/nojs/config-item/$this->view_name/$display/filter/$filter");
-//     }
-//     else {
-//       // All BEF settings are now in the Exposed Form dialog.
-
-//       //@TODO
-//     }
-//     return $settings;
-//   }
 }
-
