@@ -325,7 +325,7 @@ function theme_select_as_tree($vars) {
   // Build a bunch of nested unordered lists to represent the hierarchy based
   // on the '-' prefix added by Views or optgroup structure.
   $output = '<ul class="bef-tree">';
-  $curr_depth = 0;
+  $curr_depth = -1;
   foreach ($element['#options'] as $option_value => $option_label) {
 
     // Check for Taxonomy-based filters.
@@ -365,7 +365,7 @@ function theme_select_as_tree($vars) {
         $html .= theme('form_element', array('element' => $element[$option_value]));
       }
 
-      if ($depth > $curr_depth) {
+      if ($depth > $curr_depth && -1 != $curr_depth) {
         // We've moved down a level: create a new nested <ul>.
         // TODO: Is there is a way to jump more than one level deeper at a time?
         // I don't think so...
@@ -382,12 +382,13 @@ function theme_select_as_tree($vars) {
         $output .= "</li><li>$html";
       }
       else {
-        // Remain at same level as previous entry. No </li> needed if we're at
-        // the top level.
-        if (0 == $curr_depth) {
+        if (-1 == $curr_depth) {
+          // No </li> needed if we're just starting the nested ul's.
           $output .= "<li>$html";
+          $curr_depth = 0;
         }
         else {
+          // Remain at same level as previous entry.
           $output .= "</li><li>$html";
         }
       }
