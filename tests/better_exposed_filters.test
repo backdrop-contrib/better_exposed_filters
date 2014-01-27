@@ -168,6 +168,25 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->befSaveView();
   }
 
+  protected function befAddSort($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
+    $edit = array(
+      "name[$field]" => TRUE,
+    );
+    $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/sort";
+    $this->drupalPost($url, $edit, 'Add and configure sort criteria');
+
+    if (!empty($additional)) {
+      // Handle filter-specific options screen.
+      $this->drupalPost (NULL, $additional, 'Apply');
+    }
+
+    if ($exposed) {
+      $this->drupalPost(NULL, array(), 'Expose sort');
+    }
+    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->befSaveView();
+  }
+
   protected function befAddField($field, $settings = array(), $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
@@ -492,12 +511,17 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Set rewrite for single and multiple selection filters.
     $this->befSetBefSettings(array(
       'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
-      'exposed_form_options[bef][type][more_options][bef_filter_description]' => "bef_test|This is a test\nArticle|",
+      'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' => "bef_test|This is a test\nArticle|",
     ));
 
     $this->drupalGet('bef_test_page');
-    $this->assertNoText('Article');
-    $this->assertText('Hell yeah!');
-    $this->assertText('Boo...');
+    $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter value "bef_test" in "Type" filter');
+    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Article', 'Rerwrite of the filter value "article" to null in "Type" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter value "Yes" in "Published" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter value "No" in "Published" filter.');
   }
+
+  // public function test_befExposedSort() {
+
+  // }
 }

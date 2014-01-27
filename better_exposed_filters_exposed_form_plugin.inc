@@ -899,10 +899,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           if (isset($rewrite[$option])) {
             if ('' == $rewrite[$option]) {
               unset($form[$field_id]['#options'][$index]);
-              if ($selected == $index) {
-                // Avoid "Illegal choice" errors.
-                $form[$field_id]['#default_value'] = NULL;
-              }
             }
             else {
               if ($is_object) {
