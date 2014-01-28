@@ -1062,6 +1062,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             $bef_js['datepicker_options']['dateformat'] = str_replace(array_keys($convert), array_values($convert), $format);
           }
           else {
+            $bef_js['datepicker_options']['dateformat'] = '';
             /*
              * Standard Drupal date field.  Depending on the settings, the field
              * can be at $form[$field_id] (single field) or

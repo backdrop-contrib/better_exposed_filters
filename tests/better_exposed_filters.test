@@ -31,7 +31,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->start = time();
 
     // Enable any modules required for the test.
-    parent::setUp('views', 'views_ui', 'better_exposed_filters', 'bef_test_content');
+    parent::setUp('views', 'views_ui', 'better_exposed_filters', 'bef_test_content', 'date', 'date_views');
 
     // User with edit views perms
     $this->admin_user = $this->drupalCreateUser();
@@ -607,6 +607,8 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Verify the slider option appears for integer fields
     $this->drupalGet($this->befGetBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_integer_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_integer_value][bef_format]"]/option', 'jQuery UI slider');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_price_value][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_price_value][bef_format]"]/option', 'jQuery UI slider');
 
     // Set both fields to use sliders using the default slider options. Integer
@@ -654,5 +656,68 @@ class BEF_TestCase extends DrupalWebTestCase {
       'id' => 'field-price-value',
       'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
+  }
+
+  /**
+   * Verifies Datepicker options using Drupal core date fields.
+   */
+  public function test_befDatepicker() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Verify slider rendering using the Numbers field from the BEF test content
+    // type.
+    $this->befAddFilter('node.created');
+    $this->befSaveView();
+
+    // Verify the slider option appears for integer fields
+    $this->drupalGet($this->befGetBefSettingsUrl());
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'jQuery UI Datepicker');
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][created][bef_format]' => 'bef_datepicker',
+    ));
+    $this->befSaveView();
+
+    $this->drupalGet('bef_test_page');
+    $settings = $this->drupalGetSettings();
+    $settings = $settings['better_exposed_filters'];
+    $this->assertTrue($settings['datepicker'], 'BEF slider setting is TRUE');
+    $this->assertFieldByXpath('//div[@id="edit-created-wrapper"]//input[contains(@class,"bef-datepicker")]');
+  }
+
+  /**
+   * Verifies Datepicker options using a custom (Date module) date field.
+   */
+  public function test_befDatepickerCustom() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Verify slider rendering using the Numbers field from the BEF test content
+    // type.
+    $this->befAddFilter('field_data_field_date.field_date_value', array(), array(
+      'options[form_type]' => 'date_text',
+    ));
+    $this->befSaveView();
+
+    // Verify the slider option appears for integer fields
+    $this->drupalGet($this->befGetBefSettingsUrl());
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_date_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_date_value][bef_format]"]/option', 'jQuery UI Datepicker');
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][field_date_value][bef_format]' => 'bef_datepicker',
+    ));
+    $this->befSaveView();
+
+    $this->drupalGet('bef_test_page');
+    $settings = $this->drupalGetSettings();
+    $settings = $settings['better_exposed_filters'];
+    $this->assertTrue($settings['datepicker'], 'BEF slider setting is TRUE');
+    $this->assertTrue(!empty($settings['datepicker_options']['dateformat']), 'BEF slider setting is TRUE');
+    $this->assertFieldByXpath('//div[@id="edit-field-date-value-value"]//input[contains(@class,"bef-datepicker")]');
   }
 }
