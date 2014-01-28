@@ -148,6 +148,8 @@ class BEF_TestCase extends DrupalWebTestCase {
    *   filter options.
    * $additional: (array) settings for any additional configuration forms such
    *   as taxonomy term settings.
+   *
+   * Note: This routine expects the caller to save the view, as needed.
    */
   protected function befAddFilter($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
@@ -165,9 +167,13 @@ class BEF_TestCase extends DrupalWebTestCase {
       $this->drupalPost(NULL, array(), 'Expose filter');
     }
     $this->drupalPost(NULL, $settings, 'Apply');
-    $this->befSaveView();
   }
 
+  /**
+   * Adds a sort to a view display. See befAddFilter for parameter options.
+   *
+   * Note: This routine expects the caller to save the view, as needed.
+   */
   protected function befAddSort($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
@@ -184,9 +190,13 @@ class BEF_TestCase extends DrupalWebTestCase {
       $this->drupalPost(NULL, array(), 'Expose sort');
     }
     $this->drupalPost(NULL, $settings, 'Apply');
-    $this->befSaveView();
   }
 
+  /**
+   * Adds a field to a view display. See befAddFilter for parameter options.
+   *
+   * Note: This routine expects the caller to save the view, as needed.
+   */
   protected function befAddField($field, $settings = array(), $display = 'default') {
     $edit = array(
       "name[$field]" => TRUE,
@@ -194,11 +204,12 @@ class BEF_TestCase extends DrupalWebTestCase {
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
     $this->drupalPost($url, $edit, 'Add and configure fields');
     $this->drupalPost(NULL, $settings, 'Apply');
-    $this->befSaveView();
   }
 
   /**
    * Ensures that BEF is selected as the exposed form option
+   *
+   * Note: This routine expects the caller to save the view, as needed.
    */
   protected function befSetBefExposedForm($display = 'default') {
     $edit = array(
@@ -210,12 +221,19 @@ class BEF_TestCase extends DrupalWebTestCase {
     // BEF settings is covered under befSetBefSettings() so we just accept the
     // default values and move on.
     $this->drupalPost(NULL, array(), 'Apply');
-    $this->befSaveView();
   }
 
-  protected function befSetBefSettings($settings) {
+  /**
+   * Sets various BEF exposed form settings. If $error is specified it also
+   * asserts that the error text apepars when trying to apply $settings.
+   *
+   * Note: This routine expects the caller to save the view, as needed.
+   */
+  protected function befSetBefSettings($settings, $error = '') {
     $this->drupalPost($this->befGetBefSettingsUrl(), $settings, 'Apply');
-    $this->befSaveView();
+    if (!empty($error)) {
+      $this->assertText($error);
+    }
   }
 
   /**
@@ -272,12 +290,13 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   // Add filters to the default display
   //   $this->befAddFilter('node.status');
   //   $this->befAddFilter('node.type');
+  //   $this->befSaveView();
+
+  //   // Ensure basic BEF settings are preserved on save.
   //   $settings = array(
   //     'status_1' => 'Published',
   //     'type' => 'Type',
   //   );
-
-  //   // Ensure basic BEF settings are preserved on save.
   //   foreach ($settings as $id => $label) {
   //     $edit = array(
   //       "exposed_form_options[bef][$id][bef_format]" => 'bef',
@@ -285,6 +304,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //       "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
   //     );
   //     $this->befSetBefSettings($edit);
+  //     $this->befSaveView();
   //     $this->drupalGet($this->befGetBefSettingsUrl());
   //     foreach ($edit as $name => $expected) {
   //       $this->assertFieldByName($name, $expected);
@@ -294,6 +314,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   // This filter cannot use BEF settings. Ensure only generic settings are
   //   // available for open text filters.
   //   $this->befAddFilter('node.title');
+  //   $this->befSaveView();
   //   $this->drupalGet($this->befGetBefSettingsUrl());
   //   $this->assertNoFieldByName('exposed_form_options[bef][title][bef_format]', 'bef');
   //   $edit = array(
@@ -301,6 +322,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //     "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
   //   );
   //   $this->befSetBefSettings($edit);
+  //   $this->befSaveView();
   //   $this->drupalGet($this->befGetBefSettingsUrl());
   //   foreach ($edit as $name => $expected) {
   //     $this->assertFieldByName($name, $expected);
@@ -321,6 +343,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][type][bef_format]' => 'bef',
   //   ));
+  //   $this->befSaveView();
 
   //   $this->drupalGet('bef_test_page');
   //   $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
@@ -335,7 +358,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
   //   ));
-
+  //   $this->befSaveView();
   //   $this->drupalGet('bef_test_page');
 
   //   // Exposed filter is shown as radio buttons enclosed within a fieldset.
@@ -364,6 +387,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][type][bef_format]' => 'bef',
   //   ));
+  //   $this->befSaveView();
 
   //   $this->drupalGet('bef_test_page');
   //   $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
@@ -378,6 +402,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][type][more_options][bef_select_all_none]' => TRUE,
   //   ));
+  //   $this->befSaveView();
   //   $this->drupalGet('bef_test_page');
   //   $this->assertFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
 
@@ -385,7 +410,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
   //   ));
-
+  //   $this->befSaveView();
   //   $this->drupalGet('bef_test_page');
 
   //   // Exposed filter is shown as checkboxes enclosed within a fieldset.
@@ -422,6 +447,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //     'exposed_form_options[bef][type][bef_format]' => 'bef_hidden',
   //     'exposed_form_options[bef][status_1][bef_format]' => 'bef_hidden',
   //   ));
+  //   $this->befSaveView();
 
   //   $this->drupalGet('bef_test_page');
   //   $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
@@ -469,7 +495,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //     array(),
   //     array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
   //   );
-
+  //   $this->befSaveView();
   //   $this->drupalGet($this->befGetBefSettingsUrl());
 
   //   // Verify settings available to a heirarchical taxonomy filter.
@@ -483,6 +509,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][field_location_tid][bef_format]' => 'bef_ul',
   //   ));
+  //   $this->befSaveView();
 
   //   // Verify taxonomy filter as radio buttons
   //   $this->drupalGet('bef_test_page');
@@ -513,6 +540,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //     'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
   //     'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' => "bef_test|This is a test\nArticle|",
   //   ));
+  //   $this->befSaveView();
 
   //   $this->drupalGet('bef_test_page');
   //   $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter value "bef_test" in "Type" filter');
@@ -534,6 +562,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[expose_sort_order]' => TRUE,
   //   ));
+  //   $this->befSaveView();
 
   //   // Verify basic options
   //   $this->drupalGet($this->befGetBefSettingsUrl());
@@ -545,6 +574,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //   $this->befSetBefSettings(array(
   //     'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
   //   ));
+  //   $this->befSaveView();
   //   $this->drupalGet('bef_test_page');
   //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title DESC');
   //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title ASC');
@@ -554,6 +584,7 @@ class BEF_TestCase extends DrupalWebTestCase {
   //     'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
   //     'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Title Desc|Going down\nTitle Asc|Going up",
   //   ));
+  //   $this->befSaveView();
   //   $this->drupalGet('bef_test_page');
   //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
   //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
@@ -571,6 +602,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->befAddFilter('field_data_field_price.field_price_value', array(
       'options[operator]' => 'between',
     ));
+    $this->befSaveView();
 
     // Verify the slider option appears for integer fields
     $this->drupalGet($this->befGetBefSettingsUrl());
@@ -593,9 +625,9 @@ class BEF_TestCase extends DrupalWebTestCase {
       'exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 250,
       'exposed_form_options[bef][field_price_value][slider_options][bef_slider_animate]' => 'normal',
       'exposed_form_options[bef][field_price_value][slider_options][bef_slider_orientation]' => 'vertical',
-    ));
-    // $this->assertText(t('The range of the slider (Range maximum - Range minimum) should be evenly divisible by the step.'));
-    // $this->drupalPost(NULL, array('exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 100));
+    ), t('The range of the slider (Range maximum - Range minimum) should be evenly divisible by the step.'));
+    $this->drupalPost(NULL, array('exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 100), 'Apply');
+    $this->befSaveView();
 
     $this->drupalGet('bef_test_page');
     $settings = $this->drupalGetSettings();
