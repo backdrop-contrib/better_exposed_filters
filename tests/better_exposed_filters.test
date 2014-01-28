@@ -229,333 +229,398 @@ class BEF_TestCase extends DrupalWebTestCase {
  * Tests
  ******************************************************************************/
 
-  /**
-   * Verify BEF options display for binary and unlimited option fields
-   */
-  public function test_befOptionsExist() {
-    // Add filters to the default display
-    $this->befAddFilter('node.title');
-    $this->befAddFilter('node.status');
-    $this->befAddFilter('node.type');
+  // /**
+  //  * Verify BEF options display for binary and unlimited option fields
+  //  */
+  // public function test_befOptionsExist() {
+  //   // Add filters to the default display
+  //   $this->befAddFilter('node.title');
+  //   $this->befAddFilter('node.status');
+  //   $this->befAddFilter('node.type');
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
+
+  //   $settings = array(
+  //     'status_1' => 'Published',
+  //     'type' => 'Type',
+  //     'title' => 'Title'
+  //   );
+
+  //   foreach ($settings as $id => $label) {
+  //     $translation = array(
+  //       '!id' => $id,
+  //       '!label' => $label,
+  //     );
+  //     $this->assertRaw(
+  //       htmlentities(t('Display "!id" (Filter label: "!label") exposed filter as', $translation)),
+  //       t('BEF options exist for exposed "!id" filter', $translation)
+  //     );
+  //     $this->assertRaw(
+  //       htmlentities(t('More options for "!id" (Filter label: "!label")', $translation)),
+  //       t('BEF "More options" fieldset exists for exposed "!id" filter', $translation)
+  //     );
+  //     $this->assertField(
+  //       'edit-exposed-form-options-bef-' . str_replace('_', '-', $id) . '-bef-format',
+  //       t('BEF options dropdown exists for "!id"', $translation)
+  //     );
+  //   }
+  // }
+
+  // /**
+  //  * Verify BEF options are saved and redisplayed properly
+  //  */
+  // public function test_befOptionsSave() {
+  //   // Add filters to the default display
+  //   $this->befAddFilter('node.status');
+  //   $this->befAddFilter('node.type');
+  //   $settings = array(
+  //     'status_1' => 'Published',
+  //     'type' => 'Type',
+  //   );
+
+  //   // Ensure basic BEF settings are preserved on save.
+  //   foreach ($settings as $id => $label) {
+  //     $edit = array(
+  //       "exposed_form_options[bef][$id][bef_format]" => 'bef',
+  //       "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
+  //       "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
+  //     );
+  //     $this->befSetBefSettings($edit);
+  //     $this->drupalGet($this->befGetBefSettingsUrl());
+  //     foreach ($edit as $name => $expected) {
+  //       $this->assertFieldByName($name, $expected);
+  //     }
+  //   }
+
+  //   // This filter cannot use BEF settings. Ensure only generic settings are
+  //   // available for open text filters.
+  //   $this->befAddFilter('node.title');
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
+  //   $this->assertNoFieldByName('exposed_form_options[bef][title][bef_format]', 'bef');
+  //   $edit = array(
+  //     "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
+  //     "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
+  //   );
+  //   $this->befSetBefSettings($edit);
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
+  //   foreach ($edit as $name => $expected) {
+  //     $this->assertFieldByName($name, $expected);
+  //   }
+  // }
+
+  // /**
+  //  * Verify BEF radio buttons are rendered correctly on a page view.
+  //  */
+  // public function test_befPageDisplayRadios() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Verify radio button rendering with the node type filter.
+  //   $this->befAddFilter('node.type');
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][bef_format]' => 'bef',
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
+
+  //   // Exposed filter options render as radio buttons.
+  //   $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-all"]');
+  //   $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-article"]');
+  //   $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-page"]');
+  //   $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
+
+  //   // Now try it in a with the collapsible option.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+
+  //   // Exposed filter is shown as radio buttons enclosed within a fieldset.
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-all"]');
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-article"]');
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-page"]');
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
+
+  //   // Filter label is used as the fieldset legend
+  //   $this->assertFieldByXpath('//fieldset//legend[* = "Type"]');
+  // }
+
+  // /**
+  //  * Verify that checkboxes are rendered correctly on a page display
+  //  */
+  // public function test_befPageDisplayCheckboxes() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Verify checkbox rendering with the node type filter.
+  //   $this->befAddFilter('node.type', array(
+  //     'options[expose][multiple]' => TRUE,
+  //   ));
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][bef_format]' => 'bef',
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
+
+  //   // Exposed filter option render as checkboxes.
+  //   $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
+  //   $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
+  //   $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
+
+  //   // Verify classes added for select all/none functionality.
+  //   $this->assertNoFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][more_options][bef_select_all_none]' => TRUE,
+  //   ));
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
+
+  //   // Now try it in a with the collapsible option.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+
+  //   // Exposed filter is shown as checkboxes enclosed within a fieldset.
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
+  //   $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
+
+  //   // Filter label is used as the fieldset legend
+  //   $this->assertFieldByXpath('//fieldset//legend[* = "Type"]');
+
+  //   // Test the select all/none option in fieldsets.
+  //   $this->assertFieldByXpath('//fieldset//div[contains(@class, "bef-select-all-none")]');
+  // }
+
+  // /**
+  //  * Verify hidden exposed filters are rendered correctly on a page display
+  //  * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
+  //  */
+  // public function test_befPageDisplayHidden() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Verify multi-selection hidden elements with node->type.
+  //   $this->befAddFilter('node.type', array(
+  //     'options[expose][multiple]' => TRUE,
+  //   ));
+
+  //   // Verify single-selection hidden elements with node->status.
+  //   $this->befAddFilter('node.status');
+
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][type][bef_format]' => 'bef_hidden',
+  //     'exposed_form_options[bef][status_1][bef_format]' => 'bef_hidden',
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
+  //   $this->assertNoText(t('Published'), 'Exposed "Published" filter title does not show for hidden elements.');
+
+  //   // Exposed filter option render as checkboxes.
+  //   // @todo: Need to fix these.
+  //   // $this->assertFieldByXpath('//input[@name="type[]" and @type="hidden"]');
+  //   // $this->assertFieldByXpath('//input[@name="status_1" and @type="hidden"]');
+  // }
+
+  // /**
+  //  * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
+  //  */
+  // public function test_befTaxonomyFilters() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Add three terms with two children each to the vocab defined in
+  //   // bef_test_content.
+  //   $vocab = taxonomy_vocabulary_machine_name_load('location');
+  //   $parents = array();
+  //   foreach(array('parent1', 'parent2', 'parent3') as $name) {
+  //     $term = new stdClass();
+  //     $term->vid = $vocab->vid;
+  //     $term->name = $name;
+  //     taxonomy_term_save($term);
+  //     $parents[$term->tid] = $term->name;
+  //   }
+  //   foreach(array('child1', 'child2') as $name) {
+  //     foreach($parents as $pid => $pname) {
+  //       $term = new stdClass();
+  //       $term->vid = $vocab->vid;
+  //       $term->name = "$pname $name";
+  //       $term->parent = $pid;
+  //       taxonomy_term_save($term);
+  //     }
+  //   }
+
+  //   // Add a heirarchical taxonomy filter from the BEF test feature.
+  //   $this->befAddFilter(
+  //     'field_data_field_location.field_location_tid',
+  //     array(),
+  //     array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
+  //   );
+
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
+
+  //   // Verify settings available to a heirarchical taxonomy filter.
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="default"]');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef"]');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_ul"]');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_links"]');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_hidden"]');
+
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][field_location_tid][bef_format]' => 'bef_ul',
+  //   ));
+
+  //   // Verify taxonomy filter as radio buttons
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertText(t('Location (field_location)'), 'Verify exposed filter label');
+  //   $this->assertFieldByXpath('//input[@name="field_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
+  //   $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
+  //   $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
+  //   $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
+  // }
+
+  // /**
+  //  * Verify rewriting works for filter options
+  //  */
+  // public function test_befFilterRewrite() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Verify checkbox rendering with the node type filter.
+  //   $this->befAddFilter('node.type', array(
+  //     'options[expose][multiple]' => TRUE,
+  //   ));
+  //   $this->befAddFilter('node.status');
+
+  //   // Set rewrite for single and multiple selection filters.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
+  //     'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' => "bef_test|This is a test\nArticle|",
+  //   ));
+
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter value "bef_test" in "Type" filter');
+  //   $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Article', 'Rerwrite of the filter value "article" to null in "Type" filter.');
+  //   $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter value "Yes" in "Published" filter.');
+  //   $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter value "No" in "Published" filter.');
+  // }
+
+  // public function test_befExposedSort() {
+  //   // Create a page display to validate rendering.
+  //   $this->befCreateDisplay('Page', array(
+  //     'path' => array('path' => 'bef_test_page'),
+  //   ));
+
+  //   // Add an exposed sort
+  //   $this->befAddSort('node.title');
+
+  //   // Double-check that expose sort order is checked.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[expose_sort_order]' => TRUE,
+  //   ));
+
+  //   // Verify basic options
+  //   $this->drupalGet($this->befGetBefSettingsUrl());
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Default select list');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Radio Buttons');
+  //   $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Links');
+
+  //   // Verify combined sort order and sort by.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
+  //   ));
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title DESC');
+  //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title ASC');
+
+  //   // And rewrite the combined sort options.
+  //   $this->befSetBefSettings(array(
+  //     'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
+  //     'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Title Desc|Going down\nTitle Asc|Going up",
+  //   ));
+  //   $this->drupalGet('bef_test_page');
+  //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
+  //   $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
+  // }
+
+  public function test_befSliders() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Verify slider rendering using the Numbers field from the BEF test content
+    // type.
+    $this->befAddFilter('field_data_field_integer.field_integer_value');
+    $this->befAddFilter('field_data_field_price.field_price_value', array(
+      'options[operator]' => 'between',
+    ));
+
+    // Verify the slider option appears for integer fields
     $this->drupalGet($this->befGetBefSettingsUrl());
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_integer_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_price_value][bef_format]"]/option', 'jQuery UI slider');
 
-    $settings = array(
-      'status_1' => 'Published',
-      'type' => 'Type',
-      'title' => 'Title'
-    );
-
-    foreach ($settings as $id => $label) {
-      $translation = array(
-        '!id' => $id,
-        '!label' => $label,
-      );
-      $this->assertRaw(
-        htmlentities(t('Display "!id" (Filter label: "!label") exposed filter as', $translation)),
-        t('BEF options exist for exposed "!id" filter', $translation)
-      );
-      $this->assertRaw(
-        htmlentities(t('More options for "!id" (Filter label: "!label")', $translation)),
-        t('BEF "More options" fieldset exists for exposed "!id" filter', $translation)
-      );
-      $this->assertField(
-        'edit-exposed-form-options-bef-' . str_replace('_', '-', $id) . '-bef-format',
-        t('BEF options dropdown exists for "!id"', $translation)
-      );
-    }
-  }
-
-  /**
-   * Verify BEF options are saved and redisplayed properly
-   */
-  public function test_befOptionsSave() {
-    // Add filters to the default display
-    $this->befAddFilter('node.status');
-    $this->befAddFilter('node.type');
-    $settings = array(
-      'status_1' => 'Published',
-      'type' => 'Type',
-    );
-
-    // Ensure basic BEF settings are preserved on save.
-    foreach ($settings as $id => $label) {
-      $edit = array(
-        "exposed_form_options[bef][$id][bef_format]" => 'bef',
-        "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
-        "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
-      );
-      $this->befSetBefSettings($edit);
-      $this->drupalGet($this->befGetBefSettingsUrl());
-      foreach ($edit as $name => $expected) {
-        $this->assertFieldByName($name, $expected);
-      }
-    }
-
-    // This filter cannot use BEF settings. Ensure only generic settings are
-    // available for open text filters.
-    $this->befAddFilter('node.title');
-    $this->drupalGet($this->befGetBefSettingsUrl());
-    $this->assertNoFieldByName('exposed_form_options[bef][title][bef_format]', 'bef');
-    $edit = array(
-      "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
-      "exposed_form_options[bef][$id][more_options][bef_collapsible]" => TRUE,
-    );
-    $this->befSetBefSettings($edit);
-    $this->drupalGet($this->befGetBefSettingsUrl());
-    foreach ($edit as $name => $expected) {
-      $this->assertFieldByName($name, $expected);
-    }
-  }
-
-  /**
-   * Verify BEF radio buttons are rendered correctly on a page view.
-   */
-  public function test_befPageDisplayRadios() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
-
-    // Verify radio button rendering with the node type filter.
-    $this->befAddFilter('node.type');
+    // Set both fields to use sliders using the default slider options. Integer
+    // should render as a single slider, Price should render as two because of
+    // the "between" operator. But we can't test the creation of the sliders as
+    // Simpletest ignores JavaScript, so we just verify the settings and
+    // necessary files are there.
     $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][bef_format]' => 'bef',
+      // Just use the default values for this one.
+      'exposed_form_options[bef][field_integer_value][bef_format]' => 'bef_slider',
+
+      // More complicated option for this one.
+      'exposed_form_options[bef][field_price_value][bef_format]' => 'bef_slider',
+      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_min]' => 100,
+      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_max]' => 5000,
+      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 250,
+      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_animate]' => 'normal',
+      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_orientation]' => 'vertical',
     ));
+    // $this->assertText(t('The range of the slider (Range maximum - Range minimum) should be evenly divisible by the step.'));
+    // $this->drupalPost(NULL, array('exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 100));
 
     $this->drupalGet('bef_test_page');
-    $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
+    $settings = $this->drupalGetSettings();
+    $settings = $settings['better_exposed_filters'];
+    $this->assertTrue($settings['slider'], 'BEF slider setting is TRUE');
 
-    // Exposed filter options render as radio buttons.
-    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-all"]');
-    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-article"]');
-    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-page"]');
-    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
-
-    // Now try it in a with the collapsible option.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
+    // Check slider options are passed from the settings page to JavaScript.
+    // Note that we skip the
+    $this->assertEqual($settings['slider_options']['field_integer_value'], array(
+      'min' => '0',
+      'max' => '99999',
+      'step' => '1',
+      'animate' => '',
+      'orientation' => 'horizontal',
+      'id' => 'field-integer-value',
+      'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
-
-    $this->drupalGet('bef_test_page');
-
-    // Exposed filter is shown as radio buttons enclosed within a fieldset.
-    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-all"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-article"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-page"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
-
-    // Filter label is used as the fieldset legend
-    $this->assertFieldByXpath('//fieldset//legend[* = "Type"]');
-  }
-
-  /**
-   * Verify that checkboxes are rendered correctly on a page display
-   */
-  public function test_befPageDisplayCheckboxes() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
+    $this->assertEqual($settings['slider_options']['field_integer_value'], array(
+      'min' => '100',
+      'max' => '5000',
+      'step' => '100',
+      'animate' => 'normal',
+      'orientation' => 'vertical',
+      'id' => 'field-price-value',
+      'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
-
-    // Verify checkbox rendering with the node type filter.
-    $this->befAddFilter('node.type', array(
-      'options[expose][multiple]' => TRUE,
-    ));
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][bef_format]' => 'bef',
-    ));
-
-    $this->drupalGet('bef_test_page');
-    $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
-
-    // Exposed filter option render as checkboxes.
-    $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
-    $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
-    $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
-
-    // Verify classes added for select all/none functionality.
-    $this->assertNoFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][more_options][bef_select_all_none]' => TRUE,
-    ));
-    $this->drupalGet('bef_test_page');
-    $this->assertFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
-
-    // Now try it in a with the collapsible option.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
-    ));
-
-    $this->drupalGet('bef_test_page');
-
-    // Exposed filter is shown as checkboxes enclosed within a fieldset.
-    $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
-
-    // Filter label is used as the fieldset legend
-    $this->assertFieldByXpath('//fieldset//legend[* = "Type"]');
-
-    // Test the select all/none option in fieldsets.
-    $this->assertFieldByXpath('//fieldset//div[contains(@class, "bef-select-all-none")]');
-  }
-
-  /**
-   * Verify hidden exposed filters are rendered correctly on a page display
-   * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
-   */
-  public function test_befPageDisplayHidden() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
-
-    // Verify multi-selection hidden elements with node->type.
-    $this->befAddFilter('node.type', array(
-      'options[expose][multiple]' => TRUE,
-    ));
-
-    // Verify single-selection hidden elements with node->status.
-    $this->befAddFilter('node.status');
-
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][type][bef_format]' => 'bef_hidden',
-      'exposed_form_options[bef][status_1][bef_format]' => 'bef_hidden',
-    ));
-
-    $this->drupalGet('bef_test_page');
-    $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
-    $this->assertNoText(t('Published'), 'Exposed "Published" filter title does not show for hidden elements.');
-
-    // Exposed filter option render as checkboxes.
-    // @todo: Need to fix these.
-    // $this->assertFieldByXpath('//input[@name="type[]" and @type="hidden"]');
-    // $this->assertFieldByXpath('//input[@name="status_1" and @type="hidden"]');
-  }
-
-  /**
-   * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
-   */
-  public function test_befTaxonomyFilters() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
-
-    // Add three terms with two children each to the vocab defined in
-    // bef_test_content.
-    $vocab = taxonomy_vocabulary_machine_name_load('location');
-    $parents = array();
-    foreach(array('parent1', 'parent2', 'parent3') as $name) {
-      $term = new stdClass();
-      $term->vid = $vocab->vid;
-      $term->name = $name;
-      taxonomy_term_save($term);
-      $parents[$term->tid] = $term->name;
-    }
-    foreach(array('child1', 'child2') as $name) {
-      foreach($parents as $pid => $pname) {
-        $term = new stdClass();
-        $term->vid = $vocab->vid;
-        $term->name = "$pname $name";
-        $term->parent = $pid;
-        taxonomy_term_save($term);
-      }
-    }
-
-    // Add a heirarchical taxonomy filter from the BEF test feature.
-    $this->befAddFilter(
-      'field_data_field_location.field_location_tid',
-      array(),
-      array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
-    );
-
-    $this->drupalGet($this->befGetBefSettingsUrl());
-
-    // Verify settings available to a heirarchical taxonomy filter.
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="default"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_ul"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_links"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_hidden"]');
-
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][field_location_tid][bef_format]' => 'bef_ul',
-    ));
-
-    // Verify taxonomy filter as radio buttons
-    $this->drupalGet('bef_test_page');
-    $this->assertText(t('Location (field_location)'), 'Verify exposed filter label');
-    $this->assertFieldByXpath('//input[@name="field_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
-  }
-
-  /**
-   * Verify rewriting works for filter options
-   */
-  public function test_befFilterRewrite() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
-
-    // Verify checkbox rendering with the node type filter.
-    $this->befAddFilter('node.type', array(
-      'options[expose][multiple]' => TRUE,
-    ));
-    $this->befAddFilter('node.status');
-
-    // Set rewrite for single and multiple selection filters.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
-      'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' => "bef_test|This is a test\nArticle|",
-    ));
-
-    $this->drupalGet('bef_test_page');
-    $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter value "bef_test" in "Type" filter');
-    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Article', 'Rerwrite of the filter value "article" to null in "Type" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter value "Yes" in "Published" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter value "No" in "Published" filter.');
-  }
-
-  public function test_befExposedSort() {
-    // Create a page display to validate rendering.
-    $this->befCreateDisplay('Page', array(
-      'path' => array('path' => 'bef_test_page'),
-    ));
-
-    // Add an exposed sort
-    $this->befAddSort('node.title');
-
-    // Double-check that expose sort order is checked.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[expose_sort_order]' => TRUE,
-    ));
-
-    // Verify basic options
-    $this->drupalGet($this->befGetBefSettingsUrl());
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Default select list');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Radio Buttons');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Links');
-
-    // Verify combined sort order and sort by.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
-    ));
-    $this->drupalGet('bef_test_page');
-    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title DESC');
-    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title ASC');
-
-    // And rewrite the combined sort options.
-    $this->befSetBefSettings(array(
-      'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
-      'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Title Desc|Going down\nTitle Asc|Going up",
-    ));
-    $this->drupalGet('bef_test_page');
-    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
-    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
   }
 }
