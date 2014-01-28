@@ -645,7 +645,7 @@ class BEF_TestCase extends DrupalWebTestCase {
       'id' => 'field-integer-value',
       'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
-    $this->assertEqual($settings['slider_options']['field_integer_value'], array(
+    $this->assertEqual($settings['slider_options']['field_price_value'], array(
       'min' => '100',
       'max' => '5000',
       'step' => '100',
