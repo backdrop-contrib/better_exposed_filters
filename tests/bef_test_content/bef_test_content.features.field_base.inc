@@ -39,6 +39,22 @@ function bef_test_content_field_default_field_bases() {
     'type' => 'text_with_summary',
   );
 
+  // Exported field_base: 'field_integer'
+  $field_bases['field_integer'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_integer',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'number',
+    'settings' => array(),
+    'translatable' => 0,
+    'type' => 'number_integer',
+  );
+
   // Exported field_base: 'field_letters'
   $field_bases['field_letters'] = array(
     'active' => 1,
@@ -135,6 +151,22 @@ function bef_test_content_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_integer',
+  );
+
+  // Exported field_base: 'field_price'
+  $field_bases['field_price'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_price',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'number',
+    'settings' => array(),
+    'translatable' => 0,
+    'type' => 'number_integer',
   );
 
   return $field_bases;
