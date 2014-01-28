@@ -29,7 +29,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
     $bef_options = array();
 
-    // Get current settings and default values for new filters/
+    // Get current settings and default values for new filters.
     $existing = $this->_bef_get_settings();
 
     /*
@@ -357,7 +357,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_options[$label]['slider_options']['bef_slider_min'] = array(
           '#type' => 'textfield',
           '#title' => t('Range minimum'),
-          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_min'],
+          '#default_value' => $existing[$label]['slider_options']['bef_slider_min'],
           '#bef_filter_id' => $label,
           '#states' => array(
             'required' => array(
@@ -370,7 +370,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_options[$label]['slider_options']['bef_slider_max'] = array(
           '#type' => 'textfield',
           '#title' => t('Range maximum'),
-          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_max'],
+          '#default_value' => $existing[$label]['slider_options']['bef_slider_max'],
           '#bef_filter_id' => $label,
           '#states' => array(
             'required' => array(
@@ -383,7 +383,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_options[$label]['slider_options']['bef_slider_step'] = array(
           '#type' => 'textfield',
           '#title' => t('Step'),
-          '#default_value' => empty($this->options['bef'][$label]['slider_options']['bef_slider_step']) ? 1 : $this->options['bef'][$label]['slider_options']['bef_slider_step'],
+          '#default_value' => empty($existing[$label]['slider_options']['bef_slider_step']) ? 1 : $existing[$label]['slider_options']['bef_slider_step'],
           '#bef_filter_id' => $label,
           '#states' => array(
             'required' => array(
@@ -398,7 +398,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_options[$label]['slider_options']['bef_slider_animate'] = array(
           '#type' => 'textfield',
           '#title' => t('Animate'),
-          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_animate'],
+          '#default_value' => $existing[$label]['slider_options']['bef_slider_animate'],
           '#bef_filter_id' => $label,
           '#description' => t('Whether to slide handle smoothly when user click outside handle on the bar. Allowed values are "slow", "normal", "fast" or the number of milliseconds to run the animation (e.g. 1000). If left blank, there will be no animation, the slider will just jump to the new value instantly.'),
           '#element_validate' => array('better_exposed_filters_element_validate_slider_animate'),
@@ -410,7 +410,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             'horizontal' => t('Horizontal'),
             'vertical' => t('Vertical'),
           ),
-          '#default_value' => $this->options['bef'][$label]['slider_options']['bef_slider_orientation'],
+          '#default_value' => $existing[$label]['slider_options']['bef_slider_orientation'],
           '#bef_filter_id' => $label,
           '#states' => array(
             'required' => array(
@@ -447,7 +447,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $bef_options[$label]['more_options']['bef_select_all_none_nested'] = array(
             '#type' => 'checkbox',
             '#title' => t('Add nested all/none selection'),
-            '#default_value' => $this->options['bef'][$label]['more_options']['bef_select_all_none_nested'],
+            '#default_value' => $existing[$label]['more_options']['bef_select_all_none_nested'],
             '#disabled' => !$filter->options['expose']['multiple'] || !$filter->options['hierarchy'],
             '#description' => t(
               'When a parent checkbox is checked, check all its children. If this option
