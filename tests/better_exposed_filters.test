@@ -521,7 +521,41 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter value "No" in "Published" filter.');
   }
 
-  // public function test_befExposedSort() {
+  public function test_befExposedSort() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
 
-  // }
+    // Add an exposed sort
+    $this->befAddSort('node.title');
+
+    // Double-check that expose sort order is checked.
+    $this->befSetBefSettings(array(
+      'exposed_form_options[expose_sort_order]' => TRUE,
+    ));
+
+    // Verify basic options
+    $this->drupalGet($this->befGetBefSettingsUrl());
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Radio Buttons');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Links');
+
+    // Verify combined sort order and sort by.
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
+    ));
+    $this->drupalGet('bef_test_page');
+    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title DESC');
+    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title ASC');
+
+    // And rewrite the combined sort options.
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
+      'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Title Desc|Going down\nTitle Asc|Going up",
+    ));
+    $this->drupalGet('bef_test_page');
+    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
+    $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
+  }
 }
