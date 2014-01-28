@@ -569,6 +569,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Radio Buttons');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Links');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Toggle Links');
 
     // Verify combined sort order and sort by.
     $this->befSetBefSettings(array(
@@ -588,6 +589,8 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->drupalGet('bef_test_page');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
+
+    // @todo: add tests for correct rendering of Links and Toggle links options.
   }
 
   public function test_befSliders() {

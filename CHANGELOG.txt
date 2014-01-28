@@ -4,6 +4,8 @@ Better Exposed Filters change log
 
 Better Exposed Filters 7.x-x.x  xxxx-xx-xx
 ------------------------------------------
+Issue #1240238 by marvil07, Max Ka, gapple, chichilatte: Let use toggle links on the exposed form sorts.
+by mikeker: Revamped automated tests.
 by mikeker: Fixed (most) Drupal Coding Standards errors and warnings
 Issue #1842494 by mikeker: Fixed Combined Sort Order - Rendered in Div of Submit Button.
 Issue #1784424 by mikeker: Refactored getting existing and default values.

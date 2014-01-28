@@ -506,6 +506,9 @@ function theme_select_as_links($vars) {
 
   // Go through each filter option and build the appropriate link or plain text.
   foreach ($element['#options'] as $option => $elem) {
+    if (!empty($element['#hidden_options'][$option])) {
+      continue;
+    }
     // Check for Taxonomy-based filters.
     if (is_object($elem)) {
       $slice = array_slice($elem->option, 0, 1, TRUE);
@@ -533,6 +536,7 @@ function theme_select_as_links($vars) {
     }
 
     foreach ($element_set as $key => $value) {
+      $element_output = '';
       // Custom ID for each link based on the <select>'s original ID.
       $id = drupal_html_id($element['#id'] . '-' . $key);
       $elem = array(
@@ -543,13 +547,27 @@ function theme_select_as_links($vars) {
       );
       if (array_search($key, $selected_options) === FALSE) {
         $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, FALSE, $path));
-        $output .= theme('form_element', array('element' => $elem));
-      }
-      else {
+        //$output .= theme('form_element', array('element' => $elem));
+        $element_output = theme('form_element', array('element' => $elem));
+
+          if ($element['#name'] == 'sort_bef_combine' && !empty($element['#settings']['toggle_links'])) {
+            $sort_pair = explode(' ', $key);
+            if (count($sort_pair) == 2) {
+              // Highlight the link if it is the selected sort_by (can be either
+              // asc or desc, it doesn't matter).
+             if (strpos($selected_options[0], $sort_pair[0]) === 0) {
+                $element_output = str_replace('form-item', 'form-item selected', $element_output);
+              }
+            }
+          }
+        } else {
         $elem['#children'] = l($value, bef_replace_query_string_arg($name, $key, $multiple, TRUE, $path));
         _form_set_class($elem, array('bef-select-as-links-selected'));
-        $output .= str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
+        //$output .= str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
+        $element_output = str_replace('form-item', 'form-item selected', theme('form_element', array('element' => $elem)));
       }
+      $output .= $element_output;
+
     }
   }
 

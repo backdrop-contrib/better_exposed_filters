@@ -77,8 +77,9 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
           'default' => t('Default select list'),
           'bef' => t('Radio Buttons'),
           'bef_links' => t('Links'),
+          'bef_toggle_links' => t('Toggle Links'),
         ),
-        '#description' => t('Select a format for the exposed sort options.'),
+        '#description' => t('Select a format for the exposed sort options. Note: the "toggle links" option will only work correctly if "Combine sort order with sort by" is checked in the "Advanced Sort Options" section.'),
       );
       $bef_options['sort']['advanced'] = array(
         '#type' => 'fieldset',
@@ -626,6 +627,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           '#title' => $form['sort_by']['#title'],
         );
         $options = array();
+        // If using the bef_toggle_links format, determine which links should
+        // not be shown.
+        $hidden_options = array();
 
         // Add reset sort option at the top of the list.
         if ($settings['sort']['advanced']['reset']) {
@@ -636,6 +640,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         }
 
         $selected = '';
+        $used_sort_keys = array();
         foreach ($form['sort_by']['#options'] as $by_key => $by_val) {
           foreach ($form['sort_order']['#options'] as $order_key => $order_val) {
             // Use a space to separate the two keys, we'll unpack them in our
@@ -646,6 +651,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               // Respect default sort order set in Views. The default sort field
               // will be the first one if there are multiple sort criteria.
               $selected = "$by_key $order_key";
+            }
+           if ($settings['sort']['bef_format'] == 'bef_toggle_links') {
+             if (isset($used_sort_keys[$by_key])
+               || (!empty($form_state['input']['sort_bef_combine']) && $form_state['input']['sort_bef_combine'] == "$by_key $order_key")
+               || (empty($form_state['input']['sort_bef_combine']) && $selected == "$by_key $order_key")
+             ) {
+                $hidden_options["$by_key $order_key"] = "$by_val $order_val";
+             }
+             else {
+                $used_sort_keys[$by_key] = $order_key;
+             }
             }
           }
         }
@@ -679,6 +695,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $form['sort_bef_combine'] = array(
           '#type' => 'radios',
           '#options' => $options,
+          '#hidden_options' => $hidden_options,
+          '#settings' => array(
+            'toggle_links' => ($settings['sort']['bef_format'] == 'bef_toggle_links'),
+           ),
           '#default_value' => $selected,
           // Already sanitized by Views.
           '#title' => $form['sort_by']['#title'],
@@ -692,6 +712,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             break;
 
           case 'bef_links':
+          case 'bef_toggle_links':
             $form['sort_bef_combine']['#theme'] = 'select_as_links';
 
             // Exposed form displayed as blocks can appear on pages other than
