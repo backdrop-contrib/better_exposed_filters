@@ -597,11 +597,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
     if ($allow_secondary = $settings['general']['allow_secondary']) {
+      // If one of the secondary widgets has exposed input, do not collapse
+      // the secondary fieldset.
+      $secondary_collapse = TRUE;
+      foreach ($this->view->get_exposed_input() as $key => $value) {
+        if (!empty($value) && isset($settings[$key]['more_options']['is_secondary'])) {
+          $secondary_collapse = FALSE;
+          break;
+        }
+      }
       $secondary = array(
         '#type' => 'fieldset',
         '#title' => $settings['general']['secondary_label'],
         '#collapsible' => TRUE,
-        '#collapsed' => TRUE,
+        '#collapsed' => $secondary_collapse,
         '#theme' => 'secondary_exposed_elements',
       );
     }
