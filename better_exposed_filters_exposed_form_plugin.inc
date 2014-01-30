@@ -1345,8 +1345,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $identifier = $form['#info']["filter-$label"]['value'];
         if (!empty($form[$identifier])) {
           // Move exposed operators with exposed filters
-          if (!empty($this->display->display_options['filters'][$identifier]['expose']['use_operator'])) {
-            $op_id = $this->display->display_options['filters'][$identifier]['expose']['operator_id'];
+          if (!empty($filters[$label]->options['expose']['use_operator'])) {
+            $op_id = $filters[$label]->options['expose']['operator_id'];
             $secondary[$op_id] = $form[$op_id];
             unset($form[$op_id]);
           }
