@@ -959,7 +959,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // autocomplete). Check for that here and revert to Views' default filter
       // in those cases.
       $requires_options = array('bef', 'bef_ul', 'bef_links', 'bef_hidden');
-      if (in_array($options['bef_format'], $requires_options) && empty($form[$field_id]['#options'])) {
+      if (in_array($options['bef_format'], $requires_options) && !array_key_exists('#options', $form[$field_id])) {
         $options['bef_format'] = 'default';
       }
 
