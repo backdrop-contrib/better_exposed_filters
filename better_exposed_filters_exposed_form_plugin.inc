@@ -571,6 +571,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
    */
   function exposed_form_alter(&$form, &$form_state) {
     parent::exposed_form_alter($form, $form_state);
+    global $language;
 
     // If we have no visible elements, we don't show the Apply button.
     $show_apply = FALSE;
@@ -675,9 +676,19 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           }
         }
 
+        $view = $form_state['view'];
+
         // Rewrite the option values if any were specified.
         if (!empty($settings['sort']['advanced']['combine_rewrite'])) {
-          $lines = explode("\n", trim($settings['sort']['advanced']['combine_rewrite']));
+          $combine_rewrite = trim($settings['sort']['advanced']['combine_rewrite']);
+          $textgroup = implode(':', array(
+            'better_exposed_filters',
+            'combine_rewrite',
+            $view->name,
+            $view->current_display,
+          ));
+          $combine_rewrite = better_exposed_filters_translate($textgroup, $combine_rewrite);
+          $lines = explode("\n", $combine_rewrite);
           $rewrite = array();
           foreach ($lines as $line) {
             list($search, $replace) = explode('|', $line);
@@ -1643,8 +1654,22 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
    * text_format field.
    */
   function options_submit(&$form, &$form_state) {
-    $form_state['values']['exposed_form_options']['text_input_required_format'] = $form_state['values']['text_input_required']['format'];
-    $form_state['values']['exposed_form_options']['text_input_required'] = $form_state['values']['text_input_required']['value'];
+    $view = $form_state['view'];
+    $values = &$form_state['values'];
+    $values['exposed_form_options']['text_input_required_format'] = $values['text_input_required']['format'];
+    $values['exposed_form_options']['text_input_required'] = $values['text_input_required']['value'];
+    if (function_exists('i18n_string_update')) {
+      $combine_rewrite = $values['exposed_form_options']['bef']['sort']['advanced']['combine_rewrite'];
+      $textgroup = implode(':', array(
+        'better_exposed_filters',
+        'combine_rewrite',
+        $view->name,
+        $view->current_display,
+      ));
+      i18n_string_update($textgroup, $combine_rewrite, array(
+        'format' => FALSE,
+      ));
+    }
     parent::options_submit($form, $form_state);
   }
 }
