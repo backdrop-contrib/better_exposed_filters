@@ -723,4 +723,48 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertTrue(!empty($settings['datepicker_options']['dateformat']), 'BEF slider setting is TRUE');
     $this->assertFieldByXpath('//div[@id="edit-field-date-value-value"]//input[contains(@class,"bef-datepicker")]');
   }
+
+  /**
+   * Verify filters rendered as links.
+   */
+  public function test_befFilterLinks() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Verify checkbox rendering with the node type filter.
+    $this->befAddFilter('node.type', array(
+      'options[expose][multiple]' => TRUE,
+    ));
+    $this->befAddFilter('node.status');
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][type][bef_format]' => 'bef_links',
+      'exposed_form_options[bef][status_1][bef_format]' => 'bef_links',
+    ));
+    $this->befSaveView();
+    $this->drupalGet('bef_test_page');
+
+    // Verify the type filter, which is multi-select.
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-article"]/a[contains(@href, "?type[0]=article")]', NULL, 'Correct link for "article" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?type[0]=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?type[0]=bef_test")]', NULL, 'Correct link for "bef test" filter');
+
+    // Verify the status filter, which is single select.
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
+
+    // Click the published/yes link and verify the filter links update.
+    $this->clickLink('Yes');
+
+    // Verify the type filter, which is multi-select.
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-article"]/a[contains(@href, "?status_1=1&type[0]=article")]', NULL, 'Correct link for "article" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?status_1=1&type[0]=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?status_1=1&type[0]=bef_test")]', NULL, 'Correct link for "bef test" filter');
+
+    // Verify the status filter, which is single select.
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
+  }
+
 }
