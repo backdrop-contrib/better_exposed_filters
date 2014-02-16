@@ -601,8 +601,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // If one of the secondary widgets has exposed input, do not collapse
       // the secondary fieldset.
       $secondary_collapse = TRUE;
-      foreach ($this->view->get_exposed_input() as $key => $value) {
-        if (!empty($value) && isset($settings[$key]['more_options']['is_secondary'])) {
+      $exposed_input = $this->view->get_exposed_input();
+      foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
+        if (!$filter->options['exposed']) {
+          continue;
+        }
+        if (!empty($exposed_input[$filter->options['expose']['identifier']]) && $settings[$label]['more_options']['is_secondary']) {
           $secondary_collapse = FALSE;
           break;
         }
