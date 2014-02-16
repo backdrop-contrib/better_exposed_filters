@@ -170,6 +170,23 @@ class BEF_TestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Edits an existing filter in the current view. See befAddFilter for param
+   * definitions.
+   */
+  protected function befEditFilter($field, $settings, $additional = array(), $display = 'default') {
+    if (FALSE !== ($pos = strpos($field, '.'))) {
+      $field = substr($field, $pos + 1);
+    }
+    $url = 'admin/structure/views/nojs/config-item/' . $this->view['machine_name'] . "/$display/filter/$field";
+    $this->drupalPost($url, $settings, 'Apply');
+
+    if (!empty($additional)) {
+      // Handle filter-specific options screen.
+      $this->drupalPost (NULL, $additional, 'Apply');
+    }
+  }
+
+  /**
    * Adds a sort to a view display. See befAddFilter for parameter options.
    *
    * Note: This routine expects the caller to save the view, as needed.
@@ -765,6 +782,55 @@ class BEF_TestCase extends DrupalWebTestCase {
     // Verify the status filter, which is single select.
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
+  }
+
+  /**
+   * Verify filters rendered as links.
+   */
+  public function test_befSecondaryFilters() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Add the node.type filter as a multi-select filter.
+    $this->befAddFilter('node.type', array(
+      'options[expose][multiple]' => TRUE,
+    ));
+    $this->befSetBefSettings(array(
+      'exposed_form_options[bef][general][allow_secondary]' => 1,
+      'exposed_form_options[bef][general][secondary_label]' => 'Custom Label',
+      'exposed_form_options[bef][type][more_options][is_secondary]' => 1,
+    ));
+    $this->befSaveView();
+    $this->drupalGet('bef_test_page');
+
+    // Verify a collapsed fieldset exists with the correct label.
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset for secondary options starts collapsed/');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset/legend/span', 'Custom Label', 'Collapsible fieldset has the correct custom label');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="type[]"]', NULL, 'The node.type filter is within the secondary fieldset');
+
+    // Select an option and make sure the fielset is expanded when rendered.
+    $this->drupalPost('bef_test_page', array('type[]' => array('page')), 'Apply');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
+
+    // https://drupal.org/node/2189321
+    // Verify fieldset is collapsed/expanded when a custom filter ID is set.
+    // @TODO: Consider refactoring so we can leverage all existing tests to use
+    // custom filter ID's...
+    $this->befEditFilter('node.type', array(
+      'options[expose][identifier]' => 'custom_id',
+    ));
+    $this->befSaveView();
+    $this->drupalGet('bef_test_page');
+
+    // Verify a collapsed fieldset exists with the correct label.
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset for secondary options, starts collapsed.');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="custom_id[]"]', NULL, 'The node.type filter is within the secondary fieldset');
+
+    // Select an option and make sure the fielset is expanded when rendered.
+    $this->drupalPost('bef_test_page', array('custom_id[]' => array('page')), 'Apply');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
   }
 
 }
