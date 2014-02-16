@@ -811,7 +811,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="type[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
     // Select an option and make sure the fielset is expanded when rendered.
-    $this->drupalPost('bef_test_page', array('type[]' => array('page')), 'Apply');
+    $this->drupalGet('bef_test_page', array('query' => array('type' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
 
     // https://drupal.org/node/2189321
@@ -829,7 +829,7 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="custom_id[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
     // Select an option and make sure the fielset is expanded when rendered.
-    $this->drupalPost('bef_test_page', array('custom_id[]' => array('page')), 'Apply');
+    $this->drupalGet('bef_test_page', array('query' => array('custom_id' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
   }
 
