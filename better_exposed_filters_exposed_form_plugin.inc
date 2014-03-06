@@ -1158,7 +1158,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           // the view results appear on. This can cause problems with
           // select_as_links options as they will use the wrong path. We provide
           // a hint for theme functions to correct this.
-          if (!empty($this->display->display_options['exposed_block'])) {
+          if (!empty($this->display->display_options['exposed_block']) && isset($this->display->display_options['path'])) {
             $form[$field_id]['#bef_path'] = $this->display->display_options['path'];
           }
           break;
