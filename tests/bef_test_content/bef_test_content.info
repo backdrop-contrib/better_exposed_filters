@@ -2,6 +2,7 @@ name = BEF Test Content
 description = Content and Views for testing Better Exposed Filters.
 core = 7.x
 package = BEF Tests
+hidden = TRUE
 php = 5.2.4
 dependencies[] = better_exposed_filters
 dependencies[] = date
