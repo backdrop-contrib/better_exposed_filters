@@ -901,7 +901,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Form element is designated by the element ID which is user-
       // configurable.
-      $field_id = $form['#info']["filter-$label"]['value'];
+      if (isset($form['#info']["filter-$label"]['value'])) {
+        $field_id = $form['#info']["filter-$label"]['value'];
+      }
+      else {
+        $field_id = $form['#info']["filter-{$filters[$label]->options['group_info']['identifier']}"]['value'];
+      }
 
       // Token replacement on BEF Description fields.
       if (!empty($options['more_options']['bef_filter_description'])) {
