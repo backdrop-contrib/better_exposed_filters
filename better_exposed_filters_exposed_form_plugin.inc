@@ -1380,11 +1380,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           unset($form['#info']["filter-$label"]);
         }
       }
-    }
 
-    // Override "Any" label, if applicable.
-    if (!empty($options['more_options']['any_label']) && !empty($form[$field_id]['#options']['All'])) {
-      $form[$field_id]['#options']['All'] = $options['more_options']['any_label'];
+      // Override "Any" label, if applicable.
+      if (!empty($options['more_options']['any_label']) && !empty($form[$field_id]['#options']['All'])) {
+        $form[$field_id]['#options']['All'] = $options['more_options']['any_label'];
+      }
     }
 
     // If our form has no visible filters, hide the submit button.
