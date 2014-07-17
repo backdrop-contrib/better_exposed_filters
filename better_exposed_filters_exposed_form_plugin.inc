@@ -296,6 +296,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $bef_standard = TRUE;
         }
       }
+      // Search API numeric filters support
+      elseif ($filter instanceof SearchApiViewsHandlerFilter && !($filter instanceof SearchApiViewsHandlerFilterFulltext))  {
+        $bef_slider = TRUE;
+      }
       elseif ($filter instanceof SearchApiViewsHandlerFilterBoolean) {
         $bef_single = TRUE;
       }
