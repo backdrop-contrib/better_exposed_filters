@@ -148,7 +148,16 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     /*
      * Add options for exposed pager.
      */
-    if (isset($this->display->display_options['pager']) && !empty($this->display->display_options['pager']['options']['expose']['items_per_page'])) {
+    $pager_exposed = FALSE;
+    $current_display = $this->display->handler->view->display[$this->display->handler->view->current_display];
+    $default_display = $this->display->handler->view->display['default'];
+    if (!empty($current_display->handler->options['defaults']["pager"])) {
+      $pager_exposed = isset($default_display->handler->options['pager']) && !empty($default_display->handler->options['pager']['options']['expose']['items_per_page']);
+    }
+    else {
+      $pager_exposed = isset($current_display->handler->options['pager']) && !empty($current_display->handler->options['pager']['options']['expose']['items_per_page']);
+    }
+    if ($pager_exposed) {
       $bef_options['pager']['bef_format'] = array(
         '#type' => 'select',
         '#title' => t('Display exposed pager options as'),
