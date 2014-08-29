@@ -1368,6 +1368,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       }
       /* Ends switch ($options['bef_format']) */
 
+      // Override "Any" label, if applicable.
+      if (!empty($options['more_options']['any_label']) && !empty($form[$field_id]['#options']['All'])) {
+        $form[$field_id]['#options']['All'] = $options['more_options']['any_label'];
+      }
+
       // Check if this is a secondary form element.
       if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
         $identifier = $form['#info']["filter-$label"]['value'];
@@ -1383,11 +1388,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $secondary[$identifier]['#title'] = $form['#info']["filter-$label"]['label'];
           unset($form['#info']["filter-$label"]);
         }
-      }
-
-      // Override "Any" label, if applicable.
-      if (!empty($options['more_options']['any_label']) && !empty($form[$field_id]['#options']['All'])) {
-        $form[$field_id]['#options']['All'] = $options['more_options']['any_label'];
       }
     }
 
