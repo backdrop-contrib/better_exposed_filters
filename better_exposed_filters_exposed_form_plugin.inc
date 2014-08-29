@@ -255,6 +255,12 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         }
       }
 
+      // Grouped filters will have a limited number of filter options available
+      // so we can offer basic BEF options.
+      if ($filter->options['is_grouped']) {
+        $bef_standard = TRUE;
+      }
+
       if ($filter instanceof views_handler_filter_boolean_operator) {
         $bef_standard = TRUE;
         if (!$filter->options['expose']['multiple']) {
