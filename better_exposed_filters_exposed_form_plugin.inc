@@ -767,7 +767,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             // select_as_links options as they will use the wrong path. We
             // provide a hint for theme functions to correct this.
             if (!empty($this->display->display_options['exposed_block'])) {
-              $form['sort_bef_combine']['#bef_path'] = $this->display->display_options['path'] ?: '';
+              $form['sort_bef_combine']['#bef_path'] = isset($this->display->display_options['path']) ? $this->display->display_options['path'] : '';
             }
             break;
 
@@ -821,8 +821,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           // select_as_links options as they will use the wrong path. We provide
           // a hint for theme functions to correct this.
           if (!empty($this->display->display_options['exposed_block'])) {
-            $form['sort_by']['#bef_path'] = $this->display->display_options['path'] ?: '';
-            $form['sort_order']['#bef_path'] = $this->display->display_options['path'] ?: '';
+            $form['sort_by']['#bef_path'] = $form['sort_order']['#bef_path'] = isset($this->display->display_options['path']) ? $this->display->display_options['path'] : '';
           }
         }
 
@@ -890,7 +889,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             // select_as_links options as they will use the wrong path. We
             // provide a hint for theme functions to correct this.
             if (!empty($this->display->display_options['exposed_block'])) {
-              $form['items_per_page']['#bef_path'] = $this->display->display_options['path'] ?: '';
+              $form['items_per_page']['#bef_path'] = isset($this->display->display_options['path']) ? $this->display->display_options['path'] : '';
             }
           }
           break;
@@ -1183,7 +1182,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           // select_as_links options as they will use the wrong path. We provide
           // a hint for theme functions to correct this.
           if (!empty($this->display->display_options['exposed_block']) && isset($this->display->display_options['path'])) {
-            $form[$field_id]['#bef_path'] = $this->display->display_options['path'] ?: '';
+            $form[$field_id]['#bef_path'] = isset($this->display->display_options['path']) ? $this->display->display_options['path'] : '';
           }
           break;
 
