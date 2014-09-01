@@ -341,6 +341,18 @@ class BEF_TestCase extends DrupalWebTestCase {
       }
     }
 
+    // Ensure View-based settings are preserved on save.
+    $edit = array(
+      'exposed_form_options[input_required]' => 1,
+      'exposed_form_options[bef][general][allow_secondary]' => 1,
+    );
+    $this->befSetBefSettings($edit);
+    $this->befSaveView();
+    $this->drupalGet($this->befGetBefSettingsUrl());
+    foreach ($edit as $name => $expected) {
+      $this->assertFieldByName($name, $expected);
+    }
+
     // This filter cannot use BEF settings. Ensure only generic settings are
     // available for open text filters.
     $this->befAddFilter('node.title');
@@ -869,4 +881,27 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
   }
 
+  /**
+   * Verifies the "Require input..." option.
+   */
+  public function test_befRequireInput() {
+    // Create a page display to validate rendering.
+    $this->befCreateDisplay('Page', array(
+      'path' => array('path' => 'bef_test_page'),
+    ));
+
+    // Add the node.type filter as a multi-select filter.
+    $this->befAddFilter('node.type', array(
+      'options[expose][multiple]' => TRUE,
+    ));
+    $this->befSetBefSettings(array(
+      'exposed_form_options[input_required]' => 1,
+      'exposed_form_options[bef][general][allow_secondary]' => 1,
+    ));
+    $this->befSaveView();
+    $this->drupalGet('bef_test_page');
+
+    // Verify the "Text on demand" is shown.
+    $this->assertText(t('Select any filter and click on Apply to see results'), '"Empty" text should show on initial display.');
+  }
 }
