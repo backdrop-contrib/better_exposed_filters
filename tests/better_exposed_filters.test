@@ -31,7 +31,20 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->start = time();
 
     // Enable any modules required for the test.
-    parent::setUp('views', 'views_ui', 'better_exposed_filters', 'bef_test_content', 'date', 'date_views');
+    parent::setUp(
+      'better_exposed_filters',
+      'date',
+      'date_views',
+      'list',
+      'number',
+      'taxonomy',
+      'text',
+      'views',
+      'views_ui'
+    );
+
+    // One of these days I'll figure out why Features is breaking all my tests.
+    module_enable(array('bef_test_content'));
 
     // User with edit views perms
     $this->admin_user = $this->drupalCreateUser();
@@ -444,7 +457,8 @@ class BEF_TestCase extends DrupalWebTestCase {
 
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
-   * @TODO: check the functionality of a multi-pass filter using hidden BEF settings.
+   * @TODO: check the functionality of a multi-pass filter using hidden BEF
+   * settings.
    */
   public function test_befPageDisplayHidden() {
     // Create a page display to validate rendering.
@@ -477,13 +491,18 @@ class BEF_TestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Verify taxonomy-based exposed filters display correctly as both radio buttons and checkboxes
+   * Verify taxonomy-based exposed filters display correctly as both radio
+   * buttons and checkboxes
    */
   public function test_befTaxonomyFilters() {
     // Create a page display to validate rendering.
     $this->befCreateDisplay('Page', array(
       'path' => array('path' => 'bef_test_page'),
     ));
+
+    // Not sure why I can't get the Features-based functionality to work without
+    // pulling up the modules page, but it works...
+    $this->drupalGet('admin/modules');
 
     // Add three terms with two children each to the vocab defined in
     // bef_test_content.
@@ -566,6 +585,10 @@ class BEF_TestCase extends DrupalWebTestCase {
     $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter value "No" in "Published" filter.');
   }
 
+  /**
+   * Verify exposed sorts, including the combined sort/operator option and
+   * option rewriting, work with BEF.
+   */
   public function test_befExposedSort() {
     // Create a page display to validate rendering.
     $this->befCreateDisplay('Page', array(
@@ -610,11 +633,19 @@ class BEF_TestCase extends DrupalWebTestCase {
     // @todo: add tests for correct rendering of Links and Toggle links options.
   }
 
+  /**
+   * Verify the correct classes are placed on exposed form elements and
+   * correct JS files are loaded to display jQuery UI sliders.
+   */
   public function test_befSliders() {
     // Create a page display to validate rendering.
     $this->befCreateDisplay('Page', array(
       'path' => array('path' => 'bef_test_page'),
     ));
+
+    // Not sure why I can't get the Features-based functionality to work without
+    // pulling up the modules page, but it works...
+    $this->drupalGet('admin/modules');
 
     // Verify slider rendering using the Numbers field from the BEF test content
     // type.
@@ -717,6 +748,10 @@ class BEF_TestCase extends DrupalWebTestCase {
       'path' => array('path' => 'bef_test_page'),
     ));
 
+    // Not sure why I can't get the Features-based functionality to work without
+    // pulling up the modules page, but it works...
+    $this->drupalGet('admin/modules');
+
     // Verify slider rendering using the Numbers field from the BEF test content
     // type.
     $this->befAddFilter('field_data_field_date.field_date_value', array(), array(
@@ -785,7 +820,8 @@ class BEF_TestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Verify filters rendered as links.
+   * Basic coverage for filters rendered in secondary options fieldsets. See
+   * @todo near the end of this test.
    */
   public function test_befSecondaryFilters() {
     // Create a page display to validate rendering.

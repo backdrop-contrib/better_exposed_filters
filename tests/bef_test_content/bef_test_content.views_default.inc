@@ -33,46 +33,36 @@ function bef_test_content_views_default_views() {
       'allow_secondary' => 0,
       'secondary_label' => 'Advanced options',
     ),
-    'field_numbers_value' => array(
+    'sort' => array(
+      'bef_format' => 'bef_toggle_links',
+      'advanced' => array(
+        'collapsible' => 0,
+        'collapsible_label' => 'Sort options',
+        'combine' => 1,
+        'combine_rewrite' => '',
+        'reset' => 0,
+        'reset_label' => '',
+        'is_secondary' => 0,
+      ),
+    ),
+    'pager' => array(
+      'bef_format' => 'bef_links',
+      'is_secondary' => 0,
+    ),
+    'field_integer_value' => array(
       'bef_format' => 'default',
-      'more_options' => array(
-        'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
-        'is_secondary' => 0,
-        'bef_filter_description' => '',
-        'tokens' => array(
-          'available' => array(
-            0 => 'global_types',
-          ),
-        ),
-        'rewrite' => array(
-          'filter_rewrite_values' => '',
-        ),
+      'slider_options' => array(
+        'bef_slider_min' => '0',
+        'bef_slider_max' => '99999',
+        'bef_slider_step' => '1',
+        'bef_slider_animate' => '',
+        'bef_slider_orientation' => 'horizontal',
       ),
-    ),
-    'field_letters_value' => array(
-      'bef_format' => 'bef',
       'more_options' => array(
         'bef_select_all_none' => FALSE,
         'bef_collapsible' => 0,
-        'is_secondary' => 0,
-        'bef_filter_description' => '',
-        'tokens' => array(
-          'available' => array(
-            0 => 'global_types',
-          ),
-        ),
-        'rewrite' => array(
-          'filter_rewrite_values' => '',
-        ),
-      ),
-    ),
-    'flagged' => array(
-      'bef_format' => 'bef_single',
-      'more_options' => array(
-        'bef_select_all_none' => FALSE,
-        'bef_collapsible' => 0,
-        'is_secondary' => 0,
+        'is_secondary' => 1,
+        'any_label' => '',
         'bef_filter_description' => '',
         'tokens' => array(
           'available' => array(
@@ -85,8 +75,17 @@ function bef_test_content_views_default_views() {
       ),
     ),
   );
+  $handler->display->display_options['exposed_form']['options']['input_required'] = 0;
+  $handler->display->display_options['exposed_form']['options']['text_input_required_format'] = 'filtered_html';
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Yo! Show me';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all'] = TRUE;
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options_all_label'] = 'All dem things!';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
     'title' => 'title',
@@ -115,10 +114,6 @@ function bef_test_content_views_default_views() {
       'empty_column' => 0,
     ),
   );
-  /* Relationship: Broken/missing handler */
-  $handler->display->display_options['relationships']['flag_content_rel']['id'] = 'flag_content_rel';
-  $handler->display->display_options['relationships']['flag_content_rel']['table'] = 'node';
-  $handler->display->display_options['relationships']['flag_content_rel']['field'] = 'flag_content_rel';
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -135,26 +130,74 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['fields']['field_numbers']['id'] = 'field_numbers';
   $handler->display->display_options['fields']['field_numbers']['table'] = 'field_data_field_numbers';
   $handler->display->display_options['fields']['field_numbers']['field'] = 'field_numbers';
+  /* Field: Content: Integer */
+  $handler->display->display_options['fields']['field_integer']['id'] = 'field_integer';
+  $handler->display->display_options['fields']['field_integer']['table'] = 'field_data_field_integer';
+  $handler->display->display_options['fields']['field_integer']['field'] = 'field_integer';
+  $handler->display->display_options['fields']['field_integer']['settings'] = array(
+    'thousand_separator' => ',',
+    'prefix_suffix' => 1,
+  );
+  /* Field: Content: Post date */
+  $handler->display->display_options['fields']['created']['id'] = 'created';
+  $handler->display->display_options['fields']['created']['table'] = 'node';
+  $handler->display->display_options['fields']['created']['field'] = 'created';
+  $handler->display->display_options['fields']['created']['date_format'] = 'short';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Filter criterion: Content: Published */
-  $handler->display->display_options['filters']['status']['id'] = 'status';
-  $handler->display->display_options['filters']['status']['table'] = 'node';
-  $handler->display->display_options['filters']['status']['field'] = 'status';
-  $handler->display->display_options['filters']['status']['value'] = 1;
-  $handler->display->display_options['filters']['status']['group'] = 1;
-  $handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
-  /* Filter criterion: Content: Type */
-  $handler->display->display_options['filters']['type']['id'] = 'type';
-  $handler->display->display_options['filters']['type']['table'] = 'node';
-  $handler->display->display_options['filters']['type']['field'] = 'type';
-  $handler->display->display_options['filters']['type']['value'] = array(
-    'bef_test' => 'bef_test',
+  $handler->display->display_options['sorts']['created']['exposed'] = TRUE;
+  $handler->display->display_options['sorts']['created']['expose']['label'] = 'Post date';
+  /* Filter criterion: Content: Integer (field_integer) */
+  $handler->display->display_options['filters']['field_integer_value']['id'] = 'field_integer_value';
+  $handler->display->display_options['filters']['field_integer_value']['table'] = 'field_data_field_integer';
+  $handler->display->display_options['filters']['field_integer_value']['field'] = 'field_integer_value';
+  $handler->display->display_options['filters']['field_integer_value']['operator'] = '>=';
+  $handler->display->display_options['filters']['field_integer_value']['group'] = 1;
+  $handler->display->display_options['filters']['field_integer_value']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_integer_value']['expose']['operator_id'] = 'field_integer_value_op';
+  $handler->display->display_options['filters']['field_integer_value']['expose']['label'] = 'Integer (field_integer)';
+  $handler->display->display_options['filters']['field_integer_value']['expose']['operator'] = 'field_integer_value_op';
+  $handler->display->display_options['filters']['field_integer_value']['expose']['identifier'] = 'field_integer_value';
+  $handler->display->display_options['filters']['field_integer_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
   );
-  $handler->display->display_options['filters']['type']['group'] = 1;
+  $handler->display->display_options['filters']['field_integer_value']['is_grouped'] = TRUE;
+  $handler->display->display_options['filters']['field_integer_value']['group_info']['label'] = 'Integer (field_integer)';
+  $handler->display->display_options['filters']['field_integer_value']['group_info']['identifier'] = 'field_integer_value';
+  $handler->display->display_options['filters']['field_integer_value']['group_info']['group_items'] = array(
+    1 => array(
+      'title' => 'Small',
+      'operator' => '<=',
+      'value' => array(
+        'value' => '500',
+        'min' => '',
+        'max' => '',
+      ),
+    ),
+    2 => array(
+      'title' => 'Medium',
+      'operator' => 'between',
+      'value' => array(
+        'value' => '',
+        'min' => '500',
+        'max' => '1000',
+      ),
+    ),
+    3 => array(
+      'title' => 'Large',
+      'operator' => '>=',
+      'value' => array(
+        'value' => '1000',
+        'min' => '',
+        'max' => '',
+      ),
+    ),
+  );
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
