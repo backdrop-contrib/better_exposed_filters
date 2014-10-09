@@ -121,28 +121,28 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['fields']['title']['label'] = '';
   $handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
-  /* Field: Content: Letters */
-  $handler->display->display_options['fields']['field_letters']['id'] = 'field_letters';
-  $handler->display->display_options['fields']['field_letters']['table'] = 'field_data_field_letters';
-  $handler->display->display_options['fields']['field_letters']['field'] = 'field_letters';
-  $handler->display->display_options['fields']['field_letters']['delta_offset'] = '0';
-  /* Field: Content: Numbers */
-  $handler->display->display_options['fields']['field_numbers']['id'] = 'field_numbers';
-  $handler->display->display_options['fields']['field_numbers']['table'] = 'field_data_field_numbers';
-  $handler->display->display_options['fields']['field_numbers']['field'] = 'field_numbers';
-  /* Field: Content: Integer */
-  $handler->display->display_options['fields']['field_integer']['id'] = 'field_integer';
-  $handler->display->display_options['fields']['field_integer']['table'] = 'field_data_field_integer';
-  $handler->display->display_options['fields']['field_integer']['field'] = 'field_integer';
-  $handler->display->display_options['fields']['field_integer']['settings'] = array(
-    'thousand_separator' => ',',
-    'prefix_suffix' => 1,
-  );
   /* Field: Content: Post date */
   $handler->display->display_options['fields']['created']['id'] = 'created';
   $handler->display->display_options['fields']['created']['table'] = 'node';
   $handler->display->display_options['fields']['created']['field'] = 'created';
   $handler->display->display_options['fields']['created']['date_format'] = 'short';
+  /* Field: Content: Integer */
+  $handler->display->display_options['fields']['field_bef_test_integer']['id'] = 'field_bef_test_integer';
+  $handler->display->display_options['fields']['field_bef_test_integer']['table'] = 'field_data_field_bef_test_integer';
+  $handler->display->display_options['fields']['field_bef_test_integer']['field'] = 'field_bef_test_integer';
+  $handler->display->display_options['fields']['field_bef_test_integer']['settings'] = array(
+    'thousand_separator' => ' ',
+    'prefix_suffix' => 1,
+  );
+  /* Field: Content: Letters */
+  $handler->display->display_options['fields']['field_bef_test_letters']['id'] = 'field_bef_test_letters';
+  $handler->display->display_options['fields']['field_bef_test_letters']['table'] = 'field_data_field_bef_test_letters';
+  $handler->display->display_options['fields']['field_bef_test_letters']['field'] = 'field_bef_test_letters';
+  $handler->display->display_options['fields']['field_bef_test_letters']['delta_offset'] = '0';
+  /* Field: Content: Numbers */
+  $handler->display->display_options['fields']['field_bef_test_numbers']['id'] = 'field_bef_test_numbers';
+  $handler->display->display_options['fields']['field_bef_test_numbers']['table'] = 'field_data_field_bef_test_numbers';
+  $handler->display->display_options['fields']['field_bef_test_numbers']['field'] = 'field_bef_test_numbers';
   /* Sort criterion: Content: Post date */
   $handler->display->display_options['sorts']['created']['id'] = 'created';
   $handler->display->display_options['sorts']['created']['table'] = 'node';
@@ -150,26 +150,19 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
   $handler->display->display_options['sorts']['created']['exposed'] = TRUE;
   $handler->display->display_options['sorts']['created']['expose']['label'] = 'Post date';
-  /* Filter criterion: Content: Integer (field_integer) */
-  $handler->display->display_options['filters']['field_integer_value']['id'] = 'field_integer_value';
-  $handler->display->display_options['filters']['field_integer_value']['table'] = 'field_data_field_integer';
-  $handler->display->display_options['filters']['field_integer_value']['field'] = 'field_integer_value';
-  $handler->display->display_options['filters']['field_integer_value']['operator'] = '>=';
-  $handler->display->display_options['filters']['field_integer_value']['group'] = 1;
-  $handler->display->display_options['filters']['field_integer_value']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_integer_value']['expose']['operator_id'] = 'field_integer_value_op';
-  $handler->display->display_options['filters']['field_integer_value']['expose']['label'] = 'Integer (field_integer)';
-  $handler->display->display_options['filters']['field_integer_value']['expose']['operator'] = 'field_integer_value_op';
-  $handler->display->display_options['filters']['field_integer_value']['expose']['identifier'] = 'field_integer_value';
-  $handler->display->display_options['filters']['field_integer_value']['expose']['remember_roles'] = array(
-    2 => '2',
-    1 => 0,
-    3 => 0,
-  );
-  $handler->display->display_options['filters']['field_integer_value']['is_grouped'] = TRUE;
-  $handler->display->display_options['filters']['field_integer_value']['group_info']['label'] = 'Integer (field_integer)';
-  $handler->display->display_options['filters']['field_integer_value']['group_info']['identifier'] = 'field_integer_value';
-  $handler->display->display_options['filters']['field_integer_value']['group_info']['group_items'] = array(
+  /* Filter criterion: Content: Integer (field_bef_test_integer) */
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['id'] = 'field_bef_test_integer_value';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['table'] = 'field_data_field_bef_test_integer';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['field'] = 'field_bef_test_integer_value';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['operator_id'] = 'field_bef_test_integer_value_op';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['label'] = 'Integer (field_bef_test_integer)';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['operator'] = 'field_bef_test_integer_value_op';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['identifier'] = 'field_bef_test_integer_value';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['is_grouped'] = TRUE;
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['label'] = 'Integer (field_bef_test_integer)';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['identifier'] = 'field_bef_test_integer_value';
+  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['group_items'] = array(
     1 => array(
       'title' => 'Small',
       'operator' => '<=',
