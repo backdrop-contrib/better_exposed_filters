@@ -1,4 +1,5 @@
 <?php
+require_once 'better_exposed_filters_TestBase.php';
 
 /**
  * @file Simpletest tests for the Better Exposed Filters module.
