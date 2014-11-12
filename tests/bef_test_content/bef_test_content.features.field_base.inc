@@ -212,5 +212,23 @@ function bef_test_content_field_default_field_bases() {
     'type' => 'list_integer',
   );
 
+  // Exported field_base: 'field_bef_test_price'
+  $field_bases['field_bef_test_price'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_bef_test_price',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'number',
+    'settings' => array(
+      'decimal_separator' => '.',
+    ),
+    'translatable' => 0,
+    'type' => 'number_float',
+  );
+
   return $field_bases;
 }
