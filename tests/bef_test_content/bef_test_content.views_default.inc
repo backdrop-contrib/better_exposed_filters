@@ -49,20 +49,68 @@ function bef_test_content_views_default_views() {
       'bef_format' => 'bef_links',
       'is_secondary' => 0,
     ),
-    'field_integer_value' => array(
+    'field_bef_test_letters_value' => array(
       'bef_format' => 'default',
-      'slider_options' => array(
-        'bef_slider_min' => '0',
-        'bef_slider_max' => '99999',
-        'bef_slider_step' => '1',
-        'bef_slider_animate' => '',
-        'bef_slider_orientation' => 'horizontal',
-      ),
       'more_options' => array(
         'bef_select_all_none' => FALSE,
         'bef_collapsible' => 0,
-        'is_secondary' => 1,
-        'any_label' => '',
+        'is_secondary' => 0,
+        'any_label' => 'Any Letter',
+        'bef_filter_description' => '',
+        'tokens' => array(
+          'available' => array(
+            0 => 'global_types',
+          ),
+        ),
+        'rewrite' => array(
+          'filter_rewrite_values' => '',
+        ),
+      ),
+    ),
+    'field_bef_test_numbers_value' => array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_collapsible' => 0,
+        'is_secondary' => 0,
+        'any_label' => 'Any Number',
+        'bef_filter_description' => '',
+        'tokens' => array(
+          'available' => array(
+            0 => 'global_types',
+          ),
+        ),
+        'rewrite' => array(
+          'filter_rewrite_values' => '',
+        ),
+      ),
+    ),
+    'type' => array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_collapsible' => 0,
+        'is_secondary' => 0,
+        'any_label' => 'Any Type',
+        'bef_filter_description' => '',
+        'tokens' => array(
+          'available' => array(
+            0 => 'global_types',
+          ),
+        ),
+        'rewrite' => array(
+          'filter_rewrite_values' => '',
+        ),
+      ),
+    ),
+    'field_bef_test_location_tid' => array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_select_all_none_nested' => FALSE,
+        'bef_collapsible' => 0,
+        'is_secondary' => 0,
+        'any_label' => 'Anywhere',
         'bef_filter_description' => '',
         'tokens' => array(
           'available' => array(
@@ -75,7 +123,7 @@ function bef_test_content_views_default_views() {
       ),
     ),
   );
-  $handler->display->display_options['exposed_form']['options']['input_required'] = 1;
+  $handler->display->display_options['exposed_form']['options']['input_required'] = 0;
   $handler->display->display_options['exposed_form']['options']['text_input_required_format'] = 'filtered_html';
   $handler->display->display_options['pager']['type'] = 'full';
   $handler->display->display_options['pager']['options']['items_per_page'] = '10';
@@ -150,51 +198,73 @@ function bef_test_content_views_default_views() {
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
   $handler->display->display_options['sorts']['created']['exposed'] = TRUE;
   $handler->display->display_options['sorts']['created']['expose']['label'] = 'Post date';
-  /* Filter criterion: Content: Integer (field_bef_test_integer) */
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['id'] = 'field_bef_test_integer_value';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['table'] = 'field_data_field_bef_test_integer';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['field'] = 'field_bef_test_integer_value';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['operator_id'] = 'field_bef_test_integer_value_op';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['label'] = 'Integer (field_bef_test_integer)';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['operator'] = 'field_bef_test_integer_value_op';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['expose']['identifier'] = 'field_bef_test_integer_value';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['is_grouped'] = TRUE;
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['label'] = 'Integer (field_bef_test_integer)';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['identifier'] = 'field_bef_test_integer_value';
-  $handler->display->display_options['filters']['field_bef_test_integer_value']['group_info']['group_items'] = array(
-    1 => array(
-      'title' => 'Small',
-      'operator' => '<=',
-      'value' => array(
-        'value' => '500',
-        'min' => '',
-        'max' => '',
-      ),
-    ),
-    2 => array(
-      'title' => 'Medium',
-      'operator' => 'between',
-      'value' => array(
-        'value' => '',
-        'min' => '500',
-        'max' => '1000',
-      ),
-    ),
-    3 => array(
-      'title' => 'Large',
-      'operator' => '>=',
-      'value' => array(
-        'value' => '1000',
-        'min' => '',
-        'max' => '',
-      ),
-    ),
+  /* Filter criterion: Content: Letters (field_bef_test_letters) */
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['id'] = 'field_bef_test_letters_value';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['table'] = 'field_data_field_bef_test_letters';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['field'] = 'field_bef_test_letters_value';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['expose']['operator_id'] = 'field_bef_test_letters_value_op';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['expose']['label'] = 'Letters';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['expose']['operator'] = 'field_bef_test_letters_value_op';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['expose']['identifier'] = 'field_bef_test_letters_value';
+  $handler->display->display_options['filters']['field_bef_test_letters_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
   );
+  /* Filter criterion: Content: Numbers (field_bef_test_numbers) */
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['id'] = 'field_bef_test_numbers_value';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['table'] = 'field_data_field_bef_test_numbers';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['field'] = 'field_bef_test_numbers_value';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['expose']['operator_id'] = 'field_bef_test_numbers_value_op';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['expose']['label'] = 'Numbers';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['expose']['operator'] = 'field_bef_test_numbers_value_op';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['expose']['identifier'] = 'field_bef_test_numbers_value';
+  $handler->display->display_options['filters']['field_bef_test_numbers_value']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+  );
+  /* Filter criterion: Content: Type */
+  $handler->display->display_options['filters']['type']['id'] = 'type';
+  $handler->display->display_options['filters']['type']['table'] = 'node';
+  $handler->display->display_options['filters']['type']['field'] = 'type';
+  $handler->display->display_options['filters']['type']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['type']['expose']['operator_id'] = 'type_op';
+  $handler->display->display_options['filters']['type']['expose']['label'] = 'Type';
+  $handler->display->display_options['filters']['type']['expose']['operator'] = 'type_op';
+  $handler->display->display_options['filters']['type']['expose']['identifier'] = 'type';
+  $handler->display->display_options['filters']['type']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+  );
+  /* Filter criterion: Content: Location (field_bef_test_location) */
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['id'] = 'field_bef_test_location_tid';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['table'] = 'field_data_field_bef_test_location';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['field'] = 'field_bef_test_location_tid';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['expose']['operator_id'] = 'field_bef_test_location_tid_op';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['expose']['label'] = 'Location';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['expose']['operator'] = 'field_bef_test_location_tid_op';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['expose']['identifier'] = 'field_bef_test_location_tid';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+  );
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['type'] = 'select';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['vocabulary'] = 'location';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['hierarchy'] = 1;
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'test';
+
+  /* Display: Content pane */
+  $handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
+  $handler->display->display_options['exposed_block'] = TRUE;
   $export['bef_test_view'] = $view;
 
   return $export;

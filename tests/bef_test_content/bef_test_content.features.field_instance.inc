@@ -48,7 +48,7 @@ function bef_test_content_field_default_field_instances() {
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 9,
+      'weight' => 7,
     ),
   );
 
@@ -101,7 +101,7 @@ function bef_test_content_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'date_text',
-      'weight' => 7,
+      'weight' => 6,
     ),
   );
 
@@ -262,6 +262,52 @@ function bef_test_content_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-bef_test-field_bef_test_price'
+  $field_instances['node-bef_test-field_bef_test_price'] = array(
+    'bundle' => 'bef_test',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'number',
+        'settings' => array(
+          'decimal_separator' => '.',
+          'prefix_suffix' => TRUE,
+          'scale' => 2,
+          'thousand_separator' => ' ',
+        ),
+        'type' => 'number_decimal',
+        'weight' => 13,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_bef_test_price',
+    'label' => 'Price',
+    'required' => 0,
+    'settings' => array(
+      'max' => '',
+      'min' => '',
+      'prefix' => '$',
+      'suffix' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'number',
+      'settings' => array(),
+      'type' => 'number',
+      'weight' => 5,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Body');
@@ -270,6 +316,7 @@ function bef_test_content_field_default_field_instances() {
   t('Letters');
   t('Location');
   t('Numbers');
+  t('Price');
 
   return $field_instances;
 }
