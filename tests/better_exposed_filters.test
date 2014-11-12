@@ -337,7 +337,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
 
     // Add a heirarchical taxonomy filter from the BEF test feature.
     $this->addFilter(
-      'field_data_field_location.field_location_tid',
+      'field_data_field_bef_test_location.field_bef_test_location_tid',
       array(),
       array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
     );
@@ -345,25 +345,25 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
     $this->drupalGet($this->getBefSettingsUrl());
 
     // Verify settings available to a heirarchical taxonomy filter.
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="default"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_ul"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_links"]');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_location_tid][bef_format]"]/option[@value="bef_hidden"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="default"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="bef"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="bef_ul"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="bef_links"]');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="bef_hidden"]');
 
     $this->setBefSettings(array(
-      'exposed_form_options[bef][field_location_tid][bef_format]' => 'bef_ul',
+      'exposed_form_options[bef][field_bef_test_location_tid][bef_format]' => 'bef_ul',
     ));
     $this->saveView();
 
     // Verify taxonomy filter as radio buttons
     $this->drupalGet('bef_test_page');
-    $this->assertText(t('Location (field_location)'), 'Verify exposed filter label');
-    $this->assertFieldByXpath('//input[@name="field_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
+    $this->assertText(t('Location (field_bef_test_location)'), 'Verify exposed filter label');
+    $this->assertFieldByXpath('//input[@name="field_bef_test_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-bef-test-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
   }
 }
 
@@ -458,18 +458,18 @@ class BEF_TestSliders extends BEF_TestBase {
 
     // Verify slider rendering using the Numbers field from the BEF test content
     // type.
-    $this->addFilter('field_data_field_integer.field_integer_value');
-    $this->addFilter('field_data_field_price.field_price_value', array(
+    $this->addFilter('field_data_field_bef_test_integer.field_bef_test_integer_value');
+    $this->addFilter('field_data_field_bef_test_price.field_bef_test_price_value', array(
       'options[operator]' => 'between',
     ));
     $this->saveView();
 
     // Verify the slider option appears for integer fields
     $this->drupalGet($this->getBefSettingsUrl());
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_integer_value][bef_format]"]/option', 'Default select list');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_integer_value][bef_format]"]/option', 'jQuery UI slider');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_price_value][bef_format]"]/option', 'Default select list');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_price_value][bef_format]"]/option', 'jQuery UI slider');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_integer_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_integer_value][bef_format]"]/option', 'jQuery UI slider');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_price_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_price_value][bef_format]"]/option', 'jQuery UI slider');
 
     // Set both fields to use sliders using the default slider options. Integer
     // should render as a single slider, Price should render as two because of
@@ -478,16 +478,16 @@ class BEF_TestSliders extends BEF_TestBase {
     // necessary files are there.
     $this->setBefSettings(array(
       // Just use the default values for this one.
-      'exposed_form_options[bef][field_integer_value][bef_format]' => 'bef_slider',
+      'exposed_form_options[bef][field_bef_test_integer_value][bef_format]' => 'bef_slider',
       // More complicated option for this one.
-      'exposed_form_options[bef][field_price_value][bef_format]' => 'bef_slider',
-      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_min]' => 100,
-      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_max]' => 5000,
-      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 250,
-      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_animate]' => 'normal',
-      'exposed_form_options[bef][field_price_value][slider_options][bef_slider_orientation]' => 'vertical',
+      'exposed_form_options[bef][field_bef_test_price_value][bef_format]' => 'bef_slider',
+      'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_min]' => 100,
+      'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_max]' => 5000,
+      'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_step]' => 250,
+      'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_animate]' => 'normal',
+      'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_orientation]' => 'vertical',
     ), t('The range of the slider (Range maximum - Range minimum) should be evenly divisible by the step.'));
-    $this->drupalPost(NULL, array('exposed_form_options[bef][field_price_value][slider_options][bef_slider_step]' => 100), 'Apply');
+    $this->drupalPost(NULL, array('exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_step]' => 100), 'Apply');
     $this->saveView();
 
     $this->drupalGet('bef_test_page');
@@ -497,22 +497,22 @@ class BEF_TestSliders extends BEF_TestBase {
 
     // Check slider options are passed from the settings page to JavaScript.
     // Note that we skip the
-    $this->assertEqual($settings['slider_options']['field_integer_value'], array(
+    $this->assertEqual($settings['slider_options']['field_bef_test_integer_value'], array(
       'min' => '0',
       'max' => '99999',
       'step' => '1',
       'animate' => '',
       'orientation' => 'horizontal',
-      'id' => 'field-integer-value',
+      'id' => 'field-bef-test-integer-value',
       'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
-    $this->assertEqual($settings['slider_options']['field_price_value'], array(
+    $this->assertEqual($settings['slider_options']['field_bef_test_price_value'], array(
       'min' => '100',
       'max' => '5000',
       'step' => '100',
       'animate' => 'normal',
       'orientation' => 'vertical',
-      'id' => 'field-price-value',
+      'id' => 'field-bef-test-price-value',
       'viewId' => 'views-exposed-form-' . $this->view['machine_name'] . '-page-1',
     ));
   }
@@ -576,17 +576,17 @@ class BEF_TestDatepicker extends BEF_TestBase {
 
     // Verify slider rendering using the Numbers field from the BEF test content
     // type.
-    $this->addFilter('field_data_field_date.field_date_value', array(), array(
+    $this->addFilter('field_data_field_bef_test_date.field_bef_test_date_value', array(), array(
       'options[form_type]' => 'date_text',
     ));
     $this->saveView();
 
     // Verify the slider option appears for integer fields
     $this->drupalGet($this->getBefSettingsUrl());
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_date_value][bef_format]"]/option', 'Default select list');
-    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_date_value][bef_format]"]/option', 'jQuery UI Datepicker');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'Default select list');
+    $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'jQuery UI Datepicker');
     $this->setBefSettings(array(
-      'exposed_form_options[bef][field_date_value][bef_format]' => 'bef_datepicker',
+      'exposed_form_options[bef][field_bef_test_date_value][bef_format]' => 'bef_datepicker',
     ));
     $this->saveView();
 
@@ -595,7 +595,7 @@ class BEF_TestDatepicker extends BEF_TestBase {
     $settings = $settings['better_exposed_filters'];
     $this->assertTrue($settings['datepicker'], 'BEF slider setting is TRUE');
     $this->assertTrue(!empty($settings['datepicker_options']['dateformat']), 'BEF slider setting is TRUE');
-    $this->assertFieldByXpath('//div[@id="edit-field-date-value-value"]//input[contains(@class,"bef-datepicker")]');
+    $this->assertFieldByXpath('//div[@id="edit-field-bef-test-date-value-value"]//input[contains(@class,"bef-datepicker")]');
   }
 }
 
