@@ -349,9 +349,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $display_options['bef_hidden'] = t('Hidden');
       }
 
-      $identifier = '"' . $filter->options['expose']['identifier'] . '"';
-      if (!empty($filter->options['expose']['label'])) {
-        $identifier .= t(' (Filter label: "@fl")', array('@fl' => $filter->options['expose']['label']));
+      $filter_key = $filter->options['is_grouped'] ? 'group_info' : 'expose';
+      $identifier = '"' . $filter->options[$filter_key]['identifier'] . '"';
+      if (!empty($filter->options[$filter_key]['label'])) {
+        $identifier .= t(' (Filter label: "@fl")', array('@fl' => $filter->options[$filter_key]['label']));
       }
       $bef_options[$label]['bef_format'] = array(
         '#type' => 'select',
@@ -919,12 +920,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Form element is designated by the element ID which is user-
       // configurable.
-      if (isset($form['#info']["filter-$label"]['value'])) {
-        $field_id = $form['#info']["filter-$label"]['value'];
-      }
-      else {
-        $field_id = $form['#info']["filter-{$filters[$label]->options['group_info']['identifier']}"]['value'];
-      }
+      $filter_key = 'filter-' . ($filters[$label]->options['is_grouped'] ? $filters[$label]->options['group_info']['identifier'] : $label);
+      $field_id = $form['#info'][$filter_key]['value'];
 
       // Token replacement on BEF Description fields.
       if (!empty($options['more_options']['bef_filter_description'])) {
@@ -1256,9 +1253,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               // Pass the description and title along in a way such that it
               // doesn't get rendered as part of the exposed form widget.  We'll
               // render them as part of the fieldset.
-              if (isset($form['#info']["filter-$label"]['label'])) {
-                $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
-                unset($form['#info']["filter-$label"]['label']);
+              if (isset($form['#info'][$filter_key]['label'])) {
+                $form[$field_id]['#bef_title'] = $form['#info'][$filter_key]['label'];
+                unset($form['#info'][$filter_key]['label']);
               }
               if (!empty($options['more_options']['bef_filter_description'])) {
                 $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
@@ -1305,9 +1302,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               // Pass the description and title along in a way such that it
               // doesn't get rendered as part of the exposed form widget.  We'll
               // render them as part of the fieldset.
-              if (isset($form['#info']["filter-$label"]['label'])) {
-                $form[$field_id]['#bef_title'] = $form['#info']["filter-$label"]['label'];
-                unset($form['#info']["filter-$label"]['label']);
+              if (isset($form['#info'][$filter_key]['label'])) {
+                $form[$field_id]['#bef_title'] = $form['#info'][$filter_key]['label'];
+                unset($form['#info'][$filter_key]['label']);
               }
               if (!empty($options['more_options']['bef_filter_description'])) {
                 $form[$field_id]['#bef_description'] = $options['more_options']['bef_filter_description'];
@@ -1360,7 +1357,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         case 'bef_hidden':
           // Hide the label.
-          $form['#info']["filter-$label"]['label'] = '';
+          $form['#info'][$filter_key]['label'] = '';
           if (empty($form[$field_id]['#multiple'])) {
             $form[$field_id]['#type'] = 'hidden';
           }
@@ -1389,7 +1386,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Check if this is a secondary form element.
       if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
-        $identifier = $form['#info']["filter-$label"]['value'];
+        $identifier = $form['#info'][$filter_key]['value'];
         if (!empty($form[$identifier])) {
           // Move exposed operators with exposed filters
           if (!empty($filters[$label]->options['expose']['use_operator'])) {
@@ -1399,9 +1396,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           }
           $secondary[$identifier] = $form[$identifier];
           unset($form[$identifier]);
-          $secondary[$identifier]['#title'] = $form['#info']["filter-$label"]['label'];
-          unset($form['#info']["filter-$label"]);
-        }
+          $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
+          unset($form['#info'][$filter_key]);
+         }
       }
     }
 
