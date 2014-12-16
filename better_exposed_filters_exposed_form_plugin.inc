@@ -947,7 +947,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $rewrite = array();
         foreach ($lines as $line) {
           list($search, $replace) = explode('|', $line);
-          if (!empty($search)) {
+          if (isset($search)) {
             $rewrite[$search] = $replace;
           }
         }
