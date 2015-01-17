@@ -517,7 +517,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#type' => 'textarea',
         '#title' => t('Description'),
         '#default_value' => $existing[$label]['more_options']['bef_filter_description'],
-        '#description' => t('Adds descriptive text to the exposed filter.  This is usually rendered in smaller print under the label or the options.'),
+        '#description' => t('Adds descriptive text to the exposed filter.  This is usually rendered in smaller print under the label or the options. You may use tokens as specified below and in the "Global replacements values" section at the bottom of this page.'),
       );
 
       // Add token support to the description field.
@@ -535,23 +535,35 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           . '</p>',
         );
       }
+      else {
+        // Collect a list of token types that make sense for this filter.
+        $available = array('global_types');
+        if (!empty($filter->options['vocabulary'])) {
+          $available[] = 'vocabulary';
+        }
+        /* @TODO: Other token types? */
 
-      // Collect a list of token types that make sense for this filter.
-      $available = array('global_types');
-      if (!empty($filter->options['vid'])) {
-        $available[] = 'vocabulary';
+        $filter_specific = array_diff($available, array('global_types'));
+        if (empty($filter_specific)) {
+          $bef_options[$label]['more_options']['tokens']['nothing_specific'] = array(
+            '#markup' => '<p>' . t('There are no filter-specific tokens for this filter. See the "Global replacement tokens" at the bottom of this dialog for additional token replacement options.') . '<p>',
+          );
+        }
+        else {
+          $bef_options[$label]['more_options']['tokens']['list'] = array(
+            //'#title' => t('Filter-specific tokens'),
+            '#theme' => 'token_tree',
+            '#token_types' => $filter_specific,
+            '#global_types' => FALSE,
+          );
+        }
+
+        $bef_options[$label]['more_options']['tokens']['available'] = array(
+          // Save us from parsing available tokens again.
+          '#type' => 'value',
+          '#value' => $available,
+        );
       }
-      /* @TODO: Other token types? */
-
-      $bef_options[$label]['more_options']['tokens']['list'] = array(
-        '#theme' => 'token_tree',
-        '#token_types' => $available,
-      );
-      $bef_options[$label]['more_options']['tokens']['available'] = array(
-        // Save us from parsing available tokens again.
-        '#type' => 'value',
-        '#value' => $available,
-      );
 
       // Allow rewriting of filter options for any filter.
       $bef_options[$label]['more_options']['rewrite'] = array(
@@ -576,6 +588,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       );
     }
     /* Ends: foreach ($filters as $filter) { */
+
+    // Add global token replacements, if available.
+    if (module_exists('token')) {
+      $bef_options['global_replacement_tokens'] = array(
+        '#title' => t('Global replacement patterns'),
+        '#type' => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $bef_options['global_replacement_tokens']['list'] = array(
+        '#theme' => 'token_tree',
+        '#token_types' => array('global_types'),
+      );
+    }
 
     // Add BEF form elements to the exposed form options form.
     $form['bef'] = $bef_options;
