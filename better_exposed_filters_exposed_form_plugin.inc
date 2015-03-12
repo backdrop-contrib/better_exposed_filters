@@ -642,7 +642,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
     // Allow modules/themes to alter BEF settings before they are passed to the
     // exposed form widgets.
-    drupal_alter('better_exposed_filters_settings', $settings);
+    $context['view'] = $this->view;
+    $context['display'] = $this->display;
+    drupal_alter('better_exposed_filters_settings', $settings, $context);
 
     // Some elements may be placed in a secondary fieldset (eg: "Advanced
     // search options"). Place this after the exposed filters and before the
