@@ -6,6 +6,15 @@
 
 class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_form_basic {
 
+  function init(&$view, &$display, $options = array()) {
+    $this->view = &$view;
+    $this->display = &$display;
+
+    $this->localization_keys = $this->unpack_translatable_keys();
+
+    $this->unpack_options($this->options, $options);
+  }
+
   function summary_title() {
     return t('BEF Settings');
   }
@@ -14,7 +23,11 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
     $options = parent::option_definition();
 
     // Add Better Exposed Filters options to those saved by Views.
-    $options['bef'] = array('default' => array());
+    $options['bef'] = array(
+      'default' => array(),
+      'translatable' => TRUE,
+      'unpack_translatable' => 'unpack_translatable_options',
+    );
 
     // Options for the input required setting.
     $options['input_required'] = array('default' => FALSE);
@@ -1727,5 +1740,74 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       ));
     }
     parent::options_submit($form, $form_state);
+  }
+
+  function unpack_translatable_options(&$translatable, $storage, $option, $definition, $parents) {
+    foreach ($this->unpack_translatable_keys() as $key) {
+      $value = drupal_array_get_nested_value($this->options, $key);
+      if (!empty($value)) {
+        $translatable[] = array(
+          'value' => $value,
+          'keys' => $key,
+          'format' => NULL,
+        );
+      }
+    }
+  }
+
+  function unpack_translatable_keys() {
+    // Default options.
+    $keys = array(
+      'general_secondary_label' => array('bef', 'general', 'secondary_label'),
+      'sort_collapsible_label' => array('bef', 'sort', 'advanced', 'collapsible_label'),
+      'sort_combine_rewrite' => array('bef', 'sort', 'advanced', 'combine_rewrite'),
+      'sort_reset_label' => array('bef', 'sort', 'advanced', 'reset_label'),
+    );
+
+    // Exposed filter options.
+    foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
+      if (!$filter->options['exposed']) {
+        continue;
+      }
+      $keys[$label . '_filter_description'] = array('bef', $label, 'more_options', 'bef_filter_description');
+      $keys[$label . '_any_label'] = array('bef', $label, 'more_options', 'any_label');
+      $keys[$label . '_rewrite_values'] = array('bef', $label, 'more_options', 'rewrite', 'filter_rewrite_values');
+    }
+
+    return $keys;
+  }
+
+  function unpack_options(&$storage, $options, $definition = NULL, $all = TRUE, $check = TRUE, $localization_keys = array()) {
+    parent::unpack_options($storage, $options, $definition, $all, $check, $localization_keys);
+
+    // Override the values.
+    foreach ($this->localization_keys as $key => $parents) {
+      $parent = end($parents);
+      $value = isset($options[$parent]) ? $options[$parent] : NULL;
+
+      // Don't localize strings during editing. When editing, we need to work with
+      // the original data, not the translated version.
+      if (empty($this->view->editing) && !empty($value)) {
+        if (!empty($this->view) && $this->view->is_translatable()) {
+          // Allow other modules to make changes to the string before it's
+          // sent for translation.
+          // The $keys array is built from the bef form array structure.
+          $format = NULL;
+          $translation_data = array(
+            'value' => $value,
+            'format' => $format,
+            'keys' => $parents,
+          );
+          $storage[$parent] = $this->view->localization_plugin->translate($translation_data);
+        }
+        // Otherwise, this is a code-based string, so we can use t().
+        else {
+          $storage[$parent] = t($value);
+        }
+      }
+      else if ($all || !empty($value)) {
+        $storage[$parent] = $value;
+      }
+    }
   }
 }
