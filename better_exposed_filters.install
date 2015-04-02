@@ -17,7 +17,7 @@ function better_exposed_filters_disable() {
         $warnings[] = t('The %display_title display in the %view_name view. (<a href="@link" target="_blank">Update this display</a>)',
           array(
             '%display_title' => $display->display_title,
-            '%view' => $view->human_name,
+            '%view_name' => $view->human_name,
             '@link' => url('admin/structure/views/view/' . $view->name . '/edit/' . $display->id),
           )
         );
