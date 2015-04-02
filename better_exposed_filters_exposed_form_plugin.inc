@@ -125,7 +125,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#type' => 'textfield',
         '#title' => t('Enter a query parameter to use for combined sorts'),
         '#default_value' => $existing['sort']['advanced']['combine_param'],
-        '#description' => t('This will be the $_GET parameter used in query strings. Useful for preventing collisions between exposed filters when there are multiple instances of BEF on the page.'),
+        '#description' => t('This will be the $_GET parameter used in query strings. Useful for preventing collisions between exposed filters when there are multiple instances of BEF on the page. Use only UTF-8 letters, numbers, and the dash (-), underscore (_), asterisk (*), and period(.) characters.'),
         '#default_value' => empty($existing['sort']['advanced']['combine_param']) ? 'sort_bef_combine' : $existing['sort']['advanced']['combine_param'],
         '#required' => TRUE,
         '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-combine' => array(1)),
