@@ -193,10 +193,11 @@ function theme_select_as_hidden($vars) {
       // Only render fields for selected values -- no selected values renders
       // zero fields.
       if (array_search($key, $selected_options) !== FALSE) {
+        // Custom ID for each hidden field based on the <select> element's
+        // original ID.
+        $id = drupal_html_id($element['#id'] . '-' . $key);
         $hidden = array(
-          // Custom ID for each hidden field based on the <select> element's
-          // original ID.
-          'id' => drupal_html_id($element['#id'] . '-' . $key),
+          'id' => $id,
           'name' => check_plain($element['#name']) . '[]',
           'value' => check_plain($key),
         );
