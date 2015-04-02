@@ -121,6 +121,15 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#default_value' => $existing['sort']['advanced']['combine'],
         '#description' => t('Combines the sort by options and order (ascending or decending) into a single list.  Use this to display "Option1 Desc", "Option1 Asc", "Option2 Desc", "Option2 Asc" in a single form element.'),
       );
+      $bef_options['sort']['advanced']['combine_param'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Enter a query parameter to use for combined sorts'),
+        '#default_value' => $existing['sort']['advanced']['combine_param'],
+        '#description' => t('This will be the $_GET parameter used in query strings. Useful for preventing collisions between exposed filters when there are multiple instances of BEF on the page.'),
+        '#default_value' => empty($existing['sort']['advanced']['combine_param']) ? 'sort_bef_combine' : $existing['sort']['advanced']['combine_param'],
+        '#required' => TRUE,
+        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-combine' => array(1)),
+      );
       $bef_options['sort']['advanced']['combine_rewrite'] = array(
         '#type' => 'textarea',
         '#title' => t('Rewrite the text displayed'),
@@ -698,8 +707,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Check for combined sort_by and sort_order.
       if ($settings['sort']['advanced']['combine']) {
+        $form_state['#combine_param'] = $settings['sort']['advanced']['combine_param'];
         // Combine sort_by and sort_order into a single element.
-        $form['sort_bef_combine'] = array(
+        $form[$settings['sort']['advanced']['combine_param']] = array(
           '#type' => 'radios',
           // Already sanitized by Views.
           '#title' => $form['sort_by']['#title'],
@@ -714,7 +724,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           $options[' '] = t($settings['sort']['advanced']['reset_label']);
         }
         else {
-          $form['sort_bef_combine']['#default_value'] = '';
+          $form[$settings['sort']['advanced']['combine_param']]['#default_value'] = '';
         }
 
         $selected = '';
@@ -732,8 +742,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             }
            if ($settings['sort']['bef_format'] == 'bef_toggle_links') {
              if (isset($used_sort_keys[$by_key])
-               || (!empty($form_state['input']['sort_bef_combine']) && $form_state['input']['sort_bef_combine'] == "$by_key $order_key")
-               || (empty($form_state['input']['sort_bef_combine']) && $selected == "$by_key $order_key")
+               || (!empty($form_state['input'][$settings['sort']['advanced']['combine_param']]) && $form_state['input'][$settings['sort']['advanced']['combine_param']] == "$by_key $order_key")
+               || (empty($form_state['input'][$settings['sort']['advanced']['combine_param']]) && $selected == "$by_key $order_key")
              ) {
                 $hidden_options["$by_key $order_key"] = "$by_val $order_val";
              }
@@ -770,12 +780,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           }
         }
 
-        $form['sort_bef_combine'] = array(
+        $form[$settings['sort']['advanced']['combine_param']] = array(
           '#type' => 'radios',
           '#options' => $options,
           '#hidden_options' => $hidden_options,
           '#settings' => array(
             'toggle_links' => ($settings['sort']['bef_format'] == 'bef_toggle_links'),
+            'combine_param' => $settings['sort']['advanced']['combine_param'],
            ),
           '#default_value' => $selected,
           // Already sanitized by Views.
@@ -785,25 +796,25 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // Handle display-specific details.
         switch ($settings['sort']['bef_format']) {
           case 'bef':
-            $form['sort_bef_combine']['#prefix'] = '<div class="bef-sort-combined bef-select-as-radios">';
-            $form['sort_bef_combine']['#suffix'] = '</div>';
+            $form[$settings['sort']['advanced']['combine_param']]['#prefix'] = '<div class="bef-sort-combined bef-select-as-radios">';
+            $form[$settings['sort']['advanced']['combine_param']]['#suffix'] = '</div>';
             break;
 
           case 'bef_links':
           case 'bef_toggle_links':
-            $form['sort_bef_combine']['#theme'] = 'select_as_links';
+            $form[$settings['sort']['advanced']['combine_param']]['#theme'] = 'select_as_links';
 
             // Exposed form displayed as blocks can appear on pages other than
             // the view results appear on. This can cause problems with
             // select_as_links options as they will use the wrong path. We
             // provide a hint for theme functions to correct this.
             if (!empty($this->display->display_options['exposed_block'])) {
-              $form['sort_bef_combine']['#bef_path'] = $this->view->get_path();
+              $form[$settings['sort']['advanced']['combine_param']]['#bef_path'] = $this->view->get_path();
             }
             break;
 
           case 'default':
-            $form['sort_bef_combine']['#type'] = 'select';
+            $form[$settings['sort']['advanced']['combine_param']]['#type'] = 'select';
             break;
         }
 
@@ -812,7 +823,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
         // Pretend we're another exposed form widget.
         $form['#info']['sort-sort_bef_combine'] = array(
-          'value' => 'sort_bef_combine',
+          'value' => $settings['sort']['advanced']['combine_param'],
         );
 
         // Remove the existing sort_by and sort_order elements.
@@ -820,7 +831,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         unset($form['sort_order']);
 
         if ($collapse) {
-          $sort_elems[] = 'sort_bef_combine';
+          $sort_elems[] = $settings['sort']['advanced']['combine_param'];
         }
       }
       /* if ($settings['sort']['advanced']['combine']) { } */
@@ -883,7 +894,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Check if this is a secondary form element.
       if ($allow_secondary && $settings['sort']['advanced']['is_secondary']) {
-        foreach (array('sort_bef_combine', 'sort_by', 'sort_order') as $elem) {
+        foreach (array($settings['sort']['advanced']['combine_param'], 'sort_by', 'sort_order') as $elem) {
           if (!empty($form[$elem])) {
             $secondary[$elem] = $form[$elem];
             unset($form[$elem]);
@@ -1574,6 +1585,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           'collapsible' => FALSE,
           'collapsible_label' => '',
           'combine' => FALSE,
+          'combine_param' => 'sort_bef_combine',
           'combine_rewrite' => '',
           'reset' => FALSE,
           'reset_label' => '',
