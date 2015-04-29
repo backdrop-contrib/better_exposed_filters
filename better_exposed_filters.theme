@@ -322,7 +322,7 @@ function theme_select_as_tree($vars) {
   // Build a bunch of nested unordered lists to represent the hierarchy based
   // on the '-' prefix added by Views or optgroup structure.
   $output = '<ul class="bef-tree">';
-  $curr_depth = -1;
+  $curr_depth = 0;
   foreach ($element['#options'] as $option_value => $option_label) {
 
     // Check for Taxonomy-based filters.
@@ -338,7 +338,7 @@ function theme_select_as_tree($vars) {
     else {
       // Build hierarchy based on prefixed '-' on the element label.
       if (t('- Any -') == $option_label) {
-        $depth = -1;
+        $depth = 0;
       }
       else {
         preg_match('/^(-*).*$/', $option_label, $matches);
