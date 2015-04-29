@@ -605,9 +605,25 @@ function theme_select_as_links($vars) {
 function theme_secondary_exposed_elements($vars) {
   $element = $vars['element'];
 
-  $output = '<div class="bef-secondary-options">';
+  // Render child elements in the order they would appear as exposed filters.
+  // First collect the elements that have a specified position and order them
+  // based on that position. Then render those without a position.
+  $children = array();
+  $unordered = array();
   foreach (element_children($element) as $id) {
-    $output .= drupal_render($element[$id]);
+    if (isset($element[$id]['#bef_position'])) {
+      $children[$element[$id]['#bef_position']] = $element[$id];
+    }
+    else {
+      $unordered[] = $element[$id];
+    }
+  }
+  ksort($children, SORT_NUMERIC);
+  $children = array_merge($children, $unordered);
+
+  $output = '<div class="bef-secondary-options">';
+  foreach ($children as $child) {
+    $output .= drupal_render($child);
   }
   $output .= '</div>';
 

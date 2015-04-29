@@ -1446,17 +1446,33 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       if ($allow_secondary && $settings[$label]['more_options']['is_secondary']) {
         $identifier = $form['#info'][$filter_key]['value'];
         if (!empty($form[$identifier])) {
+          // Move from the main form to the secondary options fieldset.
+          $secondary[$identifier] = $form[$identifier];
+          unset($form[$identifier]);
+          $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
+          unset($form['#info'][$filter_key]);
+
+          // Ensure secondary options respect ordering of filters. Pass this
+          // along to the theme function for rendering. Multiply existing
+          // position by 2 so that we have room to stick the exposed operator
+          // before the filter.
+          if (isset($filters[$identifier]->position)) {
+            $secondary[$identifier]['#bef_position'] = $filters[$identifier]->position * 2;
+          }
+
           // Move exposed operators with exposed filters
           if (!empty($filters[$label]->options['expose']['use_operator'])) {
             $op_id = $filters[$label]->options['expose']['operator_id'];
             $secondary[$op_id] = $form[$op_id];
             unset($form[$op_id]);
+
+            // Make sure operators appear just before the filter they are
+            // associated with.
+            if (isset($filters[$identifier]->position)) {
+              $secondary[$op_id]['#bef_position'] = ($filters[$identifier]->position * 2) - 1;
+            }
           }
-          $secondary[$identifier] = $form[$identifier];
-          unset($form[$identifier]);
-          $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
-          unset($form['#info'][$filter_key]);
-         }
+        }
       }
     }
 
