@@ -128,8 +128,18 @@
       var befSettings = settings.better_exposed_filters;
       if (befSettings && befSettings.slider && befSettings.slider_options) {
         $.each(befSettings.slider_options, function(i, sliderOptions) {
+          var containing_parent = "#" + sliderOptions.viewId + " #edit-" + sliderOptions.id + "-wrapper .views-widget";
+          var $filter = $(containing_parent);
+
+          // If the filter is placed in a secondary fieldset, we may not have
+          // the usual wrapper element.
+          if (!$filter.length) {
+            containing_parent = "#" + sliderOptions.viewId + " .bef-secondary-options";
+            $filter = $(containing_parent);
+          }
+
           // Only make one slider per filter.
-          $("#" + sliderOptions.viewId + " #edit-" + sliderOptions.id + "-wrapper").once('slider-filter', function() {
+          $filter.once('slider-filter', function() {
             var $input = $(this).find('input[type=text]');
 
             // This is a "between" or "not between" filter with two values.
@@ -151,7 +161,7 @@
               $min.val(default_min);
               $max.val(default_max);
 
-              $min.parents('div.views-widget').after(
+              $min.parents(containing_parent).after(
                 $('<div class="bef-slider"></div>').slider({
                   range: true,
                   min: parseFloat(sliderOptions.min, 10),
@@ -202,7 +212,7 @@
               // Set the element value in case we are using the slider min.
               $input.val(default_value);
 
-              $input.parents('div.views-widget').after(
+              $input.parents(containing_parent).after(
                 $('<div class="bef-slider"></div>').slider({
                   min: parseFloat(sliderOptions.min, 10),
                   max: parseFloat(sliderOptions.max, 10),
