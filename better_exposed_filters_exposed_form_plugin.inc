@@ -918,10 +918,9 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
      * Handle exposed pager elements.
      */
     if (isset($settings['pager'])) {
-      $show_apply = TRUE;
-
       switch ($settings['pager']['bef_format']) {
         case 'bef':
+          $show_apply = TRUE;
           $form['items_per_page']['#type'] = 'radios';
           if (empty($form['items_per_page']['#process'])) {
             $form['items_per_page']['#process'] = array();
@@ -932,6 +931,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           break;
 
         case 'bef_links':
+          $show_apply = TRUE;
           if (count($form['items_per_page']['#options']) > 1) {
             $bef_add_js = TRUE;
             $form['items_per_page']['#theme'] = 'select_as_links';
@@ -1472,8 +1472,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
     }
 
     // If our form has no visible filters, hide the submit button.
-    $form['submit']['#access'] = $show_apply;
-    $form['reset']['#access'] = $show_apply;
+    if (!$show_apply) {
+      if (isset($form['submit'])) {
+        $form['submit']['#attributes']['class'][] = 'element-hidden';
+      }
+      if (isset($form['reset'])) {
+        $form['reset']['#attributes']['class'][] = 'element-hidden';
+      }
+    }
 
     // Add Javascript as needed.
     if ($bef_add_js) {
