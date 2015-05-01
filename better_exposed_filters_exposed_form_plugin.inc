@@ -931,7 +931,6 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           break;
 
         case 'bef_links':
-          $show_apply = TRUE;
           if (count($form['items_per_page']['#options']) > 1) {
             $bef_add_js = TRUE;
             $form['items_per_page']['#theme'] = 'select_as_links';
