@@ -715,9 +715,28 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset for secondary options, starts collapsed.');
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="custom_id[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
-    // Select an option and make sure the fielset is expanded when rendered.
+    // Select an option and make sure the fieldset is expanded when rendered.
     $this->drupalGet('bef_test_page', array('query' => array('custom_id' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
+
+    // Add an in-between filter and verify it renders correctly.
+    $this->addFilter('field_data_field_bef_test_integer.field_bef_test_integer_value', array(
+      'options[operator]' => 'between',
+    ));
+    $this->setBefSettings(array(
+      'exposed_form_options[bef][general][allow_secondary]' => 1,
+      'exposed_form_options[bef][general][secondary_label]' => 'Custom Label',
+      'exposed_form_options[bef][field_bef_test_integer_value][more_options][is_secondary]' => 1,
+    ));
+    $this->saveView();
+    $this->drupalGet('bef_test_page');
+
+    // Verify labels for the min and max fields.
+    $this->assertFieldByXpath('//div[@class="form-item-field-bef-test-integer-value-min"]//label', 'Integer (field_bef_test_integer)', 'Label appears for in-between filters in secondary fieldsets.');
+
+    $this->assertFieldByXpath('////div[contains(@class, "form-item-field-bef-test-integer-value-max")]/label', 'And ', 'In-between filter has correct label between min and max inputs');
+
+
   }
 }
 
