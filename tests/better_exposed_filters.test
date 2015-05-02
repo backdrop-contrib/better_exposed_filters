@@ -732,11 +732,13 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->drupalGet('bef_test_page');
 
     // Verify labels for the min and max fields.
-    $this->assertFieldByXpath('//div[@class="form-item-field-bef-test-integer-value-min"]//label', 'Integer (field_bef_test_integer)', 'Label appears for in-between filters in secondary fieldsets.');
-
-    $this->assertFieldByXpath('////div[contains(@class, "form-item-field-bef-test-integer-value-max")]/label', 'And ', 'In-between filter has correct label between min and max inputs');
-
-
+    // Note: Both labels have a trailing space which is added by Views... I
+    // assume to provide some visual whitespace between the label and widget if
+    // they are arranged horizontally. I imagine that'll change at some point as
+    // it's a terrible way to add some padding to an element!
+    $this->assertFieldByXpath('//label[@for="edit-field-bef-test-integer-value-min"]', 'Integer (field_bef_test_integer) ', 'Label appears for in-between filters in secondary fieldsets.');
+    $this->assertFieldByXpath('//label[@for="edit-field-bef-test-integer-value-max"]', 'And ', 'In-between filter has correct label between min and max inputs');
+    $this->assertFieldByXpath('//label[@for="edit-custom-id"]', 'Type ', 'Single input filter has correct label');
   }
 }
 
