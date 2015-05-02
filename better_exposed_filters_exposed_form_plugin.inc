@@ -1466,10 +1466,21 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $identifier = $form['#info'][$filter_key]['value'];
         if (!empty($form[$identifier])) {
           // Move from the main form to the secondary options fieldset.
+          $children = element_children($form[$identifier]);
           $secondary[$identifier] = $form[$identifier];
           unset($form[$identifier]);
-          $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
-          unset($form['#info'][$filter_key]);
+
+          if (1 < count($children)) {
+            // Some elements can have multiple children, for example min/max
+            // fields on an in-between filter. In those cases Add the label
+            // to the first element.
+            $secondary[$identifier][$children[0]]['#title'] = $form['#info'][$filter_key]['label'];
+            unset($form['#info'][$filter_key]);
+          }
+          else {
+            $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
+            unset($form['#info'][$filter_key]);
+          }
 
           // Ensure secondary options respect ordering of filters. Pass this
           // along to the theme function for rendering. Multiply existing
