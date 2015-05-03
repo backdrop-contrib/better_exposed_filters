@@ -84,7 +84,7 @@ class BEF_TestOptions extends BEF_TestBase {
 
     // Ensure View-based settings are preserved on save.
     $edit = array(
-      'exposed_form_options[input_required]' => 1,
+      'exposed_form_options[bef][general][input_required]' => 1,
       'exposed_form_options[bef][general][allow_secondary]' => 1,
     );
     $this->setBefSettings($edit);
@@ -849,7 +849,7 @@ class BEF_TestMisc extends BEF_TestBase {
       'options[expose][multiple]' => TRUE,
     ));
     $this->setBefSettings(array(
-      'exposed_form_options[input_required]' => 1,
+      'exposed_form_options[bef][general][input_required]' => 1,
       'exposed_form_options[bef][general][allow_secondary]' => 1,
     ));
     $this->saveView();
