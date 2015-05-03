@@ -1245,6 +1245,15 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             'viewId' => $form['#id'],
           );
 
+          // We need a wrapping element that covers all elements in the
+          // slider -- not just the text fields, but descriptions as well. When
+          // placed in the secondary fieldset, we lose what we usually get from
+          // the FormAPI.
+          if ($options['more_options']['is_secondary']) {
+            $form[$filter_id]['#prefix'] = '<div class="bef-slider-wrapper">';
+            $form[$filter_id]['#suffix'] = '</div>';
+          }
+
           // This element renders via Drupal's FormAPI so we can use
           // #description instead of passing the description along to BEF's
           // theme functions.

@@ -134,7 +134,7 @@
           // If the filter is placed in a secondary fieldset, we may not have
           // the usual wrapper element.
           if (!$filter.length) {
-            containing_parent = "#" + sliderOptions.viewId + " .bef-secondary-options";
+            containing_parent = "#" + sliderOptions.viewId + " .bef-slider-wrapper";
             $filter = $(containing_parent);
           }
 
