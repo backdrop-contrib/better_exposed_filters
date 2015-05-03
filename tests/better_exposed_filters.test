@@ -540,12 +540,12 @@ class BEF_TestDatepicker extends BEF_TestBase {
       'path' => array('path' => 'bef_test_page'),
     ));
 
-    // Verify slider rendering using the Numbers field from the BEF test content
-    // type.
+    // Verify Datepicker rendering using the Numbers field from the BEF test
+    // content type.
     $this->addFilter('node.created');
     $this->saveView();
 
-    // Verify the slider option appears for integer fields
+    // Verify the datepicker option appears for core date fields.
     $this->drupalGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'jQuery UI Datepicker');
@@ -557,7 +557,7 @@ class BEF_TestDatepicker extends BEF_TestBase {
     $this->drupalGet('bef_test_page');
     $settings = $this->drupalGetSettings();
     $settings = $settings['better_exposed_filters'];
-    $this->assertTrue($settings['datepicker'], 'BEF slider setting is TRUE');
+    $this->assertTrue($settings['datepicker'], 'BEF datepicker setting is TRUE');
     $this->assertFieldByXpath('//div[@id="edit-created-wrapper"]//input[contains(@class,"bef-datepicker")]');
   }
 
@@ -574,14 +574,14 @@ class BEF_TestDatepicker extends BEF_TestBase {
     // pulling up the modules page, but it works...
     $this->drupalGet('admin/modules');
 
-    // Verify slider rendering using the Numbers field from the BEF test content
-    // type.
+    // Verify datepicker rendering using the Numbers field from the BEF test
+    // content type.
     $this->addFilter('field_data_field_bef_test_date.field_bef_test_date_value', array(), array(
       'options[form_type]' => 'date_text',
     ));
     $this->saveView();
 
-    // Verify the slider option appears for integer fields
+    // Verify the datepicker option appears for custom date fields.
     $this->drupalGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'jQuery UI Datepicker');
@@ -593,8 +593,8 @@ class BEF_TestDatepicker extends BEF_TestBase {
     $this->drupalGet('bef_test_page');
     $settings = $this->drupalGetSettings();
     $settings = $settings['better_exposed_filters'];
-    $this->assertTrue($settings['datepicker'], 'BEF slider setting is TRUE');
-    $this->assertTrue(!empty($settings['datepicker_options']['dateformat']), 'BEF slider setting is TRUE');
+    $this->assertTrue($settings['datepicker'], 'BEF datepicker setting is TRUE');
+    $this->assertTrue(!empty($settings['datepicker_options']['dateFormat']), 'BEF datepicker setting is TRUE');
     $this->assertFieldByXpath('//div[@id="edit-field-bef-test-date-value-value"]//input[contains(@class,"bef-datepicker")]');
   }
 }

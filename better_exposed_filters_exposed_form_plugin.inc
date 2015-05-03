@@ -603,6 +603,24 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 </pre> Leave the replacement value blank to remove an option altogether. If using hierarchical taxonomy filters, do not including leading hyphens in the current value.
         '),
       );
+
+      // Add an option to override defaults for the jQuery UI Datepicker.
+      if ($bef_datepicker) {
+        $bef_options[$label]['more_options']['datepicker_options'] = array(
+          '#type' => 'textarea',
+          '#title' => t('jQuery UI Datepicker option'),
+          '#default_value' => $existing[$label]['more_options']['datepicker_options'],
+          '#description' => t('Use this field to override the default options for the Datepicker widget. Options should be in the form of <code>option_name: option_value</code>, one setting per line. For example, to set the days of the week and date format to French: <pre>
+dayNamesMin: [ "Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa" ]
+dateFormat: "dd-mm-yy"
+</pre>More information about datepicker options can be found on the <a href="!link">jQuery UI website</a>. This field is translatable so you can specify different options for different languages. See the <a href="!docs_link">BEF localization documentation</a> for more details.',
+            array(
+              '!link' => 'http://api.jqueryui.com/datepicker/',
+              '!docs_link' => 'https://www.drupal.org/node/2460797',
+            )
+          ),
+        );
+      }
     }
     /* Ends: foreach ($filters as $filter) { */
 
@@ -1191,10 +1209,10 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
                 $form[$filter_id]['max']['#description'] = $form[$filter_id]['#bef_description'];
               }
             }
-            $bef_js['datepicker_options']['dateformat'] = str_replace(array_keys($convert), array_values($convert), $format);
+            $bef_js['datepicker_options']['dateFormat'] = str_replace(array_keys($convert), array_values($convert), $format);
           }
           else {
-            $bef_js['datepicker_options']['dateformat'] = '';
+            $bef_js['datepicker_options']['dateFormat'] = '';
             /*
              * Standard Drupal date field.  Depending on the settings, the field
              * can be at $form[$filter_id] (single field) or
@@ -1224,6 +1242,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               if (!empty($form[$filter_id]['#bef_description'])) {
                 $form[$filter_id]['#description'] = $form[$filter_id]['#bef_description'];
               }
+            }
+          }
+
+          if (!empty($options['more_options']['datepicker_options'])) {
+            foreach (explode("\n", $options['more_options']['datepicker_options']) as $setting) {
+              list ($key, $val) = explode(':', trim($setting));
+              $bef_js['datepicker_options'][$key] = $val;
             }
           }
           break;
@@ -1741,6 +1766,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         'rewrite' => array(
           'filter_rewrite_values' => '',
         ),
+        'datepicker_options' => '',
       ),
       'slider_options' => array(
         'bef_slider_min' => 0,
@@ -1868,6 +1894,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       $keys[$label . '_filter_description'] = array('bef', $label, 'more_options', 'bef_filter_description');
       $keys[$label . '_any_label'] = array('bef', $label, 'more_options', 'any_label');
       $keys[$label . '_rewrite_values'] = array('bef', $label, 'more_options', 'rewrite', 'filter_rewrite_values');
+      $keys[$label . '_datepicker_options'] = array('bef', $label, 'more_options', 'datepicker_options');
     }
 
     return $keys;

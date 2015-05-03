@@ -89,7 +89,12 @@
       // Check for and initialize datepickers
       var befSettings = Drupal.settings.better_exposed_filters;
       if (befSettings && befSettings.datepicker && befSettings.datepicker_options && $.fn.datepicker) {
-        var opt = befSettings.datepicker_options.dateformat ? {dateFormat: befSettings.datepicker_options.dateformat} : {};
+        var opt = [];
+        $.each(befSettings.datepicker_options, function(key, val) {
+          if (key && val) {
+            opt[key] = JSON.parse(val);
+          }
+        });
         $('.bef-datepicker').datepicker(opt);
       }
 
