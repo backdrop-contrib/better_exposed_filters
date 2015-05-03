@@ -1444,13 +1444,21 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           break;
 
         default:
-          // Handle functionality for exposed filters that are not limited to
-          // BEF only filters.
+          // Handles functionality for exposed filters that are not rendered
+          // using BEF.
           $show_apply = TRUE;
 
           // Add a description to the exposed filter.
           if (!empty($options['more_options']['bef_filter_description'])) {
-            $form[$filter_id]['#description'] = t($options['more_options']['bef_filter_description']);
+            $children = element_children($form[$filter_id]);
+            if (count($children) > 1) {
+              // A filter may have multiple children if it's a in-between
+              // filter. In this case, put the description on the last item.
+              $form[$filter_id][end($children)]['#description'] = t($options['more_options']['bef_filter_description']);
+            }
+            else {
+              $form[$filter_id]['#description'] = t($options['more_options']['bef_filter_description']);
+            }
           }
           break;
       }
