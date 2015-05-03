@@ -85,7 +85,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       ),
       '#states' => array(
         'required' => array(
-          ':input[name="allow_secondary"]' => array('checked' => TRUE),
+          ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
         ),
       ),
       // Use CTool's #dependency as it adds some margin-left which looks nice.
@@ -182,7 +182,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#default_value' => $existing['sort']['advanced']['is_secondary'],
         '#states' => array(
           'visible' => array(
-            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+            ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
           ),
         ),
         '#description' => t('Places this element in the secondary options portion of the exposed form.'),
@@ -219,7 +219,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#default_value' => $existing['pager']['is_secondary'],
         '#states' => array(
           'visible' => array(
-            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+            ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
           ),
         ),
         '#description' => t('Places this element in the secondary options portion of the exposed form.'),
@@ -514,7 +514,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#default_value' => $existing[$label]['more_options']['is_secondary'],
         '#states' => array(
           'visible' => array(
-            ':input[name="allow_secondary"]' => array('checked' => TRUE),
+            ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
           ),
         ),
         '#description' => t('Places this element in the secondary options portion of the exposed form.'),
