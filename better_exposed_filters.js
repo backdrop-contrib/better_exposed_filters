@@ -104,11 +104,22 @@
   Drupal.behaviors.betterExposedFiltersAllNoneNested = {
     attach:function (context, settings) {
       $('.form-checkboxes.bef-select-all-none-nested li').has('ul').once('bef-all-none-nested', function () {
-        $(this)
+        var $this = $(this);
+
+        // Prevent CTools autosubmit from firing until we've finished checking
+        // all the checkboxes.
+        var submitFunc = $this.parents('form').submit;
+        $this.parents('form').submit = null;
+
+        $this
           // To respect term depth, check/uncheck child term checkboxes.
           .find('input.form-checkboxes:first')
           .click(function() {
             $(this).parents('li:first').find('ul input.form-checkboxes').attr('checked', $(this).attr('checked'));
+
+            // Now we can trigger the autosubmit
+            $this.parents('form').submit = submitFunc;
+            $this.parents('form').trigger('submit');
           })
           .end()
           // When a child term is checked or unchecked, set the parent term's
