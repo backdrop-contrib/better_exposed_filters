@@ -1244,6 +1244,20 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
             'id' => drupal_html_id($filter_id),
             'viewId' => $form['#id'],
           );
+
+          // This element renders via Drupal's FormAPI so we can use
+          // #description instead of passing the description along to BEF's
+          // theme functions.
+          if (!empty($form[$filter_id]['#bef_description'])) {
+            $children = element_children($form[$filter_id]);
+            if (count($children) > 1) {
+              // Put the description on the last child or this element.
+              $form[$filter_id][end($children)]['#description'] = $form[$filter_id]['#bef_description'];
+            }
+            else {
+              $form[$filter_id]['#description'] = $form[$filter_id]['#bef_description'];
+            }
+          }
           break;
 
         case 'bef_links':
