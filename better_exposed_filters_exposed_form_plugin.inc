@@ -259,8 +259,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // operators.
       $bef_single = FALSE;
 
-      // Used for taxonomy filters with heirarchy.
+      // Used for taxonomy filters with hierarchy.
       $bef_nested = FALSE;
+
+      // Allows the term description to be added to rendered output.
+      $bef_term_description = FALSE;
 
       // Used for date-based filters.
       $bef_datepicker = FALSE;
@@ -303,6 +306,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         }
         elseif (!empty($filter->options['hierarchy'])) {
           $bef_nested = TRUE;
+          $bef_term_description = TRUE;
         }
       }
 
@@ -491,6 +495,23 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
               'When a parent checkbox is checked, check all its children. If this option
                 is disabled, edit the filter and check "Allow multiple selections" and
                 edit the filter settings and check "Show hierarchy in dropdown".'
+            ),
+          );
+        }
+
+        if ($bef_term_description) {
+          $bef_options[$label]['more_options']['bef_term_description'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Include the term description'),
+            '#default_value' => $existing[$label]['more_options']['bef_term_description'],
+            '#description' => t('For taxonomy term filters, includes the term description for each filter option.'),
+            '#states' => array(
+              'visible' => array(
+                ':input[name="exposed_form_options[bef][' . $label . '][bef_format]"]' => array(
+                  array('value' => 'bef'),
+                  array('value' => 'bef_ul'),
+                ),
+              ),
             ),
           );
         }
@@ -1475,9 +1496,25 @@ dateFormat: "dd-mm-yy"
                 $form[$filter_id]['#bef_select_all_none_nested'] = TRUE;
               }
             }
-
           }
           /* Ends: if (empty($form[$filter_id]['#multiple'])) { ... } else { */
+
+          // Add term descriptions, if appropriate. Pass along to theme
+          // functions for rendering.
+          if ($options['more_options']['bef_term_description'] && $filters[$filter_id] instanceof views_handler_filter_term_node_tid) {
+            $tids = array();
+            foreach ($form[$filter_id]['#options'] as $tid => $option) {
+              if (is_object($option)) {
+                reset($option->option);
+                list ($tid, ) = each($option->option);
+              }
+              $tids[] = $tid;
+            }
+            $terms = taxonomy_term_load_multiple($tids);
+            foreach ($terms as $tid => $term) {
+              $form[$filter_id]['#bef_term_descriptions'][$tid] = $term->description;
+            }
+          }
           break;
 
         case 'bef_hidden':
@@ -1759,6 +1796,7 @@ dateFormat: "dd-mm-yy"
         'is_secondary' => FALSE,
         'bef_filter_description' => '',
         'any_label' => '',
+        'bef_term_description' => FALSE,
         'tokens' => array(
           'list' => array(),
           'available' => array(),

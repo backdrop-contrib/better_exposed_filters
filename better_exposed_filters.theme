@@ -293,6 +293,9 @@ function theme_select_as_radios($vars) {
 
   $output = '';
   foreach (element_children($element) as $key) {
+    if (isset($element['#bef_term_descriptions'][$key])) {
+      $element[$key]['#description'] = $element['#bef_term_descriptions'][$key];
+    }
     $element[$key]['#default_value'] = NULL;
     $element[$key]['#children'] = theme('radio', array('element' => $element[$key]));
     $output .= theme('form_element', array('element' => $element[$key]));
@@ -349,6 +352,9 @@ function theme_select_as_tree($vars) {
       // Build either checkboxes or radio buttons, depending on Views' settings.
       $html = '';
       if (!empty($element['#multiple'])) {
+        if (isset($element['#bef_term_descriptions'][$option_value])) {
+          $element[$option_value]['#description'] = $element['#bef_term_descriptions'][$option_value];
+        }
         $html = bef_checkbox(
           $element,
           $option_value,
@@ -357,6 +363,9 @@ function theme_select_as_tree($vars) {
         );
       }
       else {
+        if (isset($element['#bef_term_descriptions'][$option_value])) {
+          $element[$option_value]['#description'] = $element['#bef_term_descriptions'][$option_value];
+        }
         $element[$option_value]['#title'] = $option_label;
         $element[$option_value]['#children'] = theme('radio', array('element' => $element[$option_value]));
         $html .= theme('form_element', array('element' => $element[$option_value]));
@@ -663,6 +672,8 @@ function bef_checkbox($element, $value, $label, $selected) {
     '#id' => $id,
     '#type' => 'bef-checkbox',
     '#name' => $id,
+    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] :
+      '',
   );
 
   // Prevent the select-all-none class from cascading to all checkboxes.
