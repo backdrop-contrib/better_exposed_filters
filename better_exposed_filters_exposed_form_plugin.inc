@@ -525,7 +525,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#type' => 'textfield',
         '#title' => t('Override "Any" option label'),
         '#default_value' => $existing[$label]['more_options']['any_label'],
-        '#description' => t('Leave blank to use views default value. <em>Note: overriding this label will break translations and localizations. Leave this field blank if preserving internationalization is important to your site.</em>'),
+        '#description' => t('Leave blank to use Views\' default value.'),
       );
 
       // Build a description option form element -- available to all exposed
