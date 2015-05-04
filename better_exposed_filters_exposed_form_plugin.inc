@@ -251,9 +251,17 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $bef_filter_intro = TRUE;
       }
 
-      // These filter operators get our standard options: select, radio or
-      // checkboxes, links, etc.
+      // These filter operators get our standard options: radio or checkboxes.
       $bef_standard = FALSE;
+
+      // Allows a filter to be rendered as a hidden <input> element. Useful when
+      // building multi-step filter "wizards," for example.
+      $bef_hidden = FALSE;
+
+      // Renders the filter as a link.
+      // @TODO: expand to include toggle links for all bef_links filters, not
+      // just exposed sorts.
+      $bef_links = FALSE;
 
       // These filters get a single on/off checkbox option for boolean
       // operators.
@@ -275,9 +283,13 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       if ($filter instanceof views_handler_filter_string || $filter instanceof views_handler_filter_in_operator) {
         if (in_array($filter->operator, array('in', 'or', 'and', 'not'))) {
           $bef_standard = TRUE;
+          $bef_links = TRUE;
+          $bef_hidden = TRUE;
         }
         if (in_array($filter->operator, array('empty', 'not empty'))) {
           $bef_standard = TRUE;
+          $bef_links = TRUE;
+          $bef_hidden = TRUE;
           if (!$filter->options['expose']['multiple']) {
             $bef_single = TRUE;
           }
@@ -286,6 +298,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       if ($filter instanceof views_handler_filter_boolean_operator) {
         $bef_standard = TRUE;
+        $bef_links = TRUE;
+        $bef_hidden = TRUE;
         if (!$filter->options['expose']['multiple']) {
           $bef_single = TRUE;
         }
@@ -295,6 +309,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // so we can offer basic BEF options.
       if ($filter->options['is_grouped']) {
         $bef_standard = TRUE;
+        $bef_links = TRUE;
+        $bef_hidden = TRUE;
       }
 
       if ($filter instanceof views_handler_filter_term_node_tid) {
@@ -303,6 +319,8 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         // the autocomplete widget.
         if ('textfield' == $filter->options['type']) {
           $bef_standard = FALSE;
+          $bef_links = FALSE;
+          $bef_hidden = FALSE;
         }
         elseif (!empty($filter->options['hierarchy'])) {
           $bef_nested = TRUE;
@@ -312,12 +330,14 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       if ($filter instanceof views_handler_filter_date || !empty($filter->date_handler)) {
         $bef_datepicker = TRUE;
+        $bef_hidden = TRUE;
       }
 
       // The date filter handler extends the numeric filter handler so we have
       // to exclude it specifically.
       if ($filter instanceof views_handler_filter_numeric && !($filter instanceof views_handler_filter_date)) {
         $bef_slider = TRUE;
+        $bef_hidden = TRUE;
       }
 
       // Search API extends the more general views_handler_filter rather than
@@ -325,11 +345,15 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // Handle those options here.
       if ($filter instanceof SearchApiViewsHandlerFilterOptions) {
         $bef_standard = TRUE;
+        $bef_links = TRUE;
+        $bef_hidden = TRUE;
       }
       elseif ($filter instanceof SearchApiViewsHandlerFilterDate) {
         $bef_datepicker = TRUE;
         if ($filter->options['is_grouped']) {
           $bef_standard = TRUE;
+          $bef_links = TRUE;
+          $bef_hidden = TRUE;
         }
       }
       // Search API numeric filters support
@@ -364,9 +388,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         $display_options['bef_slider'] = t('jQuery UI slider');
       }
 
-      if ($bef_standard) {
-        // Less used BEF options, so put them last.
+      if ($bef_links) {
         $display_options['bef_links'] = t('Links');
+      }
+
+      if ($bef_hidden) {
         $display_options['bef_hidden'] = t('Hidden');
       }
 
@@ -1002,7 +1028,6 @@ dateFormat: "dd-mm-yy"
 
     // Go through each saved option looking for Better Exposed Filter settings.
     foreach ($settings as $label => $options) {
-
       // Sanity check: Ensure this filter is an exposed filter.
       if (empty($filters[$label]) || !$filters[$label]->options['exposed']) {
         continue;
@@ -1082,12 +1107,12 @@ dateFormat: "dd-mm-yy"
       }
 
       // These BEF options require a set of given options to work (namely,
-      // $form[$filter_id]['#options'] needs to set). But it is possilbe to
+      // $form[$filter_id]['#options'] needs to set). But it is possible to
       // adjust settings elsewhere in the view that removes these options from
       // the form (eg: changing a taxonomy term filter from dropdown to
       // autocomplete). Check for that here and revert to Views' default filter
       // in those cases.
-      $requires_options = array('bef', 'bef_ul', 'bef_links', 'bef_hidden');
+      $requires_options = array('bef', 'bef_ul', 'bef_links');
       if (in_array($options['bef_format'], $requires_options) && !array_key_exists('#options', $form[$filter_id])) {
         $options['bef_format'] = 'default';
       }
