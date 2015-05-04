@@ -270,7 +270,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 
       // Check various filter types and determine what options are available.
       if ($filter instanceof views_handler_filter_string || $filter instanceof views_handler_filter_in_operator) {
-        if (in_array($filter->operator, array('in', 'or', 'and'))) {
+        if (in_array($filter->operator, array('in', 'or', 'and', 'not'))) {
           $bef_standard = TRUE;
         }
         if (in_array($filter->operator, array('empty', 'not empty'))) {
