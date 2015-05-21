@@ -53,6 +53,9 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 
     $bef_options['general']['text_input_required'] = array(
       '#type' => 'container',
+      // Indent dependent options.
+      '#prefix' => '<div class="dependent-options">',
+      '#suffix' => '</div>',
       '#states' => array(
         // Hide this field when the input_required checkbox is disabled.
         'invisible' => array(
@@ -83,14 +86,17 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       '#description' => t(
         'The name of the fieldset to hold secondary options. This cannot be left blank or there will be no way to show/hide these options.'
       ),
+      // Indent dependent options.
+      '#prefix' => '<div class="dependent-options">',
+      '#suffix' => '</div>',
       '#states' => array(
         'required' => array(
           ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
         ),
+        'visible' => array(
+          ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
+        ),
       ),
-      // Use CTool's #dependency as it adds some margin-left which looks nice.
-      // Also, you can't change the required state via #dependency...
-      '#dependency' => array('edit-exposed-form-options-bef-general-allow-secondary' => array(1)),
     );
 
     /*
@@ -135,6 +141,9 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#title' => t('Collapsible fieldset title'),
         '#default_value' => empty($existing['sort']['advanced']['collapsible_label']) ? t('Sort options') : $existing['sort']['advanced']['collapsible_label'],
         '#description' => t('This cannot be left blank or there will be no way to show/hide sort options.'),
+        // Indent dependent options.
+        '#prefix' => '<div class="dependent-options">',
+        '#suffix' => '</div>',
         '#states' => array(
           'visible' => array(
             'input[name="exposed_form_options[bef][sort][advanced][collapsible]"]' => array('checked' => TRUE)
@@ -159,6 +168,8 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('This will be the $_GET parameter used in query strings. Useful for preventing collisions between exposed filters when there are multiple instances of BEF on the page. Use only UTF-8 letters, numbers, and the dash (-), underscore (_), asterisk (*), and period(.) characters.'),
         '#default_value' => empty($existing['sort']['advanced']['combine_param']) ? 'sort_bef_combine' : $existing['sort']['advanced']['combine_param'],
         '#required' => TRUE,
+        // Indent dependent options -- closing </div> is in combine_rewrite.
+        '#prefix' => '<div class="dependent-options">',
         '#states' => array(
           'visible' => array(
             'input[name="exposed_form_options[bef][sort][advanced][combine]"]' => array('checked' => TRUE),
@@ -175,6 +186,7 @@ Post date Asc|Oldest first
 Post date Desc|Newest first
 Title Asc|A -> Z
 Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option altogether.'),
+        '#suffix' => '</div>',
         '#states' => array(
           'visible' => array(
             'input[name="exposed_form_options[bef][sort][advanced][combine]"]' => array('checked' => TRUE),
