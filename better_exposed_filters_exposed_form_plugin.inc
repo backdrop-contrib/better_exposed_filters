@@ -135,13 +135,22 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#title' => t('Collapsible fieldset title'),
         '#default_value' => empty($existing['sort']['advanced']['collapsible_label']) ? t('Sort options') : $existing['sort']['advanced']['collapsible_label'],
         '#description' => t('This cannot be left blank or there will be no way to show/hide sort options.'),
-        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-collapsible' => array(1)),
+        '#states' => array(
+          'visible' => array(
+            'input[name="exposed_form_options[bef][sort][advanced][collapsible]"]' => array('checked' => TRUE)
+          ),
+        ),
       );
       $bef_options['sort']['advanced']['combine'] = array(
         '#type' => 'checkbox',
         '#title' => t('Combine sort order with sort by'),
         '#default_value' => $existing['sort']['advanced']['combine'],
-        '#description' => t('Combines the sort by options and order (ascending or decending) into a single list.  Use this to display "Option1 Desc", "Option1 Asc", "Option2 Desc", "Option2 Asc" in a single form element.'),
+        '#description' => t('Combines the sort by options and order (ascending or decending) into a single list.  Use this to display "Option1 Desc", "Option1 Asc", "Option2 Desc", "Option2 Asc" in a single form element. "Expose sort order" must be checked to enable this option.'),
+        '#states' => array(
+          'disabled' => array(
+            'input[name="exposed_form_options[expose_sort_order]"]' => array('checked' => FALSE)
+          ),
+        ),
       );
       $bef_options['sort']['advanced']['combine_param'] = array(
         '#type' => 'textfield',
@@ -150,7 +159,12 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         '#description' => t('This will be the $_GET parameter used in query strings. Useful for preventing collisions between exposed filters when there are multiple instances of BEF on the page. Use only UTF-8 letters, numbers, and the dash (-), underscore (_), asterisk (*), and period(.) characters.'),
         '#default_value' => empty($existing['sort']['advanced']['combine_param']) ? 'sort_bef_combine' : $existing['sort']['advanced']['combine_param'],
         '#required' => TRUE,
-        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-combine' => array(1)),
+        '#states' => array(
+          'visible' => array(
+            'input[name="exposed_form_options[bef][sort][advanced][combine]"]' => array('checked' => TRUE),
+            'input[name="exposed_form_options[expose_sort_order]"]' => array('checked' => TRUE),
+          ),
+        ),
       );
       $bef_options['sort']['advanced']['combine_rewrite'] = array(
         '#type' => 'textarea',
@@ -161,7 +175,12 @@ Post date Asc|Oldest first
 Post date Desc|Newest first
 Title Asc|A -> Z
 Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option altogether.'),
-        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-combine' => array(1)),
+        '#states' => array(
+          'visible' => array(
+            'input[name="exposed_form_options[bef][sort][advanced][combine]"]' => array('checked' => TRUE),
+            'input[name="exposed_form_options[expose_sort_order]"]' => array('checked' => TRUE),
+          ),
+        ),
       );
       $bef_options['sort']['advanced']['reset'] = array(
         '#type' => 'checkbox',
@@ -174,6 +193,11 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
         '#title' => t('"Reset sort" label'),
         '#default_value' => $existing['sort']['advanced']['reset_label'],
         '#description' => t('This cannot be left blank if the above option is checked'),
+        '#state' => array(
+          'visible' => array(
+            'input[name="exposed_form_options[bef][sort][advanced][reset]"]' => array('checked' => TRUE),
+          ),
+        ),
         '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-reset' => array(1)),
       );
       $bef_options['sort']['advanced']['is_secondary'] = array(
