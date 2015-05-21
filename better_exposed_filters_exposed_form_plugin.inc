@@ -194,24 +194,31 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
           ),
         ),
       );
+
       $bef_options['sort']['advanced']['reset'] = array(
         '#type' => 'checkbox',
         '#title' => t('Include a "Reset sort" option'),
         '#default_value' => $existing['sort']['advanced']['reset'],
-        '#description' => t('Adds a "Reset sort" link; Views will use the default sort order.'),
+        '#description' => t('Adds a "Reset sort" option which will use Views\' default sort order.'),
       );
       $bef_options['sort']['advanced']['reset_label'] = array(
         '#type' => 'textfield',
         '#title' => t('"Reset sort" label'),
         '#default_value' => $existing['sort']['advanced']['reset_label'],
         '#description' => t('This cannot be left blank if the above option is checked'),
-        '#state' => array(
+        // Indent dependent options.
+        '#prefix' => '<div class="dependent-options">',
+        '#suffix' => '</div>',
+        '#states' => array(
+          'required' => array(
+              'input[name="exposed_form_options[bef][sort][advanced][reset]"]' => array('checked' => TRUE),
+          ),
           'visible' => array(
             'input[name="exposed_form_options[bef][sort][advanced][reset]"]' => array('checked' => TRUE),
           ),
         ),
-        '#dependency' => array('edit-exposed-form-options-bef-sort-advanced-reset' => array(1)),
       );
+
       $bef_options['sort']['advanced']['is_secondary'] = array(
         '#type' => 'checkbox',
         '#title' => t('This is a secondary option'),
