@@ -1336,7 +1336,7 @@ dateFormat: "dd-mm-yy"
 
           if (!empty($options['more_options']['datepicker_options'])) {
             foreach (explode("\n", $options['more_options']['datepicker_options']) as $setting) {
-              list ($key, $val) = explode(':', trim($setting));
+              list ($key, $val) = explode(':', trim($setting), 2);
               $bef_js['datepicker_options'][$key] = $val;
             }
           }
