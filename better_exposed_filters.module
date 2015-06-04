@@ -54,7 +54,7 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
       'function' => 'theme_bef_checkbox',
       'render element' => 'element',
       'file' => 'better_exposed_filters.theme',
-    ),    
+    ),
   );
 }
 

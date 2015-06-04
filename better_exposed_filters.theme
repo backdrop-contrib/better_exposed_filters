@@ -124,7 +124,7 @@ function theme_select_as_checkboxes($vars) {
     }
 
     foreach ($element_set as $key => $value) {
-      $output .= theme('bef_checkbox', array('element' => $element, 'value' => $key, 'label' => $value, 'selected' => array_search($key, $selected_options) !== FALSE));      
+      $output .= theme('bef_checkbox', array('element' => $element, 'value' => $key, 'label' => $value, 'selected' => array_search($key, $selected_options) !== FALSE));
     }
 
     if ($is_optgroup) {
@@ -666,7 +666,7 @@ function theme_bef_checkbox($variables) {
   $element = $variables['element'];
   $value = check_plain($variables['value']);
   $label = check_plain($variables['label']);
-  $selected = $variables['selected'];  
+  $selected = $variables['selected'];
   $id = drupal_html_id($element['#id'] . '-' . $value);
   // Custom ID for each checkbox based on the <select>'s original ID.
   $properties = array(
