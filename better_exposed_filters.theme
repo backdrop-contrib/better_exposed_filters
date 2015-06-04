@@ -124,7 +124,7 @@ function theme_select_as_checkboxes($vars) {
     }
 
     foreach ($element_set as $key => $value) {
-      $output .= bef_checkbox($element, $key, $value, array_search($key, $selected_options) !== FALSE);
+      $output .= theme('bef_checkbox', array('element' => $element, 'value' => $key, 'label' => $value, 'selected' => array_search($key, $selected_options) !== FALSE));      
     }
 
     if ($is_optgroup) {
@@ -355,12 +355,12 @@ function theme_select_as_tree($vars) {
         if (isset($element['#bef_term_descriptions'][$option_value])) {
           $element[$option_value]['#description'] = $element['#bef_term_descriptions'][$option_value];
         }
-        $html = bef_checkbox(
-          $element,
-          $option_value,
-          $option_label,
-          (array_search($option_value, $selected_options) !== FALSE)
-        );
+        $html = theme('bef_checkbox', array(
+          'element' => $element,
+          'value' => $option_value,
+          'label' => $option_label,
+          'selected' => (array_search($option_value, $selected_options) !== FALSE),
+        ));
       }
       else {
         if (isset($element['#bef_term_descriptions'][$option_value])) {
@@ -662,9 +662,11 @@ function theme_secondary_exposed_elements($vars) {
  * @return [type]
  *   HTML to render a checkbox.
  */
-function bef_checkbox($element, $value, $label, $selected) {
-  $value = check_plain($value);
-  $label = filter_xss_admin($label);
+function theme_bef_checkbox($variables) {
+  $element = $variables['element'];
+  $value = check_plain($variables['value']);
+  $label = check_plain($variables['label']);
+  $selected = $variables['selected'];  
   $id = drupal_html_id($element['#id'] . '-' . $value);
   // Custom ID for each checkbox based on the <select>'s original ID.
   $properties = array(
