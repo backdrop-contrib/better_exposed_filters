@@ -1298,7 +1298,7 @@ dateFormat: "dd-mm-yy"
                 $form[$filter_id]['max']['#description'] = $form[$filter_id]['#bef_description'];
               }
             }
-            $bef_js['datepicker_options']['dateFormat'] = str_replace(array_keys($convert), array_values($convert), $format);
+            $bef_js['datepicker_options']['dateFormat'] = json_encode(str_replace(array_keys($convert), array_values($convert), $format));
           }
           else {
             $bef_js['datepicker_options']['dateFormat'] = '';
@@ -1337,6 +1337,11 @@ dateFormat: "dd-mm-yy"
           if (!empty($options['more_options']['datepicker_options'])) {
             foreach (explode("\n", $options['more_options']['datepicker_options']) as $setting) {
               list ($key, $val) = explode(':', trim($setting), 2);
+              // No need to json_encode() this value like we do other datepicker
+              // options as it should already be entered in JSON format in the
+              // UI. While having an admin enter JSON in a text field is not
+              // ideal, it is how the jQueryUI widget documentation shows it in
+              // their examples.
               $bef_js['datepicker_options'][$key] = $val;
             }
           }
