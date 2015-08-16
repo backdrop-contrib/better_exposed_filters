@@ -154,7 +154,7 @@ function bef_test_content_field_default_field_bases() {
         6 => 'Six',
         7 => 'Seven',
         8 => 'Eight',
-        9 => 'NIne',
+        9 => 'Nine',
         10 => 'Ten',
       ),
       'allowed_values_function' => '',
