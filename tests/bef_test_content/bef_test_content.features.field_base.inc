@@ -121,7 +121,7 @@ function bef_test_content_field_default_field_bases() {
     'settings' => array(
       'allowed_values' => array(
         0 => array(
-          'vocabulary' => 'location',
+          'vocabulary' => 'taxonomy-bef_test-location',
           'parent' => 0,
         ),
       ),

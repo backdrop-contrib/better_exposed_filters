@@ -316,7 +316,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
 
     // Add three terms with two children each to the vocab defined in
     // bef_test_content.
-    $vocab = taxonomy_vocabulary_machine_name_load('location');
+    $vocab = taxonomy_vocabulary_machine_name_load('taxonomy-bef_test-location');
     $parents = array();
     foreach (array('parent1', 'parent2', 'parent3') as $name) {
       $term = new stdClass();

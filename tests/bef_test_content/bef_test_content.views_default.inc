@@ -253,7 +253,7 @@ function bef_test_content_views_default_views() {
     3 => 0,
   );
   $handler->display->display_options['filters']['field_bef_test_location_tid']['type'] = 'select';
-  $handler->display->display_options['filters']['field_bef_test_location_tid']['vocabulary'] = 'location';
+  $handler->display->display_options['filters']['field_bef_test_location_tid']['vocabulary'] = 'taxonomy-bef_test-location';
   $handler->display->display_options['filters']['field_bef_test_location_tid']['hierarchy'] = 1;
 
   /* Display: Page */
