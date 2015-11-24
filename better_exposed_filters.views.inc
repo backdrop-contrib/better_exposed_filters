@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Adds Views3 support.
+ * Adds Views support.
  *
  * Views3 adds the concept of exposed forms to the mix.  In addition, elements
  * injected into a Views dialog is no longer saved along with the Views form

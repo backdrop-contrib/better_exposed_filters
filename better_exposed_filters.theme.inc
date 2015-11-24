@@ -49,7 +49,7 @@ function theme_select_as_checkboxes_fieldset($vars) {
   $children = '';
   if (!empty($element['#bef_operator'])) {
     // Put an exposed operator inside the fieldset.
-    $children = drupal_render($element['#bef_operator']);
+    $children = backdrop_render($element['#bef_operator']);
   }
 
   // Render the checkboxes.
@@ -148,7 +148,7 @@ function theme_select_as_checkboxes($vars) {
     $attributes['class'] = array_merge($element['#attributes']['class'], $attributes['class']);
   }
 
-  return '<div' . drupal_attributes($attributes) . ">$description$output</div>";
+  return '<div' . backdrop_attributes($attributes) . ">$description$output</div>";
 }
 
 /**
@@ -195,7 +195,7 @@ function theme_select_as_hidden($vars) {
       if (array_search($key, $selected_options) !== FALSE) {
         // Custom ID for each hidden field based on the <select> element's
         // original ID.
-        $id = drupal_html_id($element['#id'] . '-' . $key);
+        $id = backdrop_html_id($element['#id'] . '-' . $key);
         $hidden = array(
           'id' => $id,
           'name' => check_plain($element['#name']) . '[]',
@@ -263,7 +263,7 @@ function theme_select_as_radios_fieldset($vars) {
   $children = '';
   if (!empty($element['#bef_operator'])) {
     // Put an exposed operator inside the fieldset.
-    $children = drupal_render($element['#bef_operator']);
+    $children = backdrop_render($element['#bef_operator']);
   }
 
   // Render the radio buttons.
@@ -445,7 +445,7 @@ function theme_select_as_tree($vars) {
     unset($element['#attributes']['multiple']);
   }
 
-  return '<div' . drupal_attributes($element['#attributes']) . ">$description$output</div>";
+  return '<div' . backdrop_attributes($element['#attributes']) . ">$description$output</div>";
 }
 
 /**
@@ -541,7 +541,7 @@ function theme_select_as_links($vars) {
     foreach ($element_set as $key => $value) {
       $element_output = '';
       // Custom ID for each link based on the <select>'s original ID.
-      $id = drupal_html_id($element['#id'] . '-' . $key);
+      $id = backdrop_html_id($element['#id'] . '-' . $key);
       $elem = array(
         '#id' => $id,
         '#markup' => '',
@@ -632,7 +632,7 @@ function theme_secondary_exposed_elements($vars) {
 
   $output = '<div class="bef-secondary-options">';
   foreach ($children as $child) {
-    $output .= drupal_render($child);
+    $output .= backdrop_render($child);
   }
   $output .= '</div>';
 
@@ -667,7 +667,7 @@ function theme_bef_checkbox($variables) {
   $value = check_plain($variables['value']);
   $label = filter_xss_admin($variables['label']);
   $selected = $variables['selected'];
-  $id = drupal_html_id($element['#id'] . '-' . $value);
+  $id = backdrop_html_id($element['#id'] . '-' . $value);
   // Custom ID for each checkbox based on the <select>'s original ID.
   $properties = array(
     '#required' => FALSE,
@@ -696,7 +696,7 @@ function theme_bef_checkbox($variables) {
     . 'id="' . $id . '" '
     . 'value="' . $value . '" '
     . ($selected ? 'checked="checked" ' : '')
-    . drupal_attributes($element['#attributes']) . ' />';
+    . backdrop_attributes($element['#attributes']) . ' />';
   $properties['#children'] = "$checkbox <label class='option' for='$id'>$label</label>";
   $output = theme('form_element', array('element' => $properties));
   return $output;

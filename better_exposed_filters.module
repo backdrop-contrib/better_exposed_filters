@@ -202,5 +202,5 @@ function better_exposed_filters_preprocess_views_view(&$variables) {
   }
 
   $bef_js['views'][$variables['view']->name]['displays'][$variables['view']->current_display]['filters'] = $filters;
-  drupal_add_js(array('better_exposed_filters' => $bef_js), 'setting');
+  backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');
 }

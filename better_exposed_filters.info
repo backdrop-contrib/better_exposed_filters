@@ -1,8 +1,6 @@
-; $Id
+type = module
 name = Better Exposed Filters
 description = Allow the use of checkboxes or radio buttons for exposed Views filters
-core = 7.x
+backdrop = 1.x
 package = Views
 dependencies[] = views
-files[] = better_exposed_filters_exposed_form_plugin.inc
-files[] = tests/better_exposed_filters.test

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Hooks provided by the Better Expoosed Filters module.
+ * Hooks provided by the Better Exposed Filters module.
  */
 
 /**

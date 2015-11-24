@@ -28,19 +28,6 @@ function better_exposed_filters_disable() {
   if (!empty($warnings)) {
     $message = t('The following Views displays are using the Better Exposed Filters plugin, which is no longer enabled. It is recommended that you update these displays (links open in a new window) before removing the code associated with this module. Not doing so may cause unexpected results.');
     $message .= '<ul><li>' . join('</li></li>', $warnings) . '</li></ul>';
-    drupal_set_message($message, 'warning');
+    backdrop_set_message($message, 'warning');
   }
-}
-
-/*
- * Implementations of hook_update_N.
- *
- * Comments above each function appear in the update database message.
- */
-/**
- * Rebuild the theme registry to discover new theme_bef_checkbox() function.
- */
-function better_exposed_filters_update_7000() {
-  drupal_theme_rebuild();
-  return t('Theme registry has been rebuilt.');
 }

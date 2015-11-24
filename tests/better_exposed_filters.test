@@ -6,18 +6,6 @@ require_once 'better_exposed_filters_TestBase.php';
  */
 
 class BEF_TestOptions extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF Options tests',
-      'description' => 'Checks that BEF options appear when should.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
   /**
    * Verify BEF options display for binary and unlimited option fields
    */
@@ -116,17 +104,6 @@ class BEF_TestOptions extends BEF_TestBase {
 class BEF_TestRadios extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF radio button tests',
-      'description' => 'Verifies rendering filters as radio buttons.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verify BEF radio buttons are rendered correctly on a page view.
    */
   public function test_befPageDisplayRadios() {
@@ -170,17 +147,6 @@ class BEF_TestRadios extends BEF_TestBase {
 }
 
 class BEF_TestCheckboxes extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF checkbox tests',
-      'description' => 'Verifies rendering filter options as checkboxes.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
 
   /**
    * Verify that checkboxes are rendered correctly on a page display
@@ -240,17 +206,6 @@ class BEF_TestCheckboxes extends BEF_TestBase {
 class BEF_TestHidden extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF hidden tests',
-      'description' => 'Verifies rendering filter options as hidden elements.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verify hidden exposed filters are rendered correctly on a page display
    *
    * @TODO: check the functionality of a multi-pass filter using hidden BEF
@@ -288,17 +243,6 @@ class BEF_TestHidden extends BEF_TestBase {
 }
 
 class BEF_TestTaxonomyFilters extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF taxonomy filter tests',
-      'description' => 'Verifies rendering of taxonomy filters.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
 
   /**
    * Verify taxonomy-based exposed filters display correctly as both radio
@@ -370,17 +314,6 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
 class BEF_TestSort extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF sort tests',
-      'description' => 'Verifies rendering exposed sort options.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verify exposed sorts, including the combined sort/operator option and
    * option rewriting, work with BEF.
    */
@@ -430,17 +363,6 @@ class BEF_TestSort extends BEF_TestBase {
 }
 
 class BEF_TestSliders extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF slider tests',
-      'description' => 'Verifies rendering filters jQueryUI sliders.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
 
   /**
    * Verify the correct classes are placed on exposed form elements and
@@ -521,17 +443,6 @@ class BEF_TestSliders extends BEF_TestBase {
 class BEF_TestDatepicker extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF datepicker tests',
-      'description' => 'Verifies rendering filter options as a jQueryUI Datepicker.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verifies Datepicker options using Drupal core date fields.
    */
   public function test_befDatepicker() {
@@ -602,17 +513,6 @@ class BEF_TestDatepicker extends BEF_TestBase {
 class BEF_TestLinks extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF links tests',
-      'description' => 'Verifies rendering filter options as toggle links.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verify filters rendered as links.
    */
   public function test_befFilterLinks() {
@@ -657,17 +557,6 @@ class BEF_TestLinks extends BEF_TestBase {
 }
 
 class BEF_TestSecondaryFilters extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF secondary filter tests',
-      'description' => 'Verifies rendering filter options within the secondary filter fieldset.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
 
   /**
    * Basic coverage for filters rendered in secondary options fieldsets. See
@@ -745,17 +634,6 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
 class BEF_TestRewrite extends BEF_TestBase {
 
   /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF rewrite tests',
-      'description' => 'Verifies rewriting filter and sort options.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
    * Verify rewriting works for filter options
    */
   public function test_befFilterRewrite() {
@@ -823,17 +701,6 @@ class BEF_TestRewrite extends BEF_TestBase {
 }
 
 class BEF_TestMisc extends BEF_TestBase {
-
-  /**
-   * Describes these tests to the testing framework.
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF miscellaneous tests',
-      'description' => 'Verifies misc BEF functional.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
 
   /**
    * Verifies the "Require input..." option.

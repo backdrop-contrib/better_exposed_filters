@@ -746,7 +746,7 @@ dateFormat: "dd-mm-yy"
     // If we have no visible elements, we don't show the Apply button.
     $show_apply = FALSE;
 
-    // Collect BEF's Javascript settings, add to Drupal.settings at the end.
+    // Collect BEF's Javascript settings, add to Backdrop.settings at the end.
     // Historical note: We used to only add BEF's Javascript when absolutely
     // needed. Eventually, much of that functionality worked its way into the
     // normal usage of BEF so that we now turn those Jvaascript behaviors on
@@ -768,7 +768,7 @@ dateFormat: "dd-mm-yy"
     // exposed form widgets.
     $context['view'] = $this->view;
     $context['display'] = $this->display;
-    drupal_alter('better_exposed_filters_settings', $settings, $context);
+    backdrop_alter('better_exposed_filters_settings', $settings, $context);
     
     // Adds view's arguments (if any) to the path to be used use for #bef_path.
     $view_path = $this->view->args ? implode('/', array_merge(array($this->view->get_path()), $this->view->args)) : $this->view->get_path();
@@ -1283,9 +1283,8 @@ dateFormat: "dd-mm-yy"
               $format = $form[$filter_id]['value']['#date_format'];
               $form[$filter_id]['value']['#attributes']['class'][] = 'bef-datepicker';
 
-              // This element renders via Drupal's FormAPI so we can use
-              // #description instead of passing the description along to BEF's
-              // theme functions.
+              // This element renders via FormAPI so we can use #description
+              // instead of passing the description along to BEF's theme functions.
               if (!empty($form[$filter_id]['#bef_description'])) {
                 $form[$filter_id]['#description'] = $form[$filter_id]['#bef_description'];
               }
@@ -1306,8 +1305,8 @@ dateFormat: "dd-mm-yy"
           else {
             $bef_js['datepicker_options']['dateFormat'] = '';
             /*
-             * Standard Drupal date field.  Depending on the settings, the field
-             * can be at $form[$filter_id] (single field) or
+             * Standard date field. Depending on the settings, the field can be
+             * at $form[$filter_id] (for a single field) or
              * $form[$filter_id][subfield] for two-value date fields or filters
              * with exposed operators.
              */
@@ -1328,9 +1327,9 @@ dateFormat: "dd-mm-yy"
             else {
               $form[$filter_id]['#attributes']['class'][] = 'bef-datepicker';
 
-              // This element renders via Drupal's FormAPI so we can use
-              // #description instead of passing the description along to BEF's
-              // theme functions.
+              // This element renders via FormAPI so we can use #description
+              // instead of passing the description along to BEF's theme
+              // functions.
               if (!empty($form[$filter_id]['#bef_description'])) {
                 $form[$filter_id]['#description'] = $form[$filter_id]['#bef_description'];
               }
@@ -1363,7 +1362,7 @@ dateFormat: "dd-mm-yy"
             'step' => $options['slider_options']['bef_slider_step'],
             'animate' => $options['slider_options']['bef_slider_animate'],
             'orientation' => $options['slider_options']['bef_slider_orientation'],
-            'id' => drupal_html_id($filter_id),
+            'id' => backdrop_html_id($filter_id),
             'viewId' => $form['#id'],
           );
 
@@ -1376,9 +1375,9 @@ dateFormat: "dd-mm-yy"
             $form[$filter_id]['#suffix'] = '</div>';
           }
 
-          // This element renders via Drupal's FormAPI so we can use
-          // #description instead of passing the description along to BEF's
-          // theme functions.
+          // This element renders via FormAPI so we can use #description
+          // instead of passing the description along to BEF's theme
+          // functions.
           if (!empty($form[$filter_id]['#bef_description'])) {
             $children = element_children($form[$filter_id]);
             if (count($children) > 1) {
@@ -1524,7 +1523,7 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
               }
-              $form[$filter_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
+              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer.
               $form[$filter_id]['#theme'] = 'select_as_radios_fieldset';
@@ -1573,7 +1572,7 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
               }
-              $form[$filter_id]['#attached']['css'][] = drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
+              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer.
               $form[$filter_id]['#theme'] = 'select_as_checkboxes_fieldset';
@@ -1709,17 +1708,17 @@ dateFormat: "dd-mm-yy"
     if ($bef_add_js) {
       // Add jQuery UI library code as needed.
       if ($bef_js['datepicker']) {
-        drupal_add_library('system', 'ui.datepicker');
+        backdrop_add_library('system', 'ui.datepicker');
       }
       if ($bef_js['slider']) {
-        drupal_add_library('system', 'ui.slider');
+        backdrop_add_library('system', 'ui.slider');
       }
 
-      drupal_add_js(array('better_exposed_filters' => $bef_js), 'setting');
-      drupal_add_js(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
+      backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');
+      backdrop_add_js(backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
     }
     if ($bef_add_css) {
-      drupal_add_css(drupal_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+      backdrop_add_css(backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
     }
 
     // Check for secondary elements.
@@ -1996,7 +1995,7 @@ dateFormat: "dd-mm-yy"
 
   function unpack_translatable_options(&$translatable, $storage, $option, $definition, $parents) {
     foreach ($this->unpack_translatable_keys() as $key) {
-      $value = drupal_array_get_nested_value($this->options, $key);
+      $value = backdrop_array_get_nested_value($this->options, $key);
       if (!empty($value)) {
         $translatable[] = array(
           'value' => $value,
