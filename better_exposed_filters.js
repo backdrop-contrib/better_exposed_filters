@@ -41,7 +41,7 @@
               .html(selNone)
               .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
-                  $(this).attr('checked', true);
+                  _bef_checkbox_check($(this), true);
                   _bef_highlight(this, context);
                 })
               .end()
@@ -103,37 +103,39 @@
 
   Drupal.behaviors.betterExposedFiltersAllNoneNested = {
     attach:function (context, settings) {
-      $('.form-checkboxes.bef-select-all-none-nested li').has('ul').once('bef-all-none-nested', function () {
+      $('.form-checkboxes.bef-select-all-none-nested li').once('bef-all-none-nested', function () {
         var $this = $(this);
 
         // Prevent CTools autosubmit from firing until we've finished checking
         // all the checkboxes.
-        var submitFunc = $this.parents('form').submit;
-        $this.parents('form').submit = null;
+        $this.parents('form').filter('form, select, input:not(:text, :submit)').unbind('change');
 
         $this
           // To respect term depth, check/uncheck child term checkboxes.
           .find('input.form-checkboxes:first')
           .click(function() {
-            $(this).parents('li:first').find('ul input.form-checkboxes').attr('checked', $(this).attr('checked'));
+            var checked = _bef_checkbox_checked($(this));
+            _bef_checkbox_check($(this).parents('li:first').find('ul input.form-checkboxes'), checked);
 
             // Now we can trigger the autosubmit
-            $this.parents('form').submit = submitFunc;
-            $this.parents('form').trigger('submit');
+            $this.parents('form').find('.ctools-auto-submit-click').click();
           })
           .end()
           // When a child term is checked or unchecked, set the parent term's
           // status.
           .find('ul input.form-checkboxes')
           .click(function() {
-            var checked = $(this).attr('checked');
+            var checked = _bef_checkbox_checked($(this));
             // Determine the number of unchecked sibling checkboxes.
             var ct = $(this).parents('ul:first').find('input.form-checkboxes:not(:checked)').size();
             // If the child term is unchecked, uncheck the parent.
             // If all sibling terms are checked, check the parent.
             if (!checked || !ct) {
-              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').attr('checked', checked);
+              _bef_checkbox_check($(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first'), checked);
             }
+
+            // Now we can trigger the autosubmit
+            $this.parents('form').find('.ctools-auto-submit-click').click();
           });
       });
     }
@@ -377,7 +379,7 @@
 
         var $filter_name = $('input', this).attr('name').slice(0, -2);
         if (Drupal.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
-          $('input', this).prop('checked', true);
+          _bef_checkbox_check($('input', this), true);
         }
       });
     }
@@ -386,6 +388,42 @@
   /*
    * Helper functions
    */
+
+  /**
+   * Provides check for jQuery version
+   * @return true - when version is higher than 1.6
+   * @return false - when version is
+   */
+  function _bef_jquery_version() {
+    var vn = $.fn.jquery.split('.');
+    if (parseInt(vn[0]) > 0 && parseInt(vn[1]) > 6) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returnes correct checked version depends on version
+   * @ref http://api.jquery.com/prop/
+   */
+  function _bef_checkbox_checked(elem) {
+    console.log(elem);
+    var checked = elem.attr('checked');
+    if (_bef_jquery_version()) {
+      checked = elem.prop('checked');
+    }
+    return checked;
+  }
+
+  /**
+   * Check or uncheck checkbox depends on version
+   * @ref http://api.jquery.com/prop/
+   */
+  function _bef_checkbox_check(elem, checked) {
+    if (_bef_jquery_version()) {
+      elem.prop('checked', checked);
+    }
+  }
 
   /**
    * Adds/Removes the highlight class from the form-item div as appropriate
