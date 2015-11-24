@@ -553,8 +553,11 @@ function theme_select_as_links($vars) {
       // Add "active" class to the currently active filter link.
       if (in_array((string) $key, $selected_options)) {
         $link_options['attributes'] = array('class' => 'active');
+        $url = bef_replace_query_string_arg($name, $key, $multiple, TRUE, $path);
       }
-      $url = bef_replace_query_string_arg($name, $key, $multiple, FALSE, $path);
+      else {
+        $url = bef_replace_query_string_arg($name, $key, $multiple, FALSE, $path);
+      }
       $elem['#children'] = l($value, $url, $link_options);
       $element_output = theme('form_element', array('element' => $elem));
 
