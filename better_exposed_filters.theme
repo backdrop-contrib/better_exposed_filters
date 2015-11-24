@@ -481,7 +481,7 @@ function theme_select_as_links($vars) {
   $urllist = parse_url(request_uri());
   if (isset($urllist['query'])) {
     $query = array();
-    parse_str(urldecode($urllist['query']), $query);
+    parse_str($urllist['query'], $query);
     foreach ($query as $key => $value) {
       if ($key != $name) {
         continue;
@@ -733,7 +733,7 @@ function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove =
   $urllist = array_merge($urllist, parse_url(request_uri()));
   $fragment = urldecode($urllist['fragment']);
   $query = array();
-  parse_str(urldecode($urllist['query']), $query);
+  parse_str($urllist['query'], $query);
   if (isset($query[$key]) && is_array($query[$key])) {
     // Multiple values allowed for this existing key.
     if ($remove && ($key_remove = array_search($value, $query[$key])) !== FALSE) {
