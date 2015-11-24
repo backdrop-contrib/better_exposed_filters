@@ -1081,7 +1081,7 @@ dateFormat: "dd-mm-yy"
 
       // Form element is designated by the element ID which is user-
       // configurable.
-      $filter_key = 'filter-' . ($filters[$label]->options['is_grouped'] ? $filters[$label]->options['group_info']['identifier'] : $label);
+      $filter_key = 'filter-' . (!empty($filters[$label]->options['is_grouped']) ? $filters[$label]->options['group_info']['identifier'] : $label);
       $filter_id = $form['#info'][$filter_key]['value'];
 
       // Token replacement on BEF Description fields.

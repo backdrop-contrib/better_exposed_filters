@@ -194,7 +194,7 @@ function better_exposed_filters_preprocess_views_view(&$variables) {
   $filters = array();
   foreach ($variables['view']->filter as $filter) {
     if ($filter->options['exposed']) {
-      $identifier = $filter->options['is_grouped'] ? $filter->options['group_info']['identifier'] : $filter->options['expose']['identifier'];
+      $identifier = !empty($filter->options['is_grouped']) ? $filter->options['group_info']['identifier'] : $filter->options['expose']['identifier'];
       $filters[$identifier] = array(
         'required' => $filter->options['expose']['required'] ? TRUE : FALSE,
       );
