@@ -73,6 +73,7 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
 function better_exposed_filters_views_api() {
   return array(
     'api' => 3.0,
+    'path' => backdrop_get_path('module', 'better_exposed_filters'),
   );
 }
 
