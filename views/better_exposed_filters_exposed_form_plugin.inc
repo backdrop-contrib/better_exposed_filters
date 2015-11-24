@@ -2054,7 +2054,9 @@ dateFormat: "dd-mm-yy"
             'format' => $format,
             'keys' => $parents,
           );
-          $storage[$parent] = $this->view->localization_plugin->translate($translation_data);
+          if (property_exists($this->view, 'localization_plugin')) {
+            $storage[$parent] = $this->view->localization_plugin->translate($translation_data);
+          }
         }
         // Otherwise, this is a code-based string, so we can use t().
         else {
