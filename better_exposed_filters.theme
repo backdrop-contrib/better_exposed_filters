@@ -534,12 +534,9 @@ function theme_select_as_links($vars) {
     $links = array();
     $multiple = !empty($element['#multiple']);
 
-    // If we're in an exposed block, we'll get passed a path to use for the
-    // Views results page.
-    $path = '';
-    if (!empty($element['#bef_path'])) {
-      $path = $element['#bef_path'];
-    }
+    // Always use the current path for the links since this will work for
+    // exposed forms in blocks as well as regular exposed forms.
+    $path = current_path();
 
     foreach ($element_set as $key => $value) {
       $element_output = '';
