@@ -769,7 +769,10 @@ dateFormat: "dd-mm-yy"
     $context['view'] = $this->view;
     $context['display'] = $this->display;
     drupal_alter('better_exposed_filters_settings', $settings, $context);
-
+    
+    // Adds view's arguments (if any) to the path to be used use for #bef_path.
+    $view_path = $this->view->args ? implode('/', array_merge(array($this->view->get_path()), $this->view->args)) : $this->view->get_path();
+    
     // Some elements may be placed in a secondary fieldset (eg: "Advanced
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
@@ -913,7 +916,7 @@ dateFormat: "dd-mm-yy"
             // select_as_links options as they will use the wrong path. We
             // provide a hint for theme functions to correct this.
             if (!empty($this->display->display_options['exposed_block'])) {
-              $form[$settings['sort']['advanced']['combine_param']]['#bef_path'] = $this->view->get_path();
+              $form[$settings['sort']['advanced']['combine_param']]['#bef_path'] = $view_path;
             }
             break;
 
@@ -967,7 +970,7 @@ dateFormat: "dd-mm-yy"
           // select_as_links options as they will use the wrong path. We provide
           // a hint for theme functions to correct this.
           if (!empty($this->display->display_options['exposed_block'])) {
-            $form['sort_by']['#bef_path'] = $form['sort_order']['#bef_path'] = $this->view->get_path();
+            $form['sort_by']['#bef_path'] = $form['sort_order']['#bef_path'] = $view_path;
           }
         }
 
@@ -1049,7 +1052,7 @@ dateFormat: "dd-mm-yy"
             // select_as_links options as they will use the wrong path. We
             // provide a hint for theme functions to correct this.
             if (!empty($this->display->display_options['exposed_block'])) {
-              $form['items_per_page']['#bef_path'] = $this->view->get_path();
+              $form['items_per_page']['#bef_path'] = $view_path;
             }
           }
           break;
@@ -1398,7 +1401,7 @@ dateFormat: "dd-mm-yy"
           // select_as_links options as they will use the wrong path. We provide
           // a hint for theme functions to correct this.
           if (!empty($this->display->display_options['exposed_block'])) {
-            $form[$filter_id]['#bef_path'] = $this->view->get_path();
+            $form[$filter_id]['#bef_path'] = $view_path;
           }
           break;
 
