@@ -13,47 +13,47 @@ function better_exposed_filters_theme($existing, $type, $theme, $path) {
     'select_as_checkboxes' => array(
       'function' => 'theme_select_as_checkboxes',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_checkboxes_fieldset' => array(
       'function' => 'theme_select_as_checkboxes_fieldset',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_radios' => array(
       'function' => 'theme_select_as_radios',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_radios_fieldset' => array(
       'function' => 'theme_select_as_radios_fieldset',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_hidden' => array(
       'function' => 'theme_select_as_hidden',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_tree' => array(
       'function' => 'theme_select_as_tree',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'select_as_links' => array(
       'function' => 'theme_select_as_links',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'secondary_exposed_elements' => array(
       'function' => 'theme_secondary_exposed_elements',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
     'bef_checkbox' => array(
       'function' => 'theme_bef_checkbox',
       'render element' => 'element',
-      'file' => 'better_exposed_filters.theme',
+      'file' => 'better_exposed_filters.theme.inc',
     ),
   );
 }
