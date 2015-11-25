@@ -1715,10 +1715,10 @@ dateFormat: "dd-mm-yy"
       }
 
       backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');
-      backdrop_add_js(backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.js');
+      backdrop_add_js(backdrop_get_path('module', 'better_exposed_filters') . '/js/better_exposed_filters.js');
     }
     if ($bef_add_css) {
-      backdrop_add_css(backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css');
+      backdrop_add_css(backdrop_get_path('module', 'better_exposed_filters') . '/css/better_exposed_filters.css');
     }
 
     // Check for secondary elements.

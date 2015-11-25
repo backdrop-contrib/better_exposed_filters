@@ -1,10 +1,10 @@
 /**
  * @file better_exposed_filters.js
- *
  * Provides some client-side functionality for the Better Exposed Filters module
  */
 (function ($) {
-  Drupal.behaviors.betterExposedFilters = {
+
+  Backdrop.behaviors.betterExposedFilters = {
     attach: function(context) {
       // Add highlight class to checked checkboxes for better theming
       $('.bef-tree input[type=checkbox], .bef-checkboxes input[type=checkbox]')
@@ -17,7 +17,7 @@
     }
   };
 
-  Drupal.behaviors.betterExposedFiltersSelectAllNone = {
+  Backdrop.behaviors.betterExposedFiltersSelectAllNone = {
     attach: function(context) {
 
       /*
@@ -25,8 +25,8 @@
        */
       var selected = $('.form-checkboxes.bef-select-all-none:not(.bef-processed)');
       if (selected.length) {
-        var selAll = Drupal.t('Select All');
-        var selNone = Drupal.t('Select None');
+        var selAll = Backdrop.t('Select All');
+        var selNone = Backdrop.t('Select None');
 
         // Set up a prototype link and event handlers
         var link = $('<a class="bef-toggle" href="#">'+ selAll +'</a>')
@@ -87,7 +87,7 @@
       }
 
       // Check for and initialize datepickers
-      var befSettings = Drupal.settings.better_exposed_filters;
+      var befSettings = Backdrop.settings.better_exposed_filters;
       if (befSettings && befSettings.datepicker && befSettings.datepicker_options && $.fn.datepicker) {
         var opt = [];
         $.each(befSettings.datepicker_options, function(key, val) {
@@ -99,9 +99,9 @@
       }
 
     }                   // attach: function() {
-  };                    // Drupal.behaviors.better_exposed_filters = {
+  };                    // Backdrop.behaviors.better_exposed_filters = {
 
-  Drupal.behaviors.betterExposedFiltersAllNoneNested = {
+  Backdrop.behaviors.betterExposedFiltersAllNoneNested = {
     attach:function (context, settings) {
       $('.form-checkboxes.bef-select-all-none-nested li').once('bef-all-none-nested', function () {
         var $this = $(this);
@@ -141,7 +141,7 @@
     }
   }
 
-  Drupal.behaviors.better_exposed_filters_slider = {
+  Backdrop.behaviors.better_exposed_filters_slider = {
     attach: function(context, settings) {
       var befSettings = settings.better_exposed_filters;
       if (befSettings && befSettings.slider && befSettings.slider_options) {
@@ -274,7 +274,7 @@
   };
 
   // This is only needed to provide ajax functionality
-  Drupal.behaviors.better_exposed_filters_select_as_links = {
+  Backdrop.behaviors.better_exposed_filters_select_as_links = {
     attach: function(context, settings) {
 
       $('.bef-select-as-links', context).once(function() {
@@ -350,7 +350,7 @@
     }
   };
 
-  Drupal.behaviors.betterExposedFiltersRequiredFilter = {
+  Backdrop.behaviors.betterExposedFiltersRequiredFilter = {
     attach: function(context, settings) {
       // Required checkboxes should re-check all inputs if a user un-checks
       // them all.
@@ -378,7 +378,7 @@
         });
 
         var $filter_name = $('input', this).attr('name').slice(0, -2);
-        if (Drupal.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
+        if (Backdrop.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
           _bef_checkbox_check($('input', this), true);
         }
       });
