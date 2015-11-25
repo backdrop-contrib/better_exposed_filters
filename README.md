@@ -35,5 +35,6 @@ Current Maintainers
 Credits
 -------
 
-- Ported to Backdrop CMS by Jen Lampton (https://github.com/jenlampton).
 - Originally written for Drupal by Mike Keran (https://www.drupal.org/u/mikeker).
+- Ported to Backdrop CMS by Jen Lampton (https://github.com/jenlampton).
+- Port to Backdrop sponsored by [America's Best Bootfiters](http://www.bootfitters.com)
