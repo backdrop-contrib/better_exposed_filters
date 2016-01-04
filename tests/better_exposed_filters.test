@@ -576,6 +576,7 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->setBefSettings(array(
       'exposed_form_options[bef][general][allow_secondary]' => 1,
       'exposed_form_options[bef][general][secondary_label]' => 'Custom Label',
+      'exposed_form_options[bef][general][secondary_collapse_override]' => 0,
       'exposed_form_options[bef][type][more_options][is_secondary]' => 1,
     ));
     $this->saveView();
@@ -615,6 +616,7 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->setBefSettings(array(
       'exposed_form_options[bef][general][allow_secondary]' => 1,
       'exposed_form_options[bef][general][secondary_label]' => 'Custom Label',
+      'exposed_form_options[bef][general][secondary_collapse_override]' => 0,
       'exposed_form_options[bef][field_bef_test_integer_value][more_options][is_secondary]' => 1,
     ));
     $this->saveView();

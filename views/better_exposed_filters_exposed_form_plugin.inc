@@ -98,6 +98,27 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
         ),
       ),
     );
+    $bef_options['general']['secondary_collapse_override'] = array(
+      '#type' => 'select',
+      '#title' => t('Override secondary options fieldset'),
+      '#default_value' => $existing['general']['secondary_collapse_override'],
+      '#description' => t(
+        'This setting overrides the secondary options fieldset collapsed value.'
+        ),
+      '#options' => array(
+        0 => t('Default'),
+        1 => t('Open'),
+        2 => t('Closed'),
+      ),
+      // Indent dependent options.
+      '#prefix' => '<div class="dependent-options">',
+      '#suffix' => '</div>',
+      '#states' => array(
+        'visible' => array(
+          ':input[name="exposed_form_options[bef][general][allow_secondary]"]' => array('checked' => TRUE),
+        ),
+      ),
+    );
 
     /*
      * Add options for exposed sorts.
@@ -790,6 +811,20 @@ dateFormat: "dd-mm-yy"
           break;
         }
       }
+      // Manual override for secondary options fieldset.
+      // If checked, make the fieldset open.
+      if ($override = $settings['general']['secondary_collapse_override']) {
+        switch ($override) {
+          case 1:
+            $secondary_collapse = FALSE;
+            break;
+
+          case 2:
+            $secondary_collapse = TRUE;
+            break;
+        }
+      }
+
       $secondary = array(
         '#type' => 'fieldset',
         '#title' => $settings['general']['secondary_label'],
@@ -1852,6 +1887,7 @@ dateFormat: "dd-mm-yy"
         ),
         'allow_secondary' => FALSE,
         'secondary_label' => t('Advanced options'),
+        'secondary_collapse_override' => FALSE,
       ),
       'sort' => array(
         'bef_format' => 'default',
