@@ -103,12 +103,12 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
       '#title' => t('Override secondary options fieldset'),
       '#default_value' => $existing['general']['secondary_collapse_override'],
       '#description' => t(
-        'This setting overrides the secondary options fieldset collapsed value.'
+        'This setting overrides the secondary options fieldset collapsed value. By default the fieldset renders opened if a value within is selected and closed otherwise.'
         ),
       '#options' => array(
         0 => t('Default'),
-        1 => t('Open'),
-        2 => t('Closed'),
+        1 => t('Always open'),
+        2 => t('Always closed'),
       ),
       // Indent dependent options.
       '#prefix' => '<div class="dependent-options">',
@@ -798,30 +798,23 @@ dateFormat: "dd-mm-yy"
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
     if ($allow_secondary = $settings['general']['allow_secondary']) {
-      // If one of the secondary widgets has exposed input, do not collapse
-      // the secondary fieldset.
+      // If one of the secondary widgets has exposed input, do not collapse the
+      // secondary fieldset. Or is the "always open" or "always closed" option
+      // is selected, use that instead.
       $secondary_collapse = TRUE;
-      $exposed_input = $this->view->get_exposed_input();
-      foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
-        if (!$filter->options['exposed']) {
-          continue;
-        }
-        if (!empty($exposed_input[$filter->options['expose']['identifier']]) && $settings[$label]['more_options']['is_secondary']) {
-          $secondary_collapse = FALSE;
-          break;
-        }
+      if ($settings['general']['secondary_collapse_override']) {
+        $secondary_collapse = $settings['general']['secondary_collapse_override'] == 2;
       }
-      // Manual override for secondary options fieldset.
-      // If checked, make the fieldset open.
-      if ($override = $settings['general']['secondary_collapse_override']) {
-        switch ($override) {
-          case 1:
+      else {
+        $exposed_input = $this->view->get_exposed_input();
+        foreach ($this->display->handler->get_handlers('filter') as $label => $filter) {
+          if (!$filter->options['exposed']) {
+            continue;
+          }
+          if (!empty($exposed_input[$filter->options['expose']['identifier']]) && $settings[$label]['more_options']['is_secondary']) {
             $secondary_collapse = FALSE;
             break;
-
-          case 2:
-            $secondary_collapse = TRUE;
-            break;
+          }
         }
       }
 
@@ -1887,7 +1880,7 @@ dateFormat: "dd-mm-yy"
         ),
         'allow_secondary' => FALSE,
         'secondary_label' => t('Advanced options'),
-        'secondary_collapse_override' => FALSE,
+        'secondary_collapse_override' => 0,
       ),
       'sort' => array(
         'bef_format' => 'default',

@@ -587,9 +587,25 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset/legend/span', 'Custom Label', 'Collapsible fieldset has the correct custom label');
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="type[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
-    // Select an option and make sure the fielset is expanded when rendered.
+    // Select an option and make sure the fieldset is expanded when rendered.
     $this->drupalGet('bef_test_page', array('query' => array('type' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
+
+    // Verify force-open and force-closed fieldset options.
+    $this->setBefSettings(array(
+      // Always render opened.
+      'exposed_form_options[bef][general][secondary_collapse_override]' => 1,
+    ));
+    $this->saveView();
+    $this->drupalGet('bef_test_page');
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
+    $this->setBefSettings(array(
+      // Always render closed.
+      'exposed_form_options[bef][general][secondary_collapse_override]' => 2,
+    ));
+    $this->saveView();
+    $this->drupalGet('bef_test_page', array('query' => array('type' => 'page')));
+    $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset starts closed');
 
     // https://drupal.org/node/2189321
     // Verify fieldset is collapsed/expanded when a custom filter ID is set.
@@ -597,6 +613,10 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     // custom filter ID's...
     $this->editFilter('node.type', array(
       'options[expose][identifier]' => 'custom_id',
+    ));
+    $this->setBefSettings(array(
+      // Use default open/closed rendering.
+      'exposed_form_options[bef][general][secondary_collapse_override]' => 0,
     ));
     $this->saveView();
     $this->drupalGet('bef_test_page');
