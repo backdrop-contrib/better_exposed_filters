@@ -794,6 +794,9 @@ dateFormat: "dd-mm-yy"
     // Adds view's arguments (if any) to the path to be used use for #bef_path.
     $view_path = $this->view->args ? implode('/', array_merge(array($this->view->get_path()), $this->view->args)) : $this->view->get_path();
 
+    // Adds view's arguments (if any) to the path to be used use for #bef_path.
+    $view_path = $this->view->args ? implode('/', array_merge(array($this->view->get_path()), $this->view->args)) : $this->view->get_path();
+
     // Some elements may be placed in a secondary fieldset (eg: "Advanced
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
@@ -1047,7 +1050,7 @@ dateFormat: "dd-mm-yy"
         // select_as_links options as they will use the wrong path. We
         // provide a hint for theme functions to correct this.
         if (!empty($this->display->display_options['exposed_block'])) {
-          $form['sort_by']['#bef_path'] = $this->display->display_options['path'];
+          $form['sort_by']['#bef_path'] = $view_path;
         }
       }
     }

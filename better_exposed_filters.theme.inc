@@ -752,7 +752,8 @@ function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove =
       $query[$key] = $value;
     }
   }
-  // Unset page arg so we don't land on an empty page off the end of the newly filtered listing
+  // Unset page arg so we don't land on an empty page off the end of the newly
+  // filtered listing.
   unset($query['page']);
   return url(ltrim($path, '/'), array(
     'query' => $query,
