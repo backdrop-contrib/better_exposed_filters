@@ -467,13 +467,13 @@ function theme_select_as_links($vars) {
 
   // Collect selected values so we can properly style the links later.
   $selected_options = array();
-  if (empty($element['#value'])) {
-    if (!empty($element['#default_value'])) {
-      $selected_options[] = $element['#default_value'];
-    }
+  if (isset($element['#value'])) {
+    $selected_options[] = $element['#value'];
   }
   else {
-    $selected_options[] = $element['#value'];
+    if (isset($element['#default_value'])) {
+      $selected_options[] = $element['#default_value'];
+    }
   }
 
   // Add to the selected options specified by Views whatever options are in the
