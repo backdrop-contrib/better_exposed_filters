@@ -206,7 +206,7 @@ class better_exposed_filters_exposed_form_plugin extends views_plugin_exposed_fo
 Post date Asc|Oldest first
 Post date Desc|Newest first
 Title Asc|A -> Z
-Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option altogether.'),
+Title Desc|Z -> A</pre> Leave the replacement text blank to remove an option altogether.'),
         '#suffix' => '</div>',
         '#states' => array(
           'visible' => array(
@@ -711,7 +711,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
 Current|Replacement
 On|Yes
 Off|No
-</pre> Leave the replacement value blank to remove an option altogether. If using hierarchical taxonomy filters, do not including leading hyphens in the current value.
+</pre> Leave the replacement text blank to remove an option altogether. If using hierarchical taxonomy filters, do not including leading hyphens in the current value.
         '),
       );
 
