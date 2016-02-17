@@ -1421,7 +1421,6 @@ dateFormat: "dd-mm-yy"
           break;
 
         case 'bef_links':
-          $show_apply = TRUE;
           $bef_add_js = TRUE;
           $form[$filter_id]['#theme'] = 'select_as_links';
 
