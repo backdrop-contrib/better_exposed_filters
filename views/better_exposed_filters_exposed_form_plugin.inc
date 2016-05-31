@@ -460,6 +460,9 @@ Title Desc|Z -> A</pre> Leave the replacement text blank to remove an option alt
         $display_options['bef_hidden'] = t('Hidden');
       }
 
+      // Alter the list of available display options for this filter.
+      drupal_alter('better_exposed_filters_display_options', $display_options, $filter);
+
       $filter_key = $filter->options['is_grouped'] ? 'group_info' : 'expose';
       $identifier = '"' . $filter->options[$filter_key]['identifier'] . '"';
       if (!empty($filter->options[$filter_key]['label'])) {
