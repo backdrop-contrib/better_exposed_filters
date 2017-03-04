@@ -1666,7 +1666,7 @@ dateFormat: "dd-mm-yy"
             unset($form['#info'][$filter_key]);
           }
           else {
-            $secondary[$identifier]['#title'] = $form['#info'][$filter_key]['label'];
+            $secondary[$identifier]['#title'] = (array_key_exists('label', $form['#info'][$filter_key]) ? $form['#info'][$filter_key]['label'] : '');
             unset($form['#info'][$filter_key]);
           }
 
