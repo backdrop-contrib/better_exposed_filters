@@ -106,8 +106,8 @@
       $('.form-checkboxes.bef-select-all-none-nested li').once('bef-all-none-nested', function () {
         var $this = $(this);
 
-        // Prevent CTools autosubmit from firing until we've finished checking
-        // all the checkboxes.
+        // Prevent autosubmit from firing until we've finished checking all
+        // the checkboxes.
         $this.parents('form').filter('form, select, input:not(:text, :submit)').unbind('change');
 
         $this
@@ -118,7 +118,7 @@
             _bef_checkbox_check($(this).parents('li:first').find('ul input.form-checkboxes'), checked);
 
             // Now we can trigger the autosubmit
-            $this.parents('form').find('.ctools-auto-submit-click').click();
+            $this.parents('form').find('.autosubmit-click').click();
           })
           .end()
           // When a child term is checked or unchecked, set the parent term's
@@ -135,7 +135,7 @@
             }
 
             // Now we can trigger the autosubmit
-            $this.parents('form').find('.ctools-auto-submit-click').click();
+            $this.parents('form').find('.autosubmit-click').click();
           });
       });
     }
@@ -206,7 +206,7 @@
                   // Attach stop listeners.
                   stop: function(event, ui) {
                     // Click the auto submit button.
-                    $(this).parents('form').find('.ctools-auto-submit-click').click();
+                    $(this).parents('form').find('.autosubmit-click').click();
                   }
                 })
               );
@@ -254,7 +254,7 @@
                   // Attach stop listeners.
                   stop: function(event, ui) {
                     // Click the auto submit button.
-                    $(this).parents('form').find('.ctools-auto-submit-click').click();
+                    $(this).parents('form').find('.autosubmit-click').click();
                   }
                 })
               );
