@@ -1607,7 +1607,7 @@ dateFormat: "dd-mm-yy"
             }
             $terms = taxonomy_term_load_multiple($tids);
             foreach ($terms as $tid => $term) {
-              $form[$filter_id]['#bef_term_descriptions'][$tid] = $term->description;
+              $form[$filter_id]['#bef_term_descriptions'][$tid] = check_markup($term->description, $term->format, '', TRUE);
             }
           }
           break;
