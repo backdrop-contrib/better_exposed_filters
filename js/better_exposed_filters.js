@@ -377,9 +377,12 @@
           }
         });
 
-        var $filter_name = $('input', this).attr('name').slice(0, -2);
-        if (Backdrop.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
-          _bef_checkbox_check($('input', this), true);
+        // Check if we have any filters at all (for Views Selective Filter).
+        if($('input', this).length > 0) {
+          var $filter_name = $('input', this).attr('name').slice(0, -2);
+          if (Backdrop.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
+            $('input', this).prop('checked', true);
+          }
         }
       });
     }
