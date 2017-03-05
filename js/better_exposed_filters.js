@@ -104,21 +104,19 @@
   Backdrop.behaviors.betterExposedFiltersAllNoneNested = {
     attach:function (context, settings) {
       $('.form-checkboxes.bef-select-all-none-nested li').once('bef-all-none-nested', function () {
-        var $this = $(this);
-
-        // Prevent autosubmit from firing until we've finished checking all
-        // the checkboxes.
-        $this.parents('form').filter('form, select, input:not(:text, :submit)').unbind('change');
-
-        $this
+        $(this)
           // To respect term depth, check/uncheck child term checkboxes.
           .find('input.form-checkboxes:first')
           .click(function() {
-            var checked = _bef_checkbox_checked($(this));
-            _bef_checkbox_check($(this).parents('li:first').find('ul input.form-checkboxes'), checked);
-
-            // Now we can trigger the autosubmit
-            $this.parents('form').find('.autosubmit-click').click();
+            var checkedParent = $(this).attr('checked');
+            if (!checkedParent) {
+              // Uncheck all children if parent is unchecked.
+              $(this).parents('li:first').find('ul input.form-checkboxes').removeAttr('checked');
+            }
+            else {
+              // Check all children if parent is checked.
+              $(this).parents('li:first').find('ul input.form-checkboxes').attr('checked', $(this).attr('checked'));
+            }
           })
           .end()
           // When a child term is checked or unchecked, set the parent term's
@@ -126,12 +124,18 @@
           .find('ul input.form-checkboxes')
           .click(function() {
             var checked = _bef_checkbox_checked($(this));
+
             // Determine the number of unchecked sibling checkboxes.
             var ct = $(this).parents('ul:first').find('input.form-checkboxes:not(:checked)').size();
             // If the child term is unchecked, uncheck the parent.
+            if (!checked) {
+              // Uncheck parent if any of the childres is unchecked.
+              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').removeAttr('checked');
+            }
             // If all sibling terms are checked, check the parent.
-            if (!checked || !ct) {
-              _bef_checkbox_check($(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first'), checked);
+            if (!ct) {
+              // Check the parent if all the children are checked.
+              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').attr('checked', checked);
             }
 
             // Now we can trigger the autosubmit
