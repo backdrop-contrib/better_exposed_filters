@@ -20,11 +20,17 @@ Installation
 
 - Adjust the view to use Better Exposed filters under Advanced > Exposed Form.
 
-License
--------
+Documentation
+-------------
 
-This project is GPL v2 software. See the LICENSE.txt file in this directory for
-complete text.
+Additional documentation is located in the Wiki:
+https://github.com/backdrop-contrib/better_exposed_filters/wiki/Documentation
+
+Issues
+------
+
+Bugs and Feature requests should be reported in the Issue Queue:
+https://github.com/backdrop-contrib/better_exposed_filters/issues
 
 Current Maintainers
 -------------------
@@ -38,3 +44,9 @@ Credits
 - Originally written for Drupal by Mike Keran (https://www.drupal.org/u/mikeker).
 - Ported to Backdrop CMS by Jen Lampton (https://github.com/jenlampton).
 - Port to Backdrop sponsored by [America's Best Bootfiters](http://www.bootfitters.com)
+
+License
+-------
+
+This project is GPL v2 software. See the LICENSE.txt file in this directory for
+complete text.

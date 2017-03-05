@@ -282,7 +282,7 @@ Title Desc|Z -> A</pre> Leave the replacement value blank to remove an option al
       // If we're adding BEF filter options, add an intro to explain what's
       // going on.
       if (!$bef_filter_intro) {
-        $link = l(t('BEF settings documentation'), 'http://drupal.org/node/1701012');
+        $link = l(t('BEF settings documentation'), 'https://github.com/backdrop-contrib/better_exposed_filters/wiki/Better-Exposed-Filter-Options');
         $bef_options['bef_intro'] = array(
           '#markup' => '<h3>'
           . t('Exposed Filter Settings')
