@@ -769,10 +769,10 @@ dateFormat: "dd-mm-yy"
     $context['view'] = $this->view;
     $context['display'] = $this->display;
     backdrop_alter('better_exposed_filters_settings', $settings, $context);
-    
+
     // Adds view's arguments (if any) to the path to be used use for #bef_path.
     $view_path = $this->view->args ? implode('/', array_merge(array($this->view->get_path()), $this->view->args)) : $this->view->get_path();
-    
+
     // Some elements may be placed in a secondary fieldset (eg: "Advanced
     // search options"). Place this after the exposed filters and before the
     // rest of the items in the exposed form.
@@ -1661,11 +1661,11 @@ dateFormat: "dd-mm-yy"
             // Some elements can have multiple children, for example min/max
             // fields on an in-between filter. In those cases Add the label
             // to the first element.
-            $secondary[$identifier][$children[0]]['#title'] = $form['#info'][$filter_key]['label'];
+            $secondary[$identifier][$children[0]]['#title'] = isset($form['#info'][$filter_key]['label']) ? $form['#info'][$filter_key]['label'] : '';
             unset($form['#info'][$filter_key]);
           }
           else {
-            $secondary[$identifier]['#title'] = (array_key_exists('label', $form['#info'][$filter_key]) ? $form['#info'][$filter_key]['label'] : '');
+            $secondary[$identifier]['#title'] = isset($form['#info'][$filter_key]['label']) ? $form['#info'][$filter_key]['label'] : '';
             unset($form['#info'][$filter_key]);
           }
 
