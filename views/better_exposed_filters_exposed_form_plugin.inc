@@ -1089,9 +1089,8 @@ dateFormat: "dd-mm-yy"
         // Collect replacement data.
         $data = array();
         $available = $options['more_options']['tokens']['available'];
-        if (in_array('vocabulary', $available)) {
-          $vocabs = taxonomy_get_vocabularies();
-          $data['vocabulary'] = $vocabs[$filters[$label]->options['vid']];
+        if (in_array('vocabulary', $available) && isset($filters[$label]->definition['vocabulary'])) {
+          $data['vocabulary'] = taxonomy_vocabulary_machine_name_load($filters[$label]->definition['vocabulary']);
         }
         /* Others? */
 
