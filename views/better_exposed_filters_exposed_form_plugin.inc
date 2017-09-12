@@ -1516,8 +1516,8 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['js'])) {
                 $form[$filter_id]['#attached']['js'] = array();
               }
-              $form[$filter_id]['#attached']['js'][] = 'misc/form.js';
-              $form[$filter_id]['#attached']['js'][] = 'misc/collapse.js';
+              $form[$filter_id]['#attached']['js'][] = 'core/misc/form.js';
+              $form[$filter_id]['#attached']['js'][] = 'core/misc/collapse.js';
 
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
@@ -1565,8 +1565,8 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['js'])) {
                 $form[$filter_id]['#attached']['js'] = array();
               }
-              $form[$filter_id]['#attached']['js'][] = 'misc/form.js';
-              $form[$filter_id]['#attached']['js'][] = 'misc/collapse.js';
+              $form[$filter_id]['#attached']['js'][] = 'core/misc/form.js';
+              $form[$filter_id]['#attached']['js'][] = 'core/misc/collapse.js';
 
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
