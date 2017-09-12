@@ -1522,7 +1522,7 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
               }
-              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
+              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/css/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer.
               $form[$filter_id]['#theme'] = 'select_as_radios_fieldset';
@@ -1571,7 +1571,7 @@ dateFormat: "dd-mm-yy"
               if (empty($form[$filter_id]['#attached']['css'])) {
                 $form[$filter_id]['#attached']['css'] = array();
               }
-              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/better_exposed_filters.css';
+              $form[$filter_id]['#attached']['css'][] = backdrop_get_path('module', 'better_exposed_filters') . '/css/better_exposed_filters.css';
 
               // Take care of adding the fieldset in the theme layer.
               $form[$filter_id]['#theme'] = 'select_as_checkboxes_fieldset';
