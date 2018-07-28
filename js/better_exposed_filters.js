@@ -325,8 +325,8 @@
           removed = '';
           $($options).each(function(i) {
             if ($(this).attr('selected')) {
-              if (link_text == $(this).html()) {
-                removed = $(this).html();
+              if (link_text == $(this).text()) {
+                removed = $(this).text();
                 $(this).removeAttr('selected');
               }
             }
