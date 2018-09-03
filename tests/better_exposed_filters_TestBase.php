@@ -24,6 +24,7 @@ class BEF_TestBase extends DrupalWebTestCase {
       'name' => 'BEF Basic functionality tests',
       'description' => 'Basic tests for Better Exposed Filters.',
       'group' => 'Better Exposed Filters',
+      'dependencies' => array('date', 'date_views', 'views', 'views_ui')
     );
   }
 

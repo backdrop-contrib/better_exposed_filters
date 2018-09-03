@@ -14,7 +14,7 @@ class BEF_TestOptions extends BEF_TestBase {
     $this->addFilter('node.title');
     $this->addFilter('node.status');
     $this->addFilter('node.type');
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
 
     $settings = array(
       'status_1' => 'Published',
@@ -64,7 +64,7 @@ class BEF_TestOptions extends BEF_TestBase {
       );
       $this->setBefSettings($edit);
       $this->saveView();
-      $this->drupalGet($this->getBefSettingsUrl());
+      $this->backdropGet($this->getBefSettingsUrl());
       foreach ($edit as $name => $expected) {
         $this->assertFieldByName($name, $expected);
       }
@@ -77,7 +77,7 @@ class BEF_TestOptions extends BEF_TestBase {
     );
     $this->setBefSettings($edit);
     $this->saveView();
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     foreach ($edit as $name => $expected) {
       $this->assertFieldByName($name, $expected);
     }
@@ -86,7 +86,7 @@ class BEF_TestOptions extends BEF_TestBase {
     // available for open text filters.
     $this->addFilter('node.title');
     $this->saveView();
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     $this->assertNoFieldByName('exposed_form_options[bef][title][bef_format]', 'bef');
     $edit = array(
       "exposed_form_options[bef][$id][more_options][bef_filter_description]" => $this->randomName(16),
@@ -94,7 +94,7 @@ class BEF_TestOptions extends BEF_TestBase {
     );
     $this->setBefSettings($edit);
     $this->saveView();
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     foreach ($edit as $name => $expected) {
       $this->assertFieldByName($name, $expected);
     }
@@ -119,7 +119,7 @@ class BEF_TestRadios extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
 
     // Exposed filter options render as radio buttons.
@@ -133,7 +133,7 @@ class BEF_TestRadios extends BEF_TestBase {
       'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Exposed filter is shown as radio buttons enclosed within a fieldset.
     $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-all"]');
@@ -166,7 +166,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
 
     // Exposed filter option render as checkboxes.
@@ -180,7 +180,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
       'exposed_form_options[bef][type][more_options][bef_select_all_none]' => TRUE,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//div[contains(@class, "bef-select-all-none")]');
 
     // Now try it in a with the collapsible option.
@@ -188,7 +188,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
       'exposed_form_options[bef][type][more_options][bef_collapsible]' => TRUE,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Exposed filter is shown as checkboxes enclosed within a fieldset.
     $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
@@ -231,7 +231,7 @@ class BEF_TestHidden extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertNoText(t('Type'), 'Exposed "Type" filter title does not show for hidden elements.');
     $this->assertNoText(t('Published'), 'Exposed "Published" filter title does not show for hidden elements.');
 
@@ -256,7 +256,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
 
     // Not sure why I can't get the Features-based functionality to work without
     // pulling up the modules page, but it works...
-    $this->drupalGet('admin/modules');
+    $this->backdropGet('admin/modules');
 
     // Add three terms with two children each to the vocab defined in
     // bef_test_content.
@@ -286,7 +286,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
       array('options[type]' => 'select', 'options[hierarchy]' => TRUE)
     );
     $this->saveView();
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
 
     // Verify settings available to a heirarchical taxonomy filter.
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]');
@@ -302,7 +302,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
     $this->saveView();
 
     // Verify taxonomy filter as radio buttons
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertText(t('Location (field_bef_test_location)'), 'Verify exposed filter label');
     $this->assertFieldByXpath('//input[@name="field_bef_test_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
     $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
@@ -333,7 +333,7 @@ class BEF_TestSort extends BEF_TestBase {
     $this->saveView();
 
     // Verify basic options
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Radio Buttons');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][sort][bef_format]"]/option', 'Links');
@@ -344,7 +344,7 @@ class BEF_TestSort extends BEF_TestBase {
       'exposed_form_options[bef][sort][advanced][combine]' => TRUE,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title DESC');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'title ASC');
 
@@ -354,7 +354,7 @@ class BEF_TestSort extends BEF_TestBase {
       'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Title Desc|Going down\nTitle Asc|Going up",
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going up');
     $this->assertFieldByXpath('//select[@name="sort_bef_combine"]/option', 'Going down');
 
@@ -376,7 +376,7 @@ class BEF_TestSliders extends BEF_TestBase {
 
     // Not sure why I can't get the Features-based functionality to work without
     // pulling up the modules page, but it works...
-    $this->drupalGet('admin/modules');
+    $this->backdropGet('admin/modules');
 
     // Verify slider rendering using the Numbers field from the BEF test content
     // type.
@@ -387,7 +387,7 @@ class BEF_TestSliders extends BEF_TestBase {
     $this->saveView();
 
     // Verify the slider option appears for integer fields
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_integer_value][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_integer_value][bef_format]"]/option', 'jQuery UI slider');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_price_value][bef_format]"]/option', 'Default select list');
@@ -409,11 +409,11 @@ class BEF_TestSliders extends BEF_TestBase {
       'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_animate]' => 'normal',
       'exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_orientation]' => 'vertical',
     ), t('The range of the slider (Range maximum - Range minimum) should be evenly divisible by the step.'));
-    $this->drupalPost(NULL, array('exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_step]' => 100), 'Apply');
+    $this->backdropPost(NULL, array('exposed_form_options[bef][field_bef_test_price_value][slider_options][bef_slider_step]' => 100), 'Apply');
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
-    $settings = $this->drupalGetSettings();
+    $this->backdropGet('bef_test_page');
+    $settings = $this->backdropGetSettings();
     $settings = $settings['better_exposed_filters'];
     $this->assertTrue($settings['slider'], 'BEF slider setting is TRUE');
 
@@ -457,7 +457,7 @@ class BEF_TestDatepicker extends BEF_TestBase {
     $this->saveView();
 
     // Verify the datepicker option appears for core date fields.
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][created][bef_format]"]/option', 'jQuery UI Datepicker');
     $this->setBefSettings(array(
@@ -465,8 +465,8 @@ class BEF_TestDatepicker extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
-    $settings = $this->drupalGetSettings();
+    $this->backdropGet('bef_test_page');
+    $settings = $this->backdropGetSettings();
     $settings = $settings['better_exposed_filters'];
     $this->assertTrue($settings['datepicker'], 'BEF datepicker setting is TRUE');
     $this->assertFieldByXpath('//div[@id="edit-created-wrapper"]//input[contains(@class,"bef-datepicker")]');
@@ -483,7 +483,7 @@ class BEF_TestDatepicker extends BEF_TestBase {
 
     // Not sure why I can't get the Features-based functionality to work without
     // pulling up the modules page, but it works...
-    $this->drupalGet('admin/modules');
+    $this->backdropGet('admin/modules');
 
     // Verify datepicker rendering using the Numbers field from the BEF test
     // content type.
@@ -493,7 +493,7 @@ class BEF_TestDatepicker extends BEF_TestBase {
     $this->saveView();
 
     // Verify the datepicker option appears for custom date fields.
-    $this->drupalGet($this->getBefSettingsUrl());
+    $this->backdropGet($this->getBefSettingsUrl());
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'Default select list');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_date_value][bef_format]"]/option', 'jQuery UI Datepicker');
     $this->setBefSettings(array(
@@ -501,8 +501,8 @@ class BEF_TestDatepicker extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
-    $settings = $this->drupalGetSettings();
+    $this->backdropGet('bef_test_page');
+    $settings = $this->backdropGetSettings();
     $settings = $settings['better_exposed_filters'];
     $this->assertTrue($settings['datepicker'], 'BEF datepicker setting is TRUE');
     $this->assertTrue(!empty($settings['datepicker_options']['dateFormat']), 'BEF datepicker setting is TRUE');
@@ -531,7 +531,7 @@ class BEF_TestLinks extends BEF_TestBase {
       'exposed_form_options[bef][status_1][bef_format]' => 'bef_links',
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Verify the type filter, which is multi-select.
     $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-article"]/a[contains(@href, "?type[0]=article")]', NULL, 'Correct link for "article" filter');
@@ -573,7 +573,7 @@ class BEF_TestLinks extends BEF_TestBase {
       'options[expose][required]' => FALSE,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // No default filters so nothing should be marked as active.
     // @TODO: Views is giving us an $element['#value'] = FALSE which leads to
@@ -600,7 +600,7 @@ class BEF_TestLinks extends BEF_TestBase {
       'options[value]' => 0,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
     $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
@@ -632,7 +632,7 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
       'exposed_form_options[bef][type][more_options][is_secondary]' => 1,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Verify a collapsed fieldset exists with the correct label.
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset for secondary options starts collapsed/');
@@ -640,7 +640,7 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="type[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
     // Select an option and make sure the fieldset is expanded when rendered.
-    $this->drupalGet('bef_test_page', array('query' => array('type' => 'page')));
+    $this->backdropGet('bef_test_page', array('query' => array('type' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
 
     // Verify force-open and force-closed fieldset options.
@@ -649,14 +649,14 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
       'exposed_form_options[bef][general][secondary_collapse_override]' => 1,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
     $this->setBefSettings(array(
       // Always render closed.
       'exposed_form_options[bef][general][secondary_collapse_override]' => 2,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page', array('query' => array('type' => 'page')));
+    $this->backdropGet('bef_test_page', array('query' => array('type' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset starts closed');
 
     // https://drupal.org/node/2189321
@@ -671,14 +671,14 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
       'exposed_form_options[bef][general][secondary_collapse_override]' => 0,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Verify a collapsed fieldset exists with the correct label.
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and contains(@class, "collapsed")]', NULL, 'Collapsible fieldset for secondary options, starts collapsed.');
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset//select[@name="custom_id[]"]', NULL, 'The node.type filter is within the secondary fieldset');
 
     // Select an option and make sure the fieldset is expanded when rendered.
-    $this->drupalGet('bef_test_page', array('query' => array('custom_id' => 'page')));
+    $this->backdropGet('bef_test_page', array('query' => array('custom_id' => 'page')));
     $this->assertFieldByXpath('//div[@id="edit-secondary-wrapper"]//fieldset[contains(@class, "collapsible") and not(contains(@class, "collapsed"))]', NULL, 'Collapsible fieldset starts open');
 
     // Add an in-between filter and verify it renders correctly.
@@ -692,7 +692,7 @@ class BEF_TestSecondaryFilters extends BEF_TestBase {
       'exposed_form_options[bef][field_bef_test_integer_value][more_options][is_secondary]' => 1,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Verify labels for the min and max fields.
     // Note: Both labels have a trailing space which is added by Views... I
@@ -760,7 +760,7 @@ class BEF_TestRewrite extends BEF_TestBase {
     ));
     $this->saveView();
 
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter option "bef_test" in "Type" filter');
     $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Article', 'Rerwrite of the filter option "article" to null in "Type" filter.');
     $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter option "Yes" in "Published" filter.');
@@ -794,7 +794,7 @@ class BEF_TestMisc extends BEF_TestBase {
       'exposed_form_options[bef][general][allow_secondary]' => 1,
     ));
     $this->saveView();
-    $this->drupalGet('bef_test_page');
+    $this->backdropGet('bef_test_page');
 
     // Verify the "Text on demand" is shown.
     $this->assertText(t('Select any filter and click on Apply to see results'), '"Empty" text should show on initial display.');
