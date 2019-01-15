@@ -1134,7 +1134,8 @@ dateFormat: "dd-mm-yy"
                 // dsm($form[$filter_id]['#options'][$index]->option, "$filter_id at $index");
                 // Taxonomy term filters are stored as objects. Use str_replace
                 // to ensure that keep hyphens for hierarchical filters.
-                list($tid, $original) = each($form[$filter_id]['#options'][$index]->option);
+                $tid = key($form[$filter_id]['#options'][$index]->option);
+                $original = current($form[$filter_id]['#options'][$index]->option);
                 $form[$filter_id]['#options'][$index]->option[$tid] = str_replace($option, $rewrite[$option], $original);
               }
               else {
@@ -1465,7 +1466,8 @@ dateFormat: "dd-mm-yy"
             foreach ($opts as $index => $opt) {
               if (is_object($opt)) {
                 reset($opt->option);
-                list($key, $val) = each($opt->option);
+                $key = key($opt->option);
+                $val = current($opt->option);
                 $form[$filter_id]['#options'][$key] = $val;
               }
               else {
@@ -1600,7 +1602,7 @@ dateFormat: "dd-mm-yy"
             foreach ($form[$filter_id]['#options'] as $tid => $option) {
               if (is_object($option)) {
                 reset($option->option);
-                list ($tid, ) = each($option->option);
+                $tid = key($option->option);
               }
               $tids[] = $tid;
             }
