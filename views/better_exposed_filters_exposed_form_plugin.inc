@@ -402,9 +402,11 @@ Title Desc|Z -> A</pre> Leave the replacement text blank to remove an option alt
           $bef_links = FALSE;
           $bef_hidden = FALSE;
         }
-        elseif (!empty($filter->options['hierarchy'])) {
-          $bef_nested = TRUE;
+        else {
           $bef_term_description = TRUE;
+          if (!empty($filter->options['hierarchy'])) {
+            $bef_nested = TRUE;
+          }
         }
       }
 
