@@ -27,16 +27,9 @@ class BEF_TestOptions extends BEF_TestBase {
         '!id' => $id,
         '!label' => $label,
       );
-      $this->assertRaw(
-        htmlentities(t('Display "!id" (Filter label: "!label") exposed filter as', $translation)),
-        t('BEF options exist for exposed "!id" filter', $translation)
-      );
-      $this->assertRaw(
-        htmlentities(t('More options for "!id" (Filter label: "!label")', $translation)),
-        t('BEF "More options" fieldset exists for exposed "!id" filter', $translation)
-      );
+      $html_id = str_replace('_', '-', $id);
       $this->assertField(
-        'edit-exposed-form-options-bef-' . str_replace('_', '-', $id) . '-bef-format',
+        'edit-exposed-form-options-bef-' . $html_id . '-bef-format',
         t('BEF options dropdown exists for "!id"', $translation)
       );
     }

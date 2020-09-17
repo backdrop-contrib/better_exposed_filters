@@ -92,7 +92,12 @@
         var opt = [];
         $.each(befSettings.datepicker_options, function(key, val) {
           if (key && val) {
-            opt[key] = JSON.parse(val);
+            try {
+              opt[key] = JSON.parse(val);
+            }
+            catch (err) {
+              opt[key] = val;
+            }
           }
         });
         $('.bef-datepicker').datepicker(opt);
