@@ -947,9 +947,11 @@ dateFormat: "dd-mm-yy"
               $rewrite[$search] = $replace;
             }
           }
-          foreach ($options as $index => $option) {
-            if (isset($rewrite[$option])) {
-              if ('' == $rewrite[$option]) {
+          // Create new options array, based on order set in the rewrite settings.
+          $rewritten_options = array();
+          foreach ($rewrite as $search => $replace) {
+            if ($index = array_search($search, $options)) {
+              if ('' == $replace) {
                 unset($options[$index]);
                 if ($selected == $index) {
                   // Avoid "Illegal choice" errors.
@@ -957,10 +959,12 @@ dateFormat: "dd-mm-yy"
                 }
               }
               else {
-                $options[$index] = $rewrite[$option];
+                $rewritten_options[$index] = $replace;
               }
             }
           }
+          // Append any remaining non-rewritten options.
+          $options = $rewritten_options + $options;
         }
 
         $form[$settings['sort']['advanced']['combine_param']] = array(
