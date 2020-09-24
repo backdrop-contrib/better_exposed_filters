@@ -869,7 +869,7 @@ dateFormat: "dd-mm-yy"
 
       $secondary = array(
         '#type' => 'fieldset',
-        '#title' => filter_xss_admin($settings['general']['secondary_label']),
+        '#title' => filter_xss_admin(t($settings['general']['secondary_label'])),
         '#collapsible' => TRUE,
         '#collapsed' => $secondary_collapse,
         '#theme' => 'secondary_exposed_elements',
