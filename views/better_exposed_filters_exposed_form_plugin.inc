@@ -922,6 +922,12 @@ dateFormat: "dd-mm-yy"
               // Respect default sort order set in Views. The default sort field
               // will be the first one if there are multiple sort criteria.
               $selected = "$by_key $order_key";
+              // If 'Remember the last selection' was selected, remember,
+              if (isset($_SESSION['views'][$this->view->name][$this->view->current_display])) {
+                $by_key = $_SESSION['views'][$this->view->name][$this->view->current_display]['sort_by'];
+                $order_key = $_SESSION['views'][$this->view->name][$this->view->current_display]['sort_order'];
+                $selected = "$by_key $order_key";
+              }
             }
             if ($settings['sort']['bef_format'] == 'bef_toggle_links') {
               if (isset($used_sort_keys[$by_key])
