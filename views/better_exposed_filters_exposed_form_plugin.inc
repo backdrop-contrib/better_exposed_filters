@@ -1169,6 +1169,9 @@ dateFormat: "dd-mm-yy"
     // Shorthand for all filters in this view.
     $filters = $form_state['view']->display_handler->handlers['filter'];
 
+    // Get the order of all filters.
+    $filters_order = array_flip(array_keys($filters));
+
     // Go through each saved option looking for Better Exposed Filter settings.
     foreach ($settings as $label => $options) {
       // Sanity check: Ensure this filter is an exposed filter.
@@ -1785,6 +1788,9 @@ dateFormat: "dd-mm-yy"
           if (isset($filters[$label]->position)) {
             $secondary[$identifier]['#bef_position'] = $filters[$label]->position * 2;
           }
+          else {
+            $secondary[$identifier]['#bef_position'] = ($filters_order[$label] * 2);
+          }
 
           // Move exposed operators with exposed filters.
           if (!empty($filters[$label]->options['expose']['use_operator'])) {
@@ -1796,6 +1802,9 @@ dateFormat: "dd-mm-yy"
             // associated with.
             if (isset($filters[$label]->position)) {
               $secondary[$op_id]['#bef_position'] = ($filters[$label]->position * 2) - 1;
+            }
+            else {
+              $secondary[$op_id]['#bef_position'] = ($filters_order[$label] * 2) - 1;
             }
           }
         }
