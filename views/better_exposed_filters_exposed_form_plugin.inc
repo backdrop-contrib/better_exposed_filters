@@ -479,7 +479,7 @@ Title Desc|Z -> A</pre> Leave the replacement text blank to remove an option alt
       }
 
       // Alter the list of available display options for this filter.
-      drupal_alter('better_exposed_filters_display_options', $display_options, $filter);
+      backdrop_alter('better_exposed_filters_display_options', $display_options, $filter);
 
       $filter_key = $filter->options['is_grouped'] ? 'group_info' : 'expose';
       $identifier = '"' . $filter->options[$filter_key]['identifier'] . '"';
@@ -1833,7 +1833,7 @@ dateFormat: "dd-mm-yy"
       if ($bef_js['autosubmit']) {
         $form['submit']['#attributes']['class'][] = 'ctools-use-ajax';
         $form['submit']['#attributes']['class'][] = 'ctools-auto-submit-click';
-        $form['#attached']['js'][] = drupal_get_path('module', 'ctools') . '/js/auto-submit.js';
+        $form['#attached']['js'][] = backdrop_get_path('module', 'ctools') . '/js/auto-submit.js';
       }
 
       backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');

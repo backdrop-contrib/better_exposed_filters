@@ -25,6 +25,6 @@ function bef_test_content_node_info() {
       'help' => '',
     ),
   );
-  drupal_alter('node_info', $items);
+  backdrop_alter('node_info', $items);
   return $items;
 }
