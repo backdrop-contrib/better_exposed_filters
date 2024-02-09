@@ -922,7 +922,7 @@ dateFormat: "dd-mm-yy"
               // Respect default sort order set in Views. The default sort field
               // will be the first one if there are multiple sort criteria.
               $selected = "$by_key $order_key";
-              // If 'Remember the last selection' was selected, remember,
+              // If 'Remember the last selection' was selected, remember.
               if (isset($_SESSION['views'][$this->view->name][$this->view->current_display])) {
                 $by_key = $_SESSION['views'][$this->view->name][$this->view->current_display]['sort_by'];
                 $order_key = $_SESSION['views'][$this->view->name][$this->view->current_display]['sort_order'];
@@ -1748,10 +1748,10 @@ dateFormat: "dd-mm-yy"
 
         // Check type form element.
         if (isset($form[$filter_id]['value'])) {
-          $form[$filter_id]['value'] = array_merge_recursive($form[$filter_id]['value'], array('#attributes' => array('class' => array('ctools-auto-submit'))));
+          $form[$filter_id]['value'] = array_merge_recursive($form[$filter_id]['value'], array('#attributes' => array('class' => array('autosubmit'))));
         }
         else {
-          $form[$filter_id] = array_merge_recursive($form[$filter_id], array('#attributes' => array('class' => array('ctools-auto-submit'))));
+          $form[$filter_id] = array_merge_recursive($form[$filter_id], array('#attributes' => array('class' => array('autosubmit'))));
         }
       }
 
@@ -1831,9 +1831,9 @@ dateFormat: "dd-mm-yy"
         backdrop_add_library('system', 'ui.slider');
       }
       if ($bef_js['autosubmit']) {
-        $form['submit']['#attributes']['class'][] = 'ctools-use-ajax';
-        $form['submit']['#attributes']['class'][] = 'ctools-auto-submit-click';
-        $form['#attached']['js'][] = backdrop_get_path('module', 'ctools') . '/js/auto-submit.js';
+        $form['submit']['#attributes']['class'][] = 'use-ajax';
+        $form['submit']['#attributes']['class'][] = 'autosubmit-click';
+        $form['#attached']['library'][] = array('system', 'backdrop.autosubmit');
       }
 
       backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');
