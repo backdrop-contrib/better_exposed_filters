@@ -41,7 +41,7 @@
               .html(selNone)
               .siblings('.bef-checkboxes, .bef-tree')
                 .find('.form-item input:checkbox').each(function() {
-                  $(this)prop('checked', true);
+                  $(this).prop('checked', true);
                   _bef_highlight(this, context);
                 })
               .end()

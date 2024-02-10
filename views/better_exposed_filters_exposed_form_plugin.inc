@@ -1105,7 +1105,7 @@ dateFormat: "dd-mm-yy"
       $bef_js['autosubmit'] = TRUE;
       foreach (array($settings['sort']['advanced']['combine_param'], 'sort_by', 'sort_order') as $elem) {
         if (!empty($form[$elem])) {
-          $form[$elem] = array_merge_recursive($form[$elem], array('#attributes' => array('class' => array('ctools-auto-submit'))));
+          $form[$elem] = array_merge_recursive($form[$elem], array('#attributes' => array('class' => array('autosubmit'))));
         }
       }
     }
