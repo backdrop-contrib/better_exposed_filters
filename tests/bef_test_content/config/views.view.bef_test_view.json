@@ -1,0 +1,320 @@
+{
+  "_config_name": "views.view.bef_test_view",
+  "name": "bef_test_view",
+  "description": "",
+  "tag": "default",
+  "disabled": false,
+  "base_table": "node",
+  "human_name": "BEF Test View",
+  "core": 7,
+  "display": {
+    "default": {
+      "display_title": "Master",
+      "display_plugin": "default",
+      "display_options": {
+        "query": {
+          "type": "views_query",
+          "options": []
+        },
+        "title": "BEF Test View",
+        "use_more_always": false,
+        "access": {
+          "type": "perm"
+        },
+        "cache": {
+          "type": "none"
+        },
+        "exposed_form": {
+          "type": "better_exposed_filters",
+          "options": {
+            "bef": {
+              "general": {
+                "allow_secondary": 0,
+                "secondary_label": "Advanced options"
+              },
+              "sort": {
+                "bef_format": "bef_toggle_links",
+                "advanced": {
+                  "collapsible": 0,
+                  "collapsible_label": "Sort options",
+                  "combine": 1,
+                  "combine_rewrite": "",
+                  "reset": 0,
+                  "reset_label": "",
+                  "is_secondary": 0
+                }
+              },
+              "pager": {
+                "bef_format": "bef_links",
+                "is_secondary": 0
+              },
+              "field_bef_test_letters_value": {
+                "bef_format": "default",
+                "more_options": {
+                  "bef_select_all_none": false,
+                  "bef_collapsible": 0,
+                  "is_secondary": 0,
+                  "any_label": "Any Letter",
+                  "bef_filter_description": "",
+                  "tokens": {
+                    "available": [
+                      "global_types"
+                    ]
+                  },
+                  "rewrite": {
+                    "filter_rewrite_values": ""
+                  }
+                }
+              },
+              "field_bef_test_numbers_value": {
+                "bef_format": "default",
+                "more_options": {
+                  "bef_select_all_none": false,
+                  "bef_collapsible": 0,
+                  "is_secondary": 0,
+                  "any_label": "Any Number",
+                  "bef_filter_description": "",
+                  "tokens": {
+                    "available": [
+                      "global_types"
+                    ]
+                  },
+                  "rewrite": {
+                    "filter_rewrite_values": ""
+                  }
+                }
+              },
+              "type": {
+                "bef_format": "default",
+                "more_options": {
+                  "bef_select_all_none": false,
+                  "bef_collapsible": 0,
+                  "is_secondary": 0,
+                  "any_label": "Any Type",
+                  "bef_filter_description": "",
+                  "tokens": {
+                    "available": [
+                      "global_types"
+                    ]
+                  },
+                  "rewrite": {
+                    "filter_rewrite_values": ""
+                  }
+                }
+              },
+              "field_bef_test_location_tid": {
+                "bef_format": "default",
+                "more_options": {
+                  "bef_select_all_none": false,
+                  "bef_select_all_none_nested": false,
+                  "bef_collapsible": 0,
+                  "is_secondary": 0,
+                  "any_label": "Anywhere",
+                  "bef_filter_description": "",
+                  "tokens": {
+                    "available": [
+                      "global_types"
+                    ]
+                  },
+                  "rewrite": {
+                    "filter_rewrite_values": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "pager": {
+          "type": "full",
+          "options": {
+            "items_per_page": "10",
+            "offset": "0",
+            "id": "0",
+            "quantity": "9",
+            "expose": {
+              "items_per_page": true,
+              "items_per_page_label": "Yo! Show me",
+              "items_per_page_options_all": true,
+              "items_per_page_options_all_label": "All dem things!"
+            }
+          }
+        },
+        "style_plugin": "table",
+        "style_options": {
+          "columns": {
+            "title": "title",
+            "field_letters": "field_letters",
+            "field_numbers": "field_numbers"
+          },
+          "default": "-1",
+          "info": {
+            "title": {
+              "sortable": 0,
+              "default_sort_order": "asc",
+              "align": "",
+              "separator": "",
+              "empty_column": 0
+            },
+            "field_letters": {
+              "align": "",
+              "separator": "",
+              "empty_column": 0
+            },
+            "field_numbers": {
+              "sortable": 0,
+              "default_sort_order": "asc",
+              "align": "",
+              "separator": "",
+              "empty_column": 0
+            }
+          }
+        },
+        "fields": {
+          "title": {
+            "id": "title",
+            "table": "node",
+            "field": "title",
+            "label": "",
+            "alter": {
+              "word_boundary": false,
+              "ellipsis": false
+            }
+          },
+          "created": {
+            "id": "created",
+            "table": "node",
+            "field": "created",
+            "date_format": "short"
+          },
+          "field_bef_test_integer": {
+            "id": "field_bef_test_integer",
+            "table": "field_data_field_bef_test_integer",
+            "field": "field_bef_test_integer",
+            "settings": {
+              "thousand_separator": " ",
+              "prefix_suffix": 1
+            }
+          },
+          "field_bef_test_letters": {
+            "id": "field_bef_test_letters",
+            "table": "field_data_field_bef_test_letters",
+            "field": "field_bef_test_letters",
+            "delta_offset": "0"
+          },
+          "field_bef_test_numbers": {
+            "id": "field_bef_test_numbers",
+            "table": "field_data_field_bef_test_numbers",
+            "field": "field_bef_test_numbers"
+          }
+        },
+        "sorts": {
+          "created": {
+            "id": "created",
+            "table": "node",
+            "field": "created",
+            "order": "DESC",
+            "exposed": true,
+            "expose": {
+              "label": "Post date"
+            }
+          }
+        },
+        "filters": {
+          "field_bef_test_letters_value": {
+            "id": "field_bef_test_letters_value",
+            "table": "field_data_field_bef_test_letters",
+            "field": "field_bef_test_letters_value",
+            "exposed": true,
+            "expose": {
+              "operator_id": "field_bef_test_letters_value_op",
+              "label": "Letters",
+              "operator": "field_bef_test_letters_value_op",
+              "identifier": "field_bef_test_letters_value",
+              "remember_roles": {
+                "2": "2",
+                "1": 0,
+                "3": 0
+              }
+            }
+          },
+          "field_bef_test_numbers_value": {
+            "id": "field_bef_test_numbers_value",
+            "table": "field_data_field_bef_test_numbers",
+            "field": "field_bef_test_numbers_value",
+            "exposed": true,
+            "expose": {
+              "operator_id": "field_bef_test_numbers_value_op",
+              "label": "Numbers",
+              "operator": "field_bef_test_numbers_value_op",
+              "identifier": "field_bef_test_numbers_value",
+              "remember_roles": {
+                "2": "2",
+                "1": 0,
+                "3": 0
+              }
+            }
+          },
+          "type": {
+            "id": "type",
+            "table": "node",
+            "field": "type",
+            "exposed": true,
+            "expose": {
+              "operator_id": "type_op",
+              "label": "Type",
+              "operator": "type_op",
+              "identifier": "type",
+              "remember_roles": {
+                "2": "2",
+                "1": 0,
+                "3": 0
+              }
+            }
+          },
+          "field_bef_test_location_tid": {
+            "id": "field_bef_test_location_tid",
+            "table": "field_data_field_bef_test_location",
+            "field": "field_bef_test_location_tid",
+            "exposed": true,
+            "expose": {
+              "operator_id": "field_bef_test_location_tid_op",
+              "label": "Location",
+              "operator": "field_bef_test_location_tid_op",
+              "identifier": "field_bef_test_location_tid",
+              "remember_roles": {
+                "2": "2",
+                "1": 0,
+                "3": 0
+              }
+            },
+            "type": "select",
+            "vocabulary": "bef_test_location",
+            "hierarchy": 1
+          }
+        }
+      }
+    },
+    "page": {
+      "display_title": "Page",
+      "display_plugin": "page",
+      "display_options": {
+        "query": {
+          "type": "views_query",
+          "options": []
+        },
+        "path": "test"
+      }
+    },
+    "panel_pane_1": {
+      "display_title": "Content pane",
+      "display_plugin": "panel_pane",
+      "display_options": {
+        "query": {
+          "type": "views_query",
+          "options": []
+        },
+        "exposed_block": true
+      }
+    }
+  }
+}

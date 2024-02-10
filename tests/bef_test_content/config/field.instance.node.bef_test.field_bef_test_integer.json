@@ -1,0 +1,40 @@
+{
+    "_config_name": "field.instance.node.bef_test.field_bef_test_integer",
+    "field_name": "field_bef_test_integer",
+    "entity_type": "node",
+    "bundle": "bef_test",
+    "label": "Integer",
+    "widget": {
+        "weight": "-1",
+        "type": "number",
+        "module": "number",
+        "active": 0,
+        "settings": []
+    },
+    "description": "",
+    "required": 0,
+    "deleted": 0,
+    "default_value": null,
+    "default_value_function": null,
+    "settings": {
+        "min": "100",
+        "max": "5000",
+        "prefix": "",
+        "suffix": "",
+        "user_register_form": false
+    },
+    "display": {
+        "default": {
+            "label": "hidden",
+            "type": "number_integer",
+            "settings": {
+                "thousand_separator": "",
+                "decimal_separator": ".",
+                "scale": 0,
+                "prefix_suffix": true
+            },
+            "module": "number",
+            "weight": 3
+        }
+    }
+}

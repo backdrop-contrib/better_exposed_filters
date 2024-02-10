@@ -8,7 +8,7 @@
 /**
  * Helper functions for Better Exposed Filters tests.
  */
-class BEF_TestBase extends DrupalWebTestCase {
+class BEF_TestBase extends BackdropWebTestCase {
   /**
    * User with 'Administrator' role.
    */
@@ -35,7 +35,6 @@ class BEF_TestBase extends DrupalWebTestCase {
     parent::setUp(
       'better_exposed_filters',
       'date',
-      'date_views',
       'list',
       'number',
       'taxonomy',
@@ -48,11 +47,11 @@ class BEF_TestBase extends DrupalWebTestCase {
     module_enable(array('bef_test_content'));
 
     // User with edit views perms
-    $this->admin_user = $this->drupalCreateUser();
-    $role = user_role_load_by_name('administrator');
-    $this->assertTrue(!empty($role->rid), 'Found the "administrator" role.');
-    user_save($this->admin_user, array('roles' => array($role->rid => $role->rid)));
-    $this->drupalLogin($this->admin_user);
+    $this->admin_user = $this->backdropCreateUser();
+    $role = user_role_load('administrator');
+    $this->assertTrue(!empty($role->name), 'Found the "administrator" role.');
+    user_save($this->admin_user, array('roles' => array($role->name => $role->name)));
+    $this->backdropLogin($this->admin_user);
 
     // Build a basic view for use in tests.
     $this->createView();
@@ -101,7 +100,7 @@ class BEF_TestBase extends DrupalWebTestCase {
       // Default is to create a page display.
       'page[create]' => FALSE,
     );
-    $this->drupalPost('admin/structure/views/add', $edit, 'Save & exit');
+    $this->backdropPost('admin/structure/views/add', $edit, 'Save & exit');
 
     // URL to edit this view.
     $this->view['edit_url'] = 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit';
@@ -119,7 +118,7 @@ class BEF_TestBase extends DrupalWebTestCase {
     }
 
     // Add a display of $type to the view
-    $this->drupalPost($this->view['edit_url'], array(), "Add $type");
+    $this->backdropPost($this->view['edit_url'], array(), "Add $type");
 
     // Grab the name of the newly created display and store some info about it.
     $url = $this->getUrl();
@@ -141,7 +140,7 @@ class BEF_TestBase extends DrupalWebTestCase {
     //  admin/structure/views/nojs/display/<view_name>/<display_name>/title
     // you will see the form in question.
     foreach ($settings as $path => $values) {
-      $this->drupalPost($this->view['displays'][$display_name]['settings_base_url'] . "/$path", $values, 'Apply');
+      $this->backdropPost($this->view['displays'][$display_name]['settings_base_url'] . "/$path", $values, 'Apply');
     }
     $this->saveView();
   }
@@ -169,17 +168,17 @@ class BEF_TestBase extends DrupalWebTestCase {
       "name[$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/filter";
-    $this->drupalPost($url, $edit, 'Add and configure filter criteria');
+    $this->backdropPost($url, $edit, 'Add and configure filter criteria');
 
     if (!empty($additional)) {
       // Handle filter-specific options screen.
-      $this->drupalPost(NULL, $additional, 'Apply');
+      $this->backdropPost(NULL, $additional, 'Apply');
     }
 
     if ($exposed) {
-      $this->drupalPost(NULL, array(), 'Expose filter');
+      $this->backdropPost(NULL, array(), 'Expose filter');
     }
-    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->backdropPost(NULL, $settings, 'Apply');
   }
 
   /**
@@ -191,11 +190,11 @@ class BEF_TestBase extends DrupalWebTestCase {
       $field = substr($field, $pos + 1);
     }
     $url = 'admin/structure/views/nojs/config-item/' . $this->view['machine_name'] . "/$display/filter/$field";
-    $this->drupalPost($url, $settings, 'Apply');
+    $this->backdropPost($url, $settings, 'Apply');
 
     if (!empty($additional)) {
       // Handle filter-specific options screen.
-      $this->drupalPost(NULL, $additional, 'Apply');
+      $this->backdropPost(NULL, $additional, 'Apply');
     }
   }
 
@@ -209,17 +208,17 @@ class BEF_TestBase extends DrupalWebTestCase {
       "name[$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/sort";
-    $this->drupalPost($url, $edit, 'Add and configure sort criteria');
+    $this->backdropPost($url, $edit, 'Add and configure sort criteria');
 
     if (!empty($additional)) {
       // Handle filter-specific options screen.
-      $this->drupalPost(NULL, $additional, 'Apply');
+      $this->backdropPost(NULL, $additional, 'Apply');
     }
 
     if ($exposed) {
-      $this->drupalPost(NULL, array(), 'Expose sort');
+      $this->backdropPost(NULL, array(), 'Expose sort');
     }
-    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->backdropPost(NULL, $settings, 'Apply');
   }
 
   /**
@@ -232,8 +231,8 @@ class BEF_TestBase extends DrupalWebTestCase {
       "name[$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
-    $this->drupalPost($url, $edit, 'Add and configure fields');
-    $this->drupalPost(NULL, $settings, 'Apply');
+    $this->backdropPost($url, $edit, 'Add and configure fields');
+    $this->backdropPost(NULL, $settings, 'Apply');
   }
 
   /**
@@ -246,11 +245,11 @@ class BEF_TestBase extends DrupalWebTestCase {
       "exposed_form[type]" => 'better_exposed_filters',
     );
     $url = 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . "/$display/exposed_form";
-    $this->drupalPost($url, $edit, 'Apply');
+    $this->backdropPost($url, $edit, 'Apply');
 
     // BEF settings is covered under setBefSettings() so we just accept the
     // default values and move on.
-    $this->drupalPost(NULL, array(), 'Apply');
+    $this->backdropPost(NULL, array(), 'Apply');
   }
 
   /**
@@ -260,7 +259,7 @@ class BEF_TestBase extends DrupalWebTestCase {
    * Note: This routine expects the caller to save the view, as needed.
    */
   protected function setBefSettings($settings, $error = '') {
-    $this->drupalPost($this->getBefSettingsUrl(), $settings, 'Apply');
+    $this->backdropPost($this->getBefSettingsUrl(), $settings, 'Apply');
     if (!empty($error)) {
       $this->assertText($error);
     }
@@ -270,6 +269,6 @@ class BEF_TestBase extends DrupalWebTestCase {
    * Saves the view
    */
   protected function saveView() {
-    $this->drupalPost($this->view['edit_url'], array(), 'Save');
+    $this->backdropPost($this->view['edit_url'], array(), 'Save');
   }
 }

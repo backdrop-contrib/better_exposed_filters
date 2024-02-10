@@ -1,0 +1,31 @@
+{
+    "_config_name": "field.instance.node.bef_test.field_bef_test_letters",
+    "field_name": "field_bef_test_letters",
+    "entity_type": "node",
+    "bundle": "bef_test",
+    "label": "Letters",
+    "widget": {
+        "weight": "0",
+        "type": "options_select",
+        "module": "options",
+        "active": 1,
+        "settings": []
+    },
+    "description": "",
+    "required": 0,
+    "deleted": 0,
+    "default_value": null,
+    "default_value_function": null,
+    "settings": {
+        "user_register_form": false
+    },
+    "display": {
+        "default": {
+            "label": "hidden",
+            "type": "list_default",
+            "settings": [],
+            "module": "list",
+            "weight": 4
+        }
+    }
+}

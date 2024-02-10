@@ -1,0 +1,31 @@
+{
+    "_config_name": "field.field.field_bef_test_letters",
+    "field_name": "field_bef_test_letters",
+    "type": "list_text",
+    "translatable": false,
+    "module": "list",
+    "active": 1,
+    "locked": 0,
+    "cardinality": "-1",
+    "deleted": 0,
+    "entity_types": [],
+    "settings": {
+        "allowed_values": {
+            "a": "Aardvark",
+            "b": "Bumble-Bee",
+            "c": " Caterpillar",
+            "d": "Devil, Tasmanian",
+            "e": "Elephant",
+            "f": "Frigatebird",
+            "g": "Giraffe",
+            "h": "Horse"
+        },
+        "allowed_values_function": ""
+    },
+    "storage": {
+        "type": "field_sql_storage",
+        "settings": [],
+        "module": "field_sql_storage",
+        "active": 1
+    }
+}

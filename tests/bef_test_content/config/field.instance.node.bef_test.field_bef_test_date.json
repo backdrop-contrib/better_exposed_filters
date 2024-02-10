@@ -1,0 +1,50 @@
+{
+    "_config_name": "field.instance.node.bef_test.field_bef_test_date",
+    "field_name": "field_bef_test_date",
+    "entity_type": "node",
+    "bundle": "bef_test",
+    "label": "Date",
+    "widget": {
+        "weight": "-2",
+        "type": "date_text",
+        "module": "date",
+        "active": 1,
+        "settings": {
+            "input_format": "m/d/Y - g:i:sa",
+            "input_format_custom": "",
+            "year_range": "-3:+3",
+            "increment": 1,
+            "label_position": "none",
+            "text_parts": [],
+            "no_fieldset": 1
+        }
+    },
+    "description": "",
+    "required": 0,
+    "deleted": 0,
+    "default_value": null,
+    "default_value_function": null,
+    "settings": {
+        "default_value": "blank",
+        "default_value_code": "",
+        "default_value2": "same",
+        "default_value_code2": "",
+        "user_register_form": false
+    },
+    "display": {
+        "default": {
+            "label": "hidden",
+            "type": "date_default",
+            "settings": {
+                "format_type": "long",
+                "multiple_number": "",
+                "multiple_from": "",
+                "multiple_to": "",
+                "fromto": "both",
+                "show_remaining_days": false
+            },
+            "module": "date",
+            "weight": 2
+        }
+    }
+}
