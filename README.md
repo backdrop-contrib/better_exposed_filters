@@ -13,36 +13,32 @@ Filters gives you greater control over the rendering of exposed filters.
 Installation
 ------------
 
-- Install this module using the official Backdrop CMS instructions at
-  https://backdropcms.org/guide/modules
-
+- Install this module using [the official Backdrop CMS instructions](https://backdropcms.org/guide/modules)
 - Configure any view under Administration > Structure > Views.
-
 - Adjust the view to use Better Exposed filters under Advanced > Exposed Form.
 
 Documentation
 -------------
 
-Additional documentation is located in the Wiki:
-https://github.com/backdrop-contrib/better_exposed_filters/wiki/Documentation
+Additional documentation is located [in the Wiki](https://github.com/backdrop-contrib/better_exposed_filters/wiki/Documentation)
 
 Issues
 ------
 
-Bugs and Feature requests should be reported in the Issue Queue:
-https://github.com/backdrop-contrib/better_exposed_filters/issues
+Bugs and Feature requests should be reported [in the Issue Queue](https://github.com/backdrop-contrib/better_exposed_filters/issues)
 
 Current Maintainers
 -------------------
 
-- Jen Lampton (https://github.com/jenlampton)
+- [Jen Lampton](https://github.com/jenlampton)
+- [Laryn Kragt Bakker](https://github.com/laryn)
 - Seeking additional maintainers
 
 Credits
 -------
 
-- Originally written for Drupal by Mike Keran (https://www.drupal.org/u/mikeker).
-- Ported to Backdrop CMS by Jen Lampton (https://github.com/jenlampton).
+- Originally written for Drupal by [Mike Keran](https://www.drupal.org/u/mikeker)
+- Ported to Backdrop CMS by [Jen Lampton](https://github.com/jenlampton)
 - Port to Backdrop sponsored by [America's Best Bootfiters](http://www.bootfitters.com)
 
 License
