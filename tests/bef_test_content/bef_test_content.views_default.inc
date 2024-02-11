@@ -32,6 +32,7 @@ function bef_test_content_views_default_views() {
     'general' => array(
       'allow_secondary' => 0,
       'secondary_label' => 'Advanced options',
+      'secondary_collapse_override' => 0,
     ),
     'sort' => array(
       'bef_format' => 'bef_toggle_links',

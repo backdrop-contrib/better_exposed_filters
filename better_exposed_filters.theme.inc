@@ -105,7 +105,8 @@ function theme_select_as_checkboxes($vars) {
     // Check for Taxonomy-based filters.
     if (is_object($elem)) {
       $slice = array_slice($elem->option, 0, 1, TRUE);
-      list($option, $elem) = each($slice);
+      $option = key($slice);
+      $elem = current($slice);
     }
 
     // Check for optgroups.  Put subelements in the $element_set array and add
@@ -176,7 +177,8 @@ function theme_select_as_hidden($vars) {
     // Check for Taxonomy-based filters.
     if (is_object($elem)) {
       $slice = array_slice($elem->option, 0, 1, TRUE);
-      list($option, $elem) = each($slice);
+      $option = key($slice);
+      $elem = current($slice);
     }
 
     // Check for optgroups.  Put subelements in the $element_set array and add a
@@ -331,7 +333,8 @@ function theme_select_as_tree($vars) {
     // Check for Taxonomy-based filters.
     if (is_object($option_label)) {
       $slice = array_slice($option_label->option, 0, 1, TRUE);
-      list($option_value, $option_label) = each($slice);
+      $option_value = key($slice);
+      $option_label = current($slice);
     }
 
     // Check for optgroups -- which is basically a two-level deep tree.
@@ -467,13 +470,13 @@ function theme_select_as_links($vars) {
 
   // Collect selected values so we can properly style the links later.
   $selected_options = array();
-  if (empty($element['#value'])) {
-    if (!empty($element['#default_value'])) {
-      $selected_options[] = $element['#default_value'];
-    }
+  if (isset($element['#value'])) {
+    $selected_options[] = $element['#value'];
   }
   else {
-    $selected_options[] = $element['#value'];
+    if (isset($element['#default_value'])) {
+      $selected_options[] = $element['#default_value'];
+    }
   }
 
   // Add to the selected options specified by Views whatever options are in the
@@ -518,7 +521,8 @@ function theme_select_as_links($vars) {
     // Check for Taxonomy-based filters.
     if (is_object($elem)) {
       $slice = array_slice($elem->option, 0, 1, TRUE);
-      list($option, $elem) = each($slice);
+      $option = key($slice);
+      $elem = current($slice);
     }
 
     // Check for optgroups.  Put subelements in the $element_set array and add
@@ -752,7 +756,8 @@ function bef_replace_query_string_arg($key, $value, $multiple = FALSE, $remove =
       $query[$key] = $value;
     }
   }
-  // Unset page arg so we don't land on an empty page off the end of the newly filtered listing
+  // Unset page arg so we don't land on an empty page off the end of the newly
+  // filtered listing.
   unset($query['page']);
   return url(ltrim($path, '/'), array(
     'query' => $query,
