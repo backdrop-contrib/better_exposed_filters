@@ -261,19 +261,18 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
 
     // Add three terms with two children each to the vocab defined in
     // bef_test_content.
-    $vocab = taxonomy_vocabulary_machine_name_load('bef_test_location');
     $parents = array();
     foreach (array('parent1', 'parent2', 'parent3') as $name) {
-      $term = new stdClass();
-      $term->vid = $vocab->vid;
+      $term = new TaxonomyTerm();
+      $term->vocabulary = 'bef_test_location';
       $term->name = $name;
       taxonomy_term_save($term);
       $parents[$term->tid] = $term->name;
     }
     foreach (array('child1', 'child2') as $name) {
       foreach ($parents as $pid => $pname) {
-        $term = new stdClass();
-        $term->vid = $vocab->vid;
+        $term = new TaxonomyTerm();
+        $term->vocabulary = 'bef_test_location';
         $term->name = "$pname $name";
         $term->parent = $pid;
         taxonomy_term_save($term);
@@ -653,15 +652,15 @@ class BEF_TestRewrite extends BEF_TestBase {
 
     // Add a few terms to the Tags vocab and a Tags filter to the view.
     // Verify values that PHP equates to empty.
-    $term1 = new stdClass();
+    $term1 = new TaxonomyTerm();
     $term1->name = "0";
-    $term1->vid = 1;
+    $term1->vocabulary = 'tags';
     taxonomy_term_save($term1);
 
     // Verify values with accents.
-    $term2 = new stdClass();
+    $term2 = new TaxonomyTerm();
     $term2->name = "Tèstiñg Térm";
-    $term2->vid = 1;
+    $term2->vocabulary = 'tags';
     taxonomy_term_save($term2);
     $this->addFilter('field_data_field_tags.field_tags_tid', array(), array(
       // Choose the dropdown option for term filter, without hierarchy shown.
