@@ -124,7 +124,7 @@ class BEF_TestRadios extends BEF_TestBase {
 
     // Exposed filter options render as radio buttons.
     $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-all"]');
-    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-article"]');
+    $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-post"]');
     $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-page"]');
     $this->assertFieldByXpath('//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
 
@@ -137,7 +137,7 @@ class BEF_TestRadios extends BEF_TestBase {
 
     // Exposed filter is shown as radio buttons enclosed within a fieldset.
     $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-all"]');
-    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-article"]');
+    $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-post"]');
     $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-page"]');
     $this->assertFieldByXpath('//fieldset//input[@name="type" and @type="radio" and @id="edit-type-bef-test"]');
 
@@ -170,7 +170,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
     $this->assertText(t('Type'), 'Exposed "Type" filter title renders correctly.');
 
     // Exposed filter option render as checkboxes.
-    $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
+    $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-post"]');
     $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
     $this->assertFieldByXpath('//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
 
@@ -191,7 +191,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
     $this->backdropGet('bef_test_page');
 
     // Exposed filter is shown as checkboxes enclosed within a fieldset.
-    $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-article"]');
+    $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-post"]');
     $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-page"]');
     $this->assertFieldByXpath('//fieldset//input[@name="type[]" and @type="checkbox" and @id="edit-type-bef-test"]');
 
@@ -204,6 +204,7 @@ class BEF_TestCheckboxes extends BEF_TestBase {
 }
 
 class BEF_TestHidden extends BEF_TestBase {
+  protected $start;
 
   /**
    * Verify hidden exposed filters are rendered correctly on a page display
@@ -534,9 +535,9 @@ class BEF_TestLinks extends BEF_TestBase {
     $this->backdropGet('bef_test_page');
 
     // Verify the type filter, which is multi-select.
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-article"]/a[contains(@href, "?type[0]=article")]', NULL, 'Correct link for "article" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?type[0]=page")]', NULL, 'Correct link for "page" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?type[0]=bef_test")]', NULL, 'Correct link for "bef test" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-post"]/a[contains(@href, "?type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
 
     // Verify the status filter, which is single select.
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
@@ -546,9 +547,9 @@ class BEF_TestLinks extends BEF_TestBase {
     $this->clickLink('Yes');
 
     // Verify the type filter, which is multi-select.
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-article"]/a[contains(@href, "?status_1=1&type[0]=article")]', NULL, 'Correct link for "article" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?status_1=1&type[0]=page")]', NULL, 'Correct link for "page" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?status_1=1&type[0]=bef_test")]', NULL, 'Correct link for "bef test" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-post"]/a[contains(@href, "?status_1=1&type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?status_1=1&type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?status_1=1&type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
 
     // Verify the status filter, which is single select.
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
@@ -677,7 +678,7 @@ class BEF_TestRewrite extends BEF_TestBase {
       'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' =>
         "Yes|Hell yeah!\nNo|Booo...",
       'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' =>
-        "bef_test|This is a test\nArticle|",
+        "bef_test|This is a test\nPost|",
       'exposed_form_options[bef][field_tags_tid][more_options][rewrite][filter_rewrite_values]' =>
         $term1->name . "|The first one\n" . $term2->name . '|' . $term2->name . ' rewritten',
       'exposed_form_options[bef][sort][advanced][combine]' => '1',
@@ -688,7 +689,7 @@ class BEF_TestRewrite extends BEF_TestBase {
 
     $this->backdropGet('bef_test_page');
     $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter option "bef_test" in "Type" filter');
-    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Article', 'Rerwrite of the filter option "article" to null in "Type" filter.');
+    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Post', 'Rerwrite of the filter option "post" to null in "Type" filter.');
     $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter option "Yes" in "Published" filter.');
     $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter option "No" in "Published" filter.');
     $this->assertFieldByXpath('//select[@id="edit-field-tags-tid"]/option', 'The first one', 'Rerwrite of the filter value "0" in "Tags (field_tags)" filter.');

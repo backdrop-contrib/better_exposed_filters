@@ -19,6 +19,9 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected $view = array();
 
+  /**
+ *
+ */
   public static function getInfo() {
     return array(
       'name' => 'BEF Basic functionality tests',
@@ -27,6 +30,9 @@ class BEF_TestBase extends BackdropWebTestCase {
     );
   }
 
+  /**
+ *
+ */
   public function setUp() {
     // For benchmarking.
     $this->start = time();
@@ -46,25 +52,25 @@ class BEF_TestBase extends BackdropWebTestCase {
     // One of these days I'll figure out why Features is breaking all my tests.
     module_enable(array('bef_test_content'));
 
-    // User with edit views perms
+    // User with edit views perms.
     $this->admin_user = $this->backdropCreateUser();
-    $role = user_role_load('administrator');
-    $this->assertTrue(!empty($role->name), 'Found the "administrator" role.');
-    user_save($this->admin_user, array('roles' => array($role->name => $role->name)));
+    $this->admin_user->roles = array('administrator' => 'administrator');
+    user_save($this->admin_user);
     $this->backdropLogin($this->admin_user);
 
     // Build a basic view for use in tests.
     $this->createView();
 
     // $this->createDisplay('Page', array('path' => array('path' => 'bef_test_page')));
-
     // Add field to default display
-    // $this->addField('node.title');
-
-    // Turn of Better Exposed Filters
+    // $this->addField('node.title');.
+    // Turn of Better Exposed Filters.
     $this->setBefExposedForm();
   }
 
+  /**
+ *
+ */
   public function tearDown() {
     debug('This test run took ' . (time() - $this->start) . ' seconds.');
     unset($this->view);
@@ -82,6 +88,9 @@ class BEF_TestBase extends BackdropWebTestCase {
     return 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/default/exposed_form_options';
   }
 
+  /**
+ *
+ */
   protected function createView($name = '') {
     if (!empty($this->view)) {
       debug('WARNING: createView called after view has already been created.');
@@ -95,15 +104,15 @@ class BEF_TestBase extends BackdropWebTestCase {
     $this->view['machine_name'] = strtolower($name);
 
     $edit = array(
-      'human_name' => $this->view['name'],
-      'name' => $this->view['machine_name'],
+      'human_name' => $name,
+      'name' => strtolower($name),
       // Default is to create a page display.
       'page[create]' => FALSE,
     );
-    $this->backdropPost('admin/structure/views/add', $edit, 'Save & exit');
+    $this->backdropPost('admin/structure/views/add', $edit, 'Save view');
 
     // URL to edit this view.
-    $this->view['edit_url'] = 'admin/structure/views/view/' . $this->view['machine_name'] . '/edit';
+    $this->view['edit_url'] = 'admin/structure/views/view/' . $this->view['machine_name'];
   }
 
   /**
@@ -117,7 +126,7 @@ class BEF_TestBase extends BackdropWebTestCase {
       $this->view['displays'] = array();
     }
 
-    // Add a display of $type to the view
+    // Add a display of $type to the view.
     $this->backdropPost($this->view['edit_url'], array(), "Add $type");
 
     // Grab the name of the newly created display and store some info about it.
