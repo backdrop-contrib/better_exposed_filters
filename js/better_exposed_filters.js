@@ -5,20 +5,20 @@
 (function ($) {
 
   Backdrop.behaviors.betterExposedFilters = {
-    attach: function(context) {
+    attach: function (context) {
       // Add highlight class to checked checkboxes for better theming
       $('.bef-tree input[type=checkbox], .bef-checkboxes input[type=checkbox]')
         // Highlight newly selected checkboxes
-        .change(function() {
+        .on('change', function () {
           _bef_highlight(this, context);
         })
         .filter(':checked').closest('.form-item', context).addClass('highlight')
-      ;
+        ;
     }
   };
 
   Backdrop.behaviors.betterExposedFiltersSelectAllNone = {
-    attach: function(context) {
+    attach: function (context) {
 
       /*
        * Add Select all/none links to specified checkboxes
@@ -29,8 +29,8 @@
         var selNone = Backdrop.t('Select None');
 
         // Set up a prototype link and event handlers
-        var link = $('<a class="bef-toggle" href="#">'+ selAll +'</a>')
-        link.click(function(event) {
+        var link = $('<a class="bef-toggle" href="#">' + selAll + '</a>')
+        link.on('click', function (event) {
           // Don't actually follow the link...
           event.preventDefault();
           event.stopPropagation();
@@ -40,39 +40,39 @@
             $(this)
               .html(selNone)
               .siblings('.bef-checkboxes, .bef-tree')
-                .find('.form-item input:checkbox').each(function() {
-                  $(this).prop('checked', true);
-                  _bef_highlight(this, context);
-                })
+              .find('.form-item input:checkbox').each(function () {
+                $(this).prop('checked', true);
+                _bef_highlight(this, context);
+              })
               .end()
 
               // attr() doesn't trigger a change event, so we do it ourselves. But just on
               // one checkbox otherwise we have many spinning cursors
-              .find('input[type=checkbox]:first').change()
-            ;
+              .find('input[type=checkbox]:first').trigger('change')
+              ;
           }
           else {
             // Unselect all the checkboxes
             $(this)
               .html(selAll)
               .siblings('.bef-checkboxes, .bef-tree')
-                .find('.form-item input:checkbox').each(function() {
-                  $(this).attr('checked', false);
-                  _bef_highlight(this, context);
-                })
+              .find('.form-item input:checkbox').each(function () {
+                $(this).attr('checked', false);
+                _bef_highlight(this, context);
+              })
               .end()
 
               // attr() doesn't trigger a change event, so we do it ourselves. But just on
               // one checkbox otherwise we have many spinning cursors
-              .find('input[type=checkbox]:first').change()
-            ;
+              .find('input[type=checkbox]:first').trigger('change')
+              ;
           }
         });
 
         // Add link to the page for each set of checkboxes.
         selected
           .addClass('bef-processed')
-          .each(function(index) {
+          .each(function (index) {
             // Clone the link prototype and insert into the DOM
             var newLink = link.clone(true);
 
@@ -80,17 +80,17 @@
 
             // If all checkboxes are already checked by default then switch to Select None
             if ($('input:checkbox:checked', this).length == $('input:checkbox', this).length) {
-              newLink.click();
+              newLink.trigger('click');
             }
           })
-        ;
+          ;
       }
 
       // Check for and initialize datepickers
       var befSettings = Backdrop.settings.better_exposed_filters;
       if (befSettings && befSettings.datepicker && befSettings.datepicker_options && $.fn.datepicker) {
         var opt = [];
-        $.each(befSettings.datepicker_options, function(key, val) {
+        $.each(befSettings.datepicker_options, function (key, val) {
           if (key && val) {
             try {
               opt[key] = JSON.parse(val);
@@ -107,12 +107,12 @@
   };                    // Backdrop.behaviors.better_exposed_filters = {
 
   Backdrop.behaviors.betterExposedFiltersAllNoneNested = {
-    attach:function (context, settings) {
+    attach: function (context, settings) {
       $('.form-checkboxes.bef-select-all-none-nested li').has('ul').once('bef-all-none-nested', function () {
         $(this)
           // To respect term depth, check/uncheck child term checkboxes.
           .find('input.form-checkboxes:first')
-          .click(function() {
+          .on('click', function () {
             var checkedParent = $(this).attr('checked');
             if (!checkedParent) {
               // Uncheck all children if parent is unchecked.
@@ -127,7 +127,7 @@
           // When a child term is checked or unchecked, set the parent term's
           // status.
           .find('ul input.form-checkboxes')
-          .click(function() {
+          .on('click', function () {
             var checked = $(this).prop('checked');
 
             // Determine the number of unchecked sibling checkboxes.
@@ -145,17 +145,17 @@
             }
 
             // Now we can trigger the autosubmit
-            $this.parents('form').find('.autosubmit-click').click();
+            $this.parents('form').find('.autosubmit-click').trigger('click');
           });
       });
     }
   };
 
   Backdrop.behaviors.better_exposed_filters_slider = {
-    attach: function(context, settings) {
+    attach: function (context, settings) {
       var befSettings = settings.better_exposed_filters;
       if (befSettings && befSettings.slider && befSettings.slider_options) {
-        $.each(befSettings.slider_options, function(i, sliderOptions) {
+        $.each(befSettings.slider_options, function (i, sliderOptions) {
           var containing_parent = "#" + sliderOptions.viewId + " #edit-" + sliderOptions.id + "-wrapper .views-widget";
           var $filter = $(containing_parent);
 
@@ -167,15 +167,15 @@
           }
 
           // Only make one slider per filter.
-          $filter.once('slider-filter', function() {
+          $filter.once('slider-filter', function () {
             var $input = $(this).find('input[type=text]');
 
             // This is a "between" or "not between" filter with two values.
             if ($input.length == 2) {
               var $min = $input.parent().find('input#edit-' + sliderOptions.id + '-min'),
-                  $max = $input.parent().find('input#edit-' + sliderOptions.id + '-max'),
-                  default_min,
-                  default_max;
+                $max = $input.parent().find('input#edit-' + sliderOptions.id + '-max'),
+                default_min,
+                default_max;
 
               if (!$min.length || !$max.length) {
                 return;
@@ -214,18 +214,18 @@
                     $max.val(ui.values[1]);
                   },
                   // Attach stop listeners.
-                  stop: function(event, ui) {
+                  stop: function (event, ui) {
                     // Click the auto submit button.
-                    $(this).parents('form').find('.autosubmit-click').click();
+                    $(this).parents('form').find('.autosubmit-click').trigger('click');
                   }
                 })
               );
 
               // Update the slider when the fields are updated.
-              $min.blur(function() {
+              $min.blur(function () {
                 befUpdateSlider($(this), 0, sliderOptions);
               });
-              $max.blur(function() {
+              $max.blur(function () {
                 befUpdateSlider($(this), 1, sliderOptions);
               });
             }
@@ -262,15 +262,15 @@
                     $input.val(ui.value);
                   },
                   // Attach stop listeners.
-                  stop: function(event, ui) {
+                  stop: function (event, ui) {
                     // Click the auto submit button.
-                    $(this).parents('form').find('.autosubmit-click').click();
+                    $(this).parents('form').find('.autosubmit-click').trigger('click');
                   }
                 })
               );
 
               // Update the slider when the field is updated.
-              $input.blur(function() {
+              $input.blur(function () {
                 befUpdateSlider($(this), null, sliderOptions);
               });
             }
@@ -285,9 +285,9 @@
 
   // This is only needed to provide ajax functionality
   Backdrop.behaviors.better_exposed_filters_select_as_links = {
-    attach: function(context, settings) {
+    attach: function (context, settings) {
 
-      $('.bef-select-as-links', context).once(function() {
+      $('.bef-select-as-links', context).once(function () {
         var $element = $(this);
 
         // Check if ajax submission is enabled. If it's not enabled then we
@@ -302,7 +302,7 @@
         // Now check that the view for which the current filter block is used,
         // is part of the configured ajax views.
         var $uses_ajax = false;
-        $.each(settings.views.ajaxViews, function(i, item) {
+        $.each(settings.views.ajaxViews, function (i, item) {
           var $view_name = item.view_name.replace(/_/g, '-');
           var $view_display_id = item.view_display_id.replace(/_/g, '-');
           var $id = 'views-exposed-form-' + $view_name + '-' + $view_display_id;
@@ -319,7 +319,7 @@
         }
 
         // Attach selection toggle and form submit on click to each link.
-        $(this).find('a').click(function(event) {
+        $(this).find('a').on('click', function (event) {
           var $wrapper = $(this).parents('.bef-select-as-links');
           var $options = $wrapper.find('select option');
           // We have to prevent the page load triggered by the links.
@@ -328,7 +328,7 @@
           // Un select if previously seleted toogle is selected.
           var link_text = $(this).text();
           removed = '';
-          $($options).each(function(i) {
+          $($options).each(function (i) {
             if ($(this).attr('selected')) {
               if (link_text == $(this).text()) {
                 removed = $(this).text();
@@ -338,7 +338,7 @@
           });
 
           // Set the corresponding option inside the select element as selected.
-          $selected = $options.filter(function() {
+          $selected = $options.filter(function () {
             return $(this).text() == link_text && removed != link_text;
           });
           $selected.attr('selected', 'selected');
@@ -346,14 +346,14 @@
           $wrapper.find('.bef-new-value[value=""]').attr("disabled", "disabled");
           $(this).addClass('active');
           // Submit the form.
-          $wrapper.parents('form').find('.views-submit-button *[type=submit]').click();
+          $wrapper.parents('form').find('.views-submit-button *[type=submit]').trigger('click');
         });
 
-        $('.bef-select-as-link').ready(function() {
+        $('.bef-select-as-link').ready(function () {
           $('.bef-select-as-link').find('a').removeClass('active');
-          $('.bef-new-value').each(function(i, val) {
+          $('.bef-new-value').each(function (i, val) {
             id = $(this).parent().find('select').attr('id') + '-' + $(this).val();
-            $('#'+id).find('a').addClass('active');
+            $('#' + id).find('a').addClass('active');
           });
         });
       });
@@ -361,7 +361,7 @@
   };
 
   Backdrop.behaviors.betterExposedFiltersRequiredFilter = {
-    attach: function(context, settings) {
+    attach: function (context, settings) {
       // Required checkboxes should re-check all inputs if a user un-checks
       // them all.
       $('.bef-select-as-checkboxes', context).once('bef-required-filter').ajaxComplete(function (e, xhr, s) {
@@ -376,7 +376,7 @@
         var $view_name;
         var $view_display_id;
         var $uses_ajax = false;
-        $.each(settings.views.ajaxViews, function(i, item) {
+        $.each(settings.views.ajaxViews, function (i, item) {
           $view_name = item.view_name;
           $view_display_id = item.view_display_id;
           var $id = 'views-exposed-form-' + $view_name.replace(/_/g, '-') + '-' + $view_display_id.replace(/_/g, '-');
@@ -388,7 +388,7 @@
         });
 
         // Check if we have any filters at all (for Views Selective Filter).
-        if($('input', this).length > 0) {
+        if ($('input', this).length > 0) {
           var $filter_name = $('input', this).attr('name').slice(0, -2);
           if (Backdrop.settings.better_exposed_filters.views[$view_name].displays[$view_display_id].filters[$filter_name].required && $('input:checked', this).length == 0) {
             $('input', this).prop('checked', true);
@@ -432,8 +432,8 @@
    */
   function befUpdateSlider($el, valIndex, sliderOptions) {
     var val = parseFloat($el.val(), 10),
-        currentMin = $el.parents('div.views-widget').next('.bef-slider').slider('values', 0),
-        currentMax = $el.parents('div.views-widget').next('.bef-slider').slider('values', 1);
+      currentMin = $el.parents('div.views-widget').next('.bef-slider').slider('values', 0),
+      currentMax = $el.parents('div.views-widget').next('.bef-slider').slider('values', 1);
     // If we have a range slider.
     if (valIndex != null) {
       // Make sure the min is not more than the current max value.
@@ -468,4 +468,4 @@
     }
   }
 
-}) (jQuery);
+})(jQuery);
