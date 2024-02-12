@@ -19,7 +19,7 @@ class BEF_TestOptions extends BEF_TestBase {
     $settings = array(
       'status_1' => 'Published',
       'type' => 'Type',
-      'title' => 'Title'
+      'title' => 'Title',
     );
 
     foreach ($settings as $id => $label) {
@@ -754,15 +754,11 @@ class BEF_TestRewrite extends BEF_TestBase {
 
     // Set rewrite for single and multiple selection filters.
     $this->setBefSettings(array(
-      'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' =>
-        "Yes|Hell yeah!\nNo|Booo...",
-      'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' =>
-        "bef_test|This is a test\nPost|",
-      'exposed_form_options[bef][field_tags_tid][more_options][rewrite][filter_rewrite_values]' =>
-        $term1->name . "|The first one\n" . $term2->name . '|' . $term2->name . ' rewritten',
+      'exposed_form_options[bef][status_1][more_options][rewrite][filter_rewrite_values]' => "Yes|Hell yeah!\nNo|Booo...",
+      'exposed_form_options[bef][type][more_options][rewrite][filter_rewrite_values]' => "bef_test|This is a test\nPost|",
+      'exposed_form_options[bef][field_tags_tid][more_options][rewrite][filter_rewrite_values]' => $term1->name . "|The first one\n" . $term2->name . '|' . $term2->name . ' rewritten',
       'exposed_form_options[bef][sort][advanced][combine]' => '1',
-      'exposed_form_options[bef][sort][advanced][combine_rewrite]' =>
-        "Post date Asc|Oldest first\nPost date Desc|Newest first\nTitle Asc|A -> Z\nTitle Desc|",
+      'exposed_form_options[bef][sort][advanced][combine_rewrite]' => "Post date Asc|Oldest first\nPost date Desc|Newest first\nTitle Asc|A -> Z\nTitle Desc|",
     ));
     $this->saveView();
 
