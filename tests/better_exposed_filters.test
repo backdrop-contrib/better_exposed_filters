@@ -248,31 +248,29 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
       'path' => array('path' => 'bef_test_page'),
     ));
 
-    // Not sure why I can't get the Features-based functionality to work without
-    // pulling up the modules page, but it works...
-    $this->backdropGet('admin/modules');
-
     // Add three terms with two children each to the vocab defined in
     // bef_test_content.
     $parents = array();
     foreach (array('parent1', 'parent2', 'parent3') as $name) {
-      $term = new TaxonomyTerm();
-      $term->vocabulary = 'bef_test_location';
-      $term->name = $name;
+      $term = entity_create('taxonomy_term', array(
+        'vocabulary' => 'bef_test_location',
+        'name' => $name,
+      ));
       taxonomy_term_save($term);
       $parents[$term->tid] = $term->name;
     }
     foreach (array('child1', 'child2') as $name) {
       foreach ($parents as $pid => $pname) {
-        $term = new TaxonomyTerm();
-        $term->vocabulary = 'bef_test_location';
-        $term->name = "$pname $name";
-        $term->parent = $pid;
+        $term = entity_create('taxonomy_term', array(
+          'vocabulary' => 'bef_test_location',
+          'name' => "$pname $name",
+          'parent' => array($pid),
+        ));
         taxonomy_term_save($term);
       }
     }
 
-    // Add a heirarchical taxonomy filter from the BEF test feature.
+    // Add a hierarchical taxonomy filter from the BEF test feature.
     $this->addFilter(
       'field_data_field_bef_test_location.field_bef_test_location_tid',
       array(),
@@ -281,7 +279,7 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
     $this->saveView();
     $this->backdropGet($this->getBefSettingsUrl());
 
-    // Verify settings available to a heirarchical taxonomy filter.
+    // Verify settings available to a hierarchical taxonomy filter.
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="default"]');
     $this->assertFieldByXpath('//select[@name="exposed_form_options[bef][field_bef_test_location_tid][bef_format]"]/option[@value="bef"]');
@@ -298,9 +296,16 @@ class BEF_TestTaxonomyFilters extends BEF_TestBase {
     $this->backdropGet('bef_test_page');
     $this->assertText(t('Location (field_bef_test_location)'), 'Verify exposed filter label');
     $this->assertFieldByXpath('//input[@name="field_bef_test_location_tid" and @type="radio"]', NULL, 'Verify exposed filter is shown as radio buttons');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of heirarchy.');
-    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li/ul/li//label[@for="edit-field-bef-test-location-tid-4"]', NULL, 'Verify "parent1 child1" is in the second level of heirarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-all"]', NULL, 'Verify "- Any -" is in the top level of hierarchy.');
+    $this->assertFieldByXpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-1"]', NULL, 'Verify "parent1" is in the top level of hierarchy.');
+    $element = $this->xpath('//ul[@class="bef-tree"]/li//label[@for="edit-field-bef-test-location-tid-4"]');
+    if (!is_object($element[0])) {
+      $second_level = 'The result is not an object.';
+    }
+    else {
+      $second_level = trim(html_entity_decode(strip_tags($element[0]->asXML())));
+    }
+    $this->assertEqual(mb_substr($second_level, 0, 2), '· ', t('Verify "parent1 child1" is in the second level of hierarchy.'));
   }
 }
 
@@ -724,16 +729,19 @@ class BEF_TestRewrite extends BEF_TestBase {
 
     // Add a few terms to the Tags vocab and a Tags filter to the view.
     // Verify values that PHP equates to empty.
-    $term1 = new TaxonomyTerm();
-    $term1->name = "0";
-    $term1->vocabulary = 'tags';
+    $term1 = entity_create('taxonomy_term', array(
+      'vocabulary' => 'tags',
+      'name' => '0',
+    ));
     taxonomy_term_save($term1);
 
     // Verify values with accents.
-    $term2 = new TaxonomyTerm();
-    $term2->name = "Tèstiñg Térm";
-    $term2->vocabulary = 'tags';
+    $term2 = entity_create('taxonomy_term', array(
+      'vocabulary' => 'tags',
+      'name' => 'Tèstiñg Térm',
+    ));
     taxonomy_term_save($term2);
+
     $this->addFilter('field_data_field_tags.field_tags_tid', array(), array(
       // Choose the dropdown option for term filter, without hierarchy shown.
       'options[type]' => 'select',
@@ -759,15 +767,15 @@ class BEF_TestRewrite extends BEF_TestBase {
     $this->saveView();
 
     $this->backdropGet('bef_test_page');
-    $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rerwrite of the filter option "bef_test" in "Type" filter');
-    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Post', 'Rerwrite of the filter option "post" to null in "Type" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rerwrite of the filter option "Yes" in "Published" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rerwrite of the filter option "No" in "Published" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-field-tags-tid"]/option', 'The first one', 'Rerwrite of the filter value "0" in "Tags (field_tags)" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-field-tags-tid"]/option', $term2->name . ' rewritten', 'Rerwrite of a filter option with accents in "Tags (field_tags)" filter.');
-    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'Oldest first', 'Rerwrite of an exposed combined sort option.');
-    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'Newest first', 'Rerwrite of an exposed combined sort option.');
-    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'A -> Z', 'Rerwrite of an exposed combined sort option.');
+    $this->assertFieldByXpath('//select[@id="edit-type"]/option', 'This is a test', 'Rewrite of the filter option "bef_test" in "Type" filter');
+    $this->assertNoFieldByXpath('//select[@id="edit-type"]/option', 'Post', 'Rewrite of the filter option "post" to null in "Type" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Hell yeah!', 'Rewrite of the filter option "Yes" in "Published" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-status-1"]/option', 'Booo...', 'Rewrite of the filter option "No" in "Published" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-field-tags-tid"]/option', 'The first one', 'Rewrite of the filter value "0" in "Tags (field_tags)" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-field-tags-tid"]/option', $term2->name . ' rewritten', 'Rewrite of a filter option with accents in "Tags (field_tags)" filter.');
+    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'Oldest first', 'Rewrite of an exposed combined sort option.');
+    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'Newest first', 'Rewrite of an exposed combined sort option.');
+    $this->assertFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'A -> Z', 'Rewrite of an exposed combined sort option.');
     $this->assertNoFieldByXpath('//select[@id="edit-sort-bef-combine"]/option', 'Title Desc', 'Removal of an exposed combined sort option through rewriting it to NULL.');
   }
 }

@@ -19,18 +19,7 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected $view = array();
 
-  /**
- *
- */
-  public static function getInfo() {
-    return array(
-      'name' => 'BEF Basic functionality tests',
-      'description' => 'Basic tests for Better Exposed Filters.',
-      'group' => 'Better Exposed Filters',
-    );
-  }
-
-  /**
+ /**
  *
  */
   public function setUp() {
