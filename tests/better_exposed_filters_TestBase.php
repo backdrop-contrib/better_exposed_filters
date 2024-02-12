@@ -19,9 +19,9 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected $view = array();
 
- /**
- *
- */
+  /**
+   *
+   */
   public function setUp() {
     // For benchmarking.
     $this->start = time();
