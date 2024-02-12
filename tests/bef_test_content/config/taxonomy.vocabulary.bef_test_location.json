@@ -1,0 +1,9 @@
+{
+  "_config_name": "taxonomy.vocabulary.bef_test_location",
+  "name": "Location",
+  "machine_name": "bef_test_location",
+  "description": "",
+  "hierarchy": 1,
+  "language": 0,
+  "weight": 0
+}

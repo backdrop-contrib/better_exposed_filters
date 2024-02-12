@@ -1,3 +1,9 @@
+[BEF_TestBase]
+name = BEF Basic functionality tests
+description = Basic tests for Better Exposed Filters.
+group = Better Exposed Filters
+file = better_exposed_filters_TestBase.php
+
 [BEF_TestOptions]
 name = BEF Options tests
 description = Checks that BEF options appear when should.

@@ -1,0 +1,26 @@
+{
+    "_config_name": "field.field.field_bef_test_location",
+    "field_name": "field_bef_test_location",
+    "type": "taxonomy_term_reference",
+    "translatable": false,
+    "module": "taxonomy",
+    "active": 1,
+    "locked": 0,
+    "cardinality": "1",
+    "deleted": 0,
+    "entity_types": [],
+    "settings": {
+        "allowed_values": [
+            {
+                "vocabulary": "bef_test_location",
+                "parent": "0"
+            }
+        ]
+    },
+    "storage": {
+        "type": "field_sql_storage",
+        "settings": [],
+        "module": "field_sql_storage",
+        "active": 1
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "_config_name": "field.instance.node.bef_test.field_bef_test_price",
+    "field_name": "field_bef_test_price",
+    "entity_type": "node",
+    "bundle": "bef_test",
+    "label": "Price",
+    "widget": {
+        "weight": "3",
+        "type": "number",
+        "module": "number",
+        "active": 0,
+        "settings": []
+    },
+    "description": "",
+    "required": 0,
+    "deleted": 0,
+    "default_value": null,
+    "default_value_function": null,
+    "settings": {
+        "min": "",
+        "max": "",
+        "prefix": "$",
+        "suffix": "",
+        "user_register_form": false
+    },
+    "display": {
+        "default": {
+            "label": "hidden",
+            "type": "number_decimal",
+            "settings": {
+                "thousand_separator": "",
+                "decimal_separator": ".",
+                "scale": 2,
+                "prefix_suffix": true
+            },
+            "module": "number",
+            "weight": 7
+        }
+    }
+}
