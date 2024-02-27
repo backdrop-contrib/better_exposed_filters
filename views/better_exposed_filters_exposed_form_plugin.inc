@@ -804,7 +804,7 @@ dateFormat: "dd-mm-yy"
     // Collect BEF's Javascript settings, add to Backdrop.settings at the end.
     // Historical note: We used to only add BEF's Javascript when absolutely
     // needed. Eventually, much of that functionality worked its way into the
-    // normal usage of BEF so that we now turn those Jvaascript behaviors on
+    // normal usage of BEF so that we now turn those Javascript behaviors on
     // by default. (See https://drupal.org/node/1807114).
     $bef_add_js = TRUE;
     $bef_js = array(
@@ -1827,6 +1827,12 @@ dateFormat: "dd-mm-yy"
 
       backdrop_add_js(array('better_exposed_filters' => $bef_js), 'setting');
       backdrop_add_js(backdrop_get_path('module', 'better_exposed_filters') . '/js/better_exposed_filters.js');
+      // If using AJAX, we need to ensure we have the libraries to announce
+      // changes for screen readers.
+      if ($this->view->use_ajax) {
+        backdrop_add_library('system', 'backdrop.ajax');
+        backdrop_add_library('system', 'backdrop.announce');
+      }
     }
     if ($bef_add_css) {
       backdrop_add_css(backdrop_get_path('module', 'better_exposed_filters') . '/css/better_exposed_filters.css');
