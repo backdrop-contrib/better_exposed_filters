@@ -563,8 +563,8 @@ class BEF_TestLinks extends BEF_TestBase {
     $this->assertNoFieldByXpath('//div[@id="edit-type-wrapper"]//a[contains(@class, "Active")]', NULL, 'No "type" link options are marked as "active"');
 
     // Verify the status filter, which is single select.
-    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
-    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
 
     // Just the "yes" option should be marked as "active."
     $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
