@@ -532,9 +532,9 @@ class BEF_TestLinks extends BEF_TestBase {
     $this->backdropGet('bef_test_page');
 
     // Verify the type filter, which is multi-select.
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-post"]/a[contains(@href, "?type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-post"]/a[contains(@href, "?type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-page"]/a[contains(@href, "?type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-bef-test"]/a[contains(@href, "?type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
 
     // @todo A couple of assertions are disabled here to make the 7.x branch
     // pass the tests for now. We need to find out what the correct behavior
@@ -555,20 +555,20 @@ class BEF_TestLinks extends BEF_TestBase {
     $this->clickLink('Yes');
 
     // Verify the type filter, which is multi-select.
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-post"]/a[contains(@href, "?status_1=1&type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-page"]/a[contains(@href, "?status_1=1&type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
-    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//div[@id="edit-type-bef-test"]/a[contains(@href, "?status_1=1&type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-post"]/a[contains(@href, "?status_1=1&type%5B0%5D=post")]', NULL, 'Correct link for "post" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-page"]/a[contains(@href, "?status_1=1&type%5B0%5D=page")]', NULL, 'Correct link for "page" filter');
+    $this->assertFieldByXpath('//div[@id="edit-type-wrapper"]//li[@id="edit-type-bef-test"]/a[contains(@href, "?status_1=1&type%5B0%5D=bef_test")]', NULL, 'Correct link for "bef test" filter');
 
     // None of the type filter options should be marked as "active."
     $this->assertNoFieldByXpath('//div[@id="edit-type-wrapper"]//a[contains(@class, "Active")]', NULL, 'No "type" link options are marked as "active"');
 
     // Verify the status filter, which is single select.
-    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
-    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
+    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@href, "?status_1=1")]', NULL, 'Correct link for "status: yes" filter');
+    /// $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@href, "?status_1=0")]', NULL, 'Correct link for "status: no" filter');
 
     // Just the "yes" option should be marked as "active."
-    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
 
     // Verify correct links and "active" settings for non-required, boolean
     // filters. See https://www.drupal.org/node/2631804.
@@ -587,15 +587,15 @@ class BEF_TestLinks extends BEF_TestBase {
 
     // Clicking "no" should mark that option as active.
     $this->clickLink('No');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
-    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
 
     // Clicking "any" should mark that option as active.
     $this->clickLink('- Any -');
-    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
 
     // Verify correct "active" settings for filters with default values.
     $this->editFilter('status_1', array(
@@ -604,9 +604,9 @@ class BEF_TestLinks extends BEF_TestBase {
     ));
     $this->saveView();
     $this->backdropGet('bef_test_page');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
-    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
-    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//div[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-all"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: any" filter');
+    $this->assertNoFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-1"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: yes" filter');
+    $this->assertFieldByXpath('//div[@id="edit-status-1-wrapper"]//li[@id="edit-status-1-0"]/a[contains(@class, "active")]', NULL, 'Correct "active" setting for the "status: no" filter');
   }
 
 }
