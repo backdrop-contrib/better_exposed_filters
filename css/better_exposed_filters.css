@@ -19,6 +19,7 @@ fieldset.bef-select-as-checkboxes-fieldset.collapsed legend {
 .bef-slider.ui-slider-horizontal {
   margin-top: 6px;
 }
+
 .bef-slider.ui-slider-vertical {
   margin-top: 12px;
 }
@@ -28,4 +29,17 @@ fieldset.bef-select-as-checkboxes-fieldset.collapsed legend {
  */
 .views-exposed-form .views-exposed-widget {
   display: block;
+}
+
+/*
+ * Don't show Select as Links as list items by default, for backwards
+ * compatibility.
+ */
+.bef-links {
+  list-style: none;
+}
+
+.bef-links li.form-type-bef-link {
+  display: inline;
+  margin: 0;
 }
