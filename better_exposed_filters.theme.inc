@@ -207,7 +207,7 @@ function theme_select_as_hidden($vars) {
           'element' => array_merge($properties, array(
             '#id' => $id,
             '#children' => theme_hidden(array('element' => $hidden)),
-          )),
+          ))
         ));
       }
     }
@@ -551,8 +551,7 @@ function theme_select_as_links($vars) {
       $link_options = array();
       // Add "active" class to the currently active filter link.
       if (in_array((string) $key, $selected_options)) {
-        $link_options['attributes']['class'] = array('active');
-        $link_options['attributes']['aria-current'] = 'page';
+        $link_options['attributes'] = array('class' => array('active'));
         $url = bef_replace_query_string_arg($name, $key, $multiple, TRUE, $path);
       }
       else {
@@ -700,7 +699,8 @@ function theme_bef_checkbox($variables) {
     '#id' => $id,
     '#type' => 'bef-checkbox',
     '#name' => $id,
-    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] : '',
+    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] :
+      '',
   );
 
   // Prevent the select-all-none class from cascading to all checkboxes.
