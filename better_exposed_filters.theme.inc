@@ -207,7 +207,7 @@ function theme_select_as_hidden($vars) {
           'element' => array_merge($properties, array(
             '#id' => $id,
             '#children' => theme_hidden(array('element' => $hidden)),
-          ))
+          )),
         ));
       }
     }
@@ -699,8 +699,7 @@ function theme_bef_checkbox($variables) {
     '#id' => $id,
     '#type' => 'bef-checkbox',
     '#name' => $id,
-    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] :
-      '',
+    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] : '',
   );
 
   // Prevent the select-all-none class from cascading to all checkboxes.
