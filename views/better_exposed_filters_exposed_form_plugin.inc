@@ -1480,6 +1480,7 @@ dateFormat: "dd-mm-yy"
 
         case 'bef_links':
           $bef_add_js = TRUE;
+          $bef_add_css = TRUE;
           $form[$filter_id]['#theme'] = 'select_as_links';
 
           // Exposed form displayed as blocks can appear on pages other than

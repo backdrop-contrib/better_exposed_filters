@@ -207,7 +207,7 @@ function theme_select_as_hidden($vars) {
           'element' => array_merge($properties, array(
             '#id' => $id,
             '#children' => theme_hidden(array('element' => $hidden)),
-          ))
+          )),
         ));
       }
     }
@@ -513,6 +513,7 @@ function theme_select_as_links($vars) {
     $element['#value'] = check_plain($element['#value']);
   }
 
+  $items = array();
   // Go through each filter option and build the appropriate link or plain text.
   foreach ($element['#options'] as $option => $elem) {
     if (!empty($element['#hidden_options'][$option])) {
@@ -546,12 +547,6 @@ function theme_select_as_links($vars) {
       $element_output = '';
       // Custom ID for each link based on the <select>'s original ID.
       $id = backdrop_html_id($element['#id'] . '-' . $key);
-      $elem = array(
-        '#id' => $id,
-        '#markup' => '',
-        '#type' => 'bef-link',
-        '#name' => $id,
-      );
 
       $link_options = array();
       // Add "active" class to the currently active filter link.
@@ -562,31 +557,58 @@ function theme_select_as_links($vars) {
       else {
         $url = bef_replace_query_string_arg($name, $key, $multiple, FALSE, $path);
       }
-      $elem['#children'] = l($value, $url, $link_options);
-      $element_output = theme('form_element', array('element' => $elem));
+      // $elem['#children'] = l($value, $url, $link_options);
+      $link = array(
+        '#title' => $value,
+        '#href' => $url,
+        '#options' => $link_options,
+        '#type' => 'link',
+      );
 
       if (!empty($element['#settings']['combine_param']) && $element['#name'] == $element['#settings']['combine_param'] && !empty($element['#settings']['toggle_links'])) {
         $sort_pair = explode(' ', $key);
         if (count($sort_pair) == 2) {
           // Highlight the link if it is the selected sort_by (can be either
           // asc or desc, it doesn't matter).
-         if (strpos($selected_options[0], $sort_pair[0]) === 0) {
+          if (strpos($selected_options[0], $sort_pair[0]) === 0) {
             $element_output = str_replace('form-item', 'form-item selected', $element_output);
           }
         }
       }
-      $output .= $element_output;
+      $items[] = array(
+        'data' => backdrop_render($link),
+        'class' => array(
+          'form-type-bef-link',
+          'form-item',
+          'form-item-' . $key,
+        ),
+        'id' => $id,
+      );
 
     }
   }
+  if (!empty($items)) {
+    $list = theme('item_list', array(
+      'items' => $items,
+      'attributes' => array(
+        'class' => array(
+          'bef-links',
+          'form-item',
+        ),
+      ),
+      'wrapper_attributes' => array(
+        'class' => array(
+          'bef-select-as-links',
+        ),
+      ),
+    ));
 
-  $properties = array(
-    '#description' => isset($element['#bef_description']) ? $element['#bef_description'] : '',
-    '#children' => $output,
-  );
-
-  $output = '<div class="bef-select-as-links">';
-  $output .= theme('form_element', array('element' => $properties));
+    $list_wrapper = array(
+      '#description' => isset($element['#bef_description']) ? $element['#bef_description'] : '',
+      '#children' => $list,
+    );
+    $output .= render($list_wrapper);
+  }
 
   // Add attribute that hides the select form element.
   $vars['element']['#attributes']['style'] = 'display: none;';
@@ -601,7 +623,6 @@ function theme_select_as_links($vars) {
       $output .= '<input type="hidden" class="bef-new-value" name="' . $name . '" value="' . $element['#value'] . '" />';
     }
   }
-  $output .= '</div>';
 
   return $output;
 }
@@ -678,8 +699,7 @@ function theme_bef_checkbox($variables) {
     '#id' => $id,
     '#type' => 'bef-checkbox',
     '#name' => $id,
-    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] :
-      '',
+    '#description' => isset($element['#bef_term_descriptions'][$value]) ? $element['#bef_term_descriptions'][$value] : '',
   );
 
   // Prevent the select-all-none class from cascading to all checkboxes.
