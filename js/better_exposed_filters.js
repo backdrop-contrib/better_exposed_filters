@@ -222,10 +222,10 @@
               );
 
               // Update the slider when the fields are updated.
-              $min.blur(function () {
+              $min.on("blur", function () {
                 befUpdateSlider($(this), 0, sliderOptions);
               });
-              $max.blur(function () {
+              $max.on("blur", function () {
                 befUpdateSlider($(this), 1, sliderOptions);
               });
             }
@@ -270,7 +270,7 @@
               );
 
               // Update the slider when the field is updated.
-              $input.blur(function () {
+              $input.on("blur", function () {
                 befUpdateSlider($(this), null, sliderOptions);
               });
             }
