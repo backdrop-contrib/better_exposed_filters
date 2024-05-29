@@ -350,8 +350,10 @@
           $wrapper.parents('form').find('.views-submit-button *[type=submit]').trigger('click');
         });
 
-        // Announce the current filter to screen readers.
-        Backdrop.announce(Backdrop.t('The page has been filtered to show !linktext content.', { '!linktext': $active_text }));
+        if (typeof $active_text != 'undefined') {
+          // Announce the current filter to screen readers.
+          Backdrop.announce(Backdrop.t('The page has been filtered to show !linktext content.', { '!linktext': $active_text }));
+        }
       });
     }
   };

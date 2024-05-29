@@ -9,14 +9,14 @@
  * Themes a select element as checkboxes enclosed in a collapsible fieldset.
  *
  * @param array $vars
- *   An array of arrays, the 'element' item holds the properties of the element
+ *   An array of arrays, the 'element' item holds the properties of the element.
  *
  * @return string
  *   HTML representing the form element.
  */
 function theme_select_as_checkboxes_fieldset($vars) {
   // Merge incoming element with some default values. Prevents a lot of this.
-  // $foo = isset($bar) ? $bar : $bar_default;
+  // $foo = isset($bar) ? $bar : $bar_default;.
   $element = array_merge(
     array(
       '#bef_title' => '',
@@ -226,7 +226,7 @@ function theme_select_as_hidden($vars) {
  */
 function theme_select_as_radios_fieldset($vars) {
   // Merge incoming element with some default values. Prevents a lot of this.
-  // $foo = isset($bar) ? $bar : $bar_default;
+  // $foo = isset($bar) ? $bar : $bar_default;.
   $element = array_merge(
     array(
       '#bef_title' => '',
@@ -463,6 +463,7 @@ function theme_select_as_tree($vars) {
  *   HTML representing the form element.
  */
 function theme_select_as_links($vars) {
+  // @todo: Clean up this entire function to better use render arrays.
   $element = $vars['element'];
 
   $output = '';
@@ -599,11 +600,6 @@ function theme_select_as_links($vars) {
           'form-item',
         ),
       ),
-      'wrapper_attributes' => array(
-        'class' => array(
-          'bef-select-as-links',
-        ),
-      ),
     ));
 
     $list_wrapper = array(
@@ -627,7 +623,7 @@ function theme_select_as_links($vars) {
     }
   }
 
-  return $output;
+  return '<div class="bef-select-as-links">' . $output . '</div>';
 }
 
 /**
