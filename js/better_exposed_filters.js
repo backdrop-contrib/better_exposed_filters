@@ -362,7 +362,7 @@
     attach: function (context, settings) {
       // Required checkboxes should re-check all inputs if a user un-checks
       // them all.
-      $('.bef-select-as-checkboxes', context).once('bef-required-filter').ajaxComplete(function (e, xhr, s) {
+      $('.bef-select-as-checkboxes', context).once('bef-required-filter').on('ajaxComplete', function (e, xhr, s) {
         var $element = $(this);
 
         if (typeof settings.views == 'undefined' || typeof settings.views.ajaxViews == 'undefined') {
