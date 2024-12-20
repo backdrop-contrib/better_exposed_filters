@@ -142,6 +142,11 @@ class BEF_TestRadios extends BEF_TestBase {
 class BEF_TestCheckboxes extends BEF_TestBase {
 
   /**
+   * @var int
+   */
+  public $start;
+
+  /**
    * Verify that checkboxes are rendered correctly on a page display
    */
   public function test_befPageDisplayCheckboxes() {
