@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file Base class for testing the Better Exposed Filters module.
  * @author mikeker
@@ -50,7 +49,9 @@ class BEF_TestBase extends BackdropWebTestCase {
     // Build a basic view for use in tests.
     $this->createView();
 
-    // $this->createDisplay('Page', array('path' => array('path' => 'bef_test_page')));
+    // $this->createDisplay('Page', array(
+    //   'path' => array('path' => 'bef_test_page'),
+    // ));
     // Add field to default display
     // $this->addField('node.title');.
     // Turn of Better Exposed Filters.
