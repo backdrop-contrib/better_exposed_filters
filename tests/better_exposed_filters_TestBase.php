@@ -163,7 +163,7 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected function addFilter($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
-      "name[$field]" => TRUE,
+      "name[fields][$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/filter";
     $this->backdropPost($url, $edit, 'Add and configure filter criteria');
@@ -203,7 +203,7 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected function addSort($field, $settings = array(), $additional = array(), $exposed = TRUE, $display = 'default') {
     $edit = array(
-      "name[$field]" => TRUE,
+      "name[fields][$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/sort";
     $this->backdropPost($url, $edit, 'Add and configure sort criteria');
@@ -226,7 +226,7 @@ class BEF_TestBase extends BackdropWebTestCase {
    */
   protected function addField($field, $settings = array(), $display = 'default') {
     $edit = array(
-      "name[$field]" => TRUE,
+      "name[fields][$field]" => TRUE,
     );
     $url = 'admin/structure/views/nojs/add-item/' . $this->view['machine_name'] . "/$display/field";
     $this->backdropPost($url, $edit, 'Add and configure fields');
