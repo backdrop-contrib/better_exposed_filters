@@ -49,12 +49,7 @@ class BEF_TestBase extends BackdropWebTestCase {
     // Build a basic view for use in tests.
     $this->createView();
 
-    // $this->createDisplay('Page', array(
-    //   'path' => array('path' => 'bef_test_page'),
-    // ));
-    // Add field to default display
-    // $this->addField('node.title');.
-    // Turn of Better Exposed Filters.
+    // Turn on Better Exposed Filters.
     $this->setBefExposedForm();
   }
 
@@ -128,6 +123,7 @@ class BEF_TestBase extends BackdropWebTestCase {
       'settings_base_url' => 'admin/structure/views/nojs/display/' . $this->view['machine_name'] . '/' . $display_name,
     );
 
+    // @codingStandardsIgnoreStart
     // Settings should be in the form of 'path' => array_of_form_settings. Eg:
     // to set the title for a new display as an override:
     //  'title' => array(
@@ -138,6 +134,7 @@ class BEF_TestBase extends BackdropWebTestCase {
     // If you navigate to
     //  admin/structure/views/nojs/display/<view_name>/<display_name>/title
     // you will see the form in question.
+    // @codingStandardsIgnoreEnd
     foreach ($settings as $path => $values) {
       $this->backdropPost($this->view['displays'][$display_name]['settings_base_url'] . "/$path", $values, 'Apply');
     }
