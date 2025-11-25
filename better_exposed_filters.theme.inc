@@ -347,9 +347,8 @@ function theme_select_as_tree($vars) {
         $depth = 0;
       }
       else {
-        preg_match('/^(-*).*$/', $option_label, $matches);
-        $depth = strlen($matches[1]);
-        $option_label = ltrim($option_label, '-');
+        $depth = substr_count($option_label, '· ');
+        $option_label = ltrim($option_label, '· ');
       }
 
       // Build either checkboxes or radio buttons, depending on Views' settings.

@@ -57,7 +57,7 @@
               .html(selAll)
               .siblings('.bef-checkboxes, .bef-tree')
               .find('.form-item input:checkbox').each(function () {
-                $(this).attr('checked', false);
+                $(this).prop('checked', false);
                 _bef_highlight(this, context);
               })
               .end()
@@ -113,14 +113,14 @@
           // To respect term depth, check/uncheck child term checkboxes.
           .find('input.form-checkboxes:first')
           .on('click', function () {
-            var checkedParent = $(this).attr('checked');
+            var checkedParent = $(this).prop('checked');
             if (!checkedParent) {
               // Uncheck all children if parent is unchecked.
-              $(this).parents('li:first').find('ul input.form-checkboxes').removeAttr('checked');
+              $(this).parents('li:first').find('ul input.form-checkboxes').prop('checked', false);
             }
             else {
               // Check all children if parent is checked.
-              $(this).parents('li:first').find('ul input.form-checkboxes').attr('checked', $(this).attr('checked'));
+              $(this).parents('li:first').find('ul input.form-checkboxes').prop('checked', $(this).prop('checked'));
             }
           })
           .end()
@@ -131,21 +131,21 @@
             var checked = $(this).prop('checked');
 
             // Determine the number of unchecked sibling checkboxes.
-            var ct = $(this).parents('ul:first').find('input.form-checkboxes:not(:checked)').size();
+            var ct = $(this).parents('ul:first').find('input.form-checkboxes:not(:checked)').length;
 
             // If the child term is unchecked, uncheck the parent.
             if (!checked) {
               // Uncheck parent if any of the childres is unchecked.
-              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').removeAttr('checked');
+              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').prop('checked', false);
             }
             // If all sibling terms are checked, check the parent.
             if (!ct) {
               // Check the parent if all the children are checked.
-              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').attr('checked', checked);
+              $(this).parents('li:first').parents('li:first').find('input.form-checkboxes:first').prop('checked', checked);
             }
 
             // Now we can trigger the autosubmit
-            $this.parents('form').find('.autosubmit-click').trigger('click');
+            $(this).parents('form').find('.autosubmit-click').trigger('click');
           });
       });
     }
@@ -405,7 +405,7 @@
    */
   function _bef_highlight(elem, context) {
     $elem = $(elem, context);
-    $elem.attr('checked')
+    $elem.prop('checked')
       ? $elem.closest('.form-item', context).addClass('highlight')
       : $elem.closest('.form-item', context).removeClass('highlight');
   }
